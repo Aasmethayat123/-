@@ -32,7 +32,9 @@ import {
   BookOpen,
   Award,
   Palette,
-  Timer
+  Timer,
+  Flame,
+  Eraser
 } from 'lucide-react';
 
 interface GameMapProps {
@@ -48,7 +50,7 @@ interface GameMapProps {
   onOpenAvatarModal: () => void;
 }
 
-type CategoryTab = 'all' | 'nesma9' | 'projective' | 'physical_quests' | 'somatic' | 'cognitive';
+type CategoryTab = 'all' | 'visceral' | 'nesma9' | 'projective' | 'physical_quests' | 'somatic' | 'cognitive';
 
 export const GameMap: React.FC<GameMapProps> = ({
   language,
@@ -63,6 +65,58 @@ export const GameMap: React.FC<GameMapProps> = ({
   const savedCount = getSavedMoments().length;
 
   const [activeTab, setActiveTab] = useState<CategoryTab>('all');
+
+  // 6 Visceral & Tactile Psychological Games
+  const visceralGames = [
+    {
+      id: 'touch-and-break' as GameMode,
+      title: isAr ? '١. المرآة المكسورة 🪞💥' : '1. Shatter the Mirror 🪞💥',
+      desc: isAr ? 'اضغطي بقوة وسرعة لتحطيم زجاج الأوهام واكتشاف كارت السر الصادم' : 'Forceful tactile smash breaking illusions to reveal the hidden truth',
+      icon: Flame,
+      color: 'from-rose-500 to-red-700',
+      badge: isAr ? 'تحطيم وهزة حسية' : 'Touch & Break'
+    },
+    {
+      id: 'body-motion-challenge' as GameMode,
+      title: isAr ? '٢. عقارب الساعة المعكوسة ⏳🤸' : '2. Reverse Clock Motion ⏳🤸',
+      desc: isAr ? 'سيبي الشاشة وركزي مع جسمك ١٥ ثانية مع حركة مجنونة واكتشفي نمطك' : '15-second screenless body dare & playful archetype breakdown',
+      icon: Activity,
+      color: 'from-amber-500 to-orange-600',
+      badge: isAr ? 'حركة ١٥ ثانية' : 'Body Motion'
+    },
+    {
+      id: 'emotion-roulette' as GameMode,
+      title: isAr ? '٣. مسدس المشاعر (الروليت) 🎯🎡' : '3. Emotion Roulette 🎯🎡',
+      desc: isAr ? 'لفي العجلة واضغطي إطلاق لوقفها على تحدي واقعي ومرح في يومك' : 'High-speed wheel shoot unlocking real-life spontaneous micro-dares',
+      icon: Sparkles,
+      color: 'from-sky-500 to-blue-700',
+      badge: isAr ? 'روليت المشاعر' : 'Roulette Shoot'
+    },
+    {
+      id: 'scratch-to-reveal' as GameMode,
+      title: isAr ? '٤. مسح الحبر وكشط الحقيقة 🎨🖤' : '4. Scratch to Reveal 🎨🖤',
+      desc: isAr ? 'اكشطي طبقة الحبر بصباعك لتفريغ التوتر واكتشاف كاريكاتير الحقيقة' : 'Tactile scratch canvas relieving tension to unveil comforting art',
+      icon: Eraser,
+      color: 'from-emerald-500 to-teal-700',
+      badge: isAr ? 'كشط الحبر' : 'Scratch & Win'
+    },
+    {
+      id: 'multi-sensory-quest' as GameMode,
+      title: isAr ? '٥. صندوق الأسرار والروائح ☕🌿' : '5. Multi-Sensory Quest ☕🌿',
+      desc: isAr ? 'مهمة حواس حقيقية في غرفتك (شم، لمس، سمع) مع كشف سر كيمياء الدماغ' : 'Real-room 5 senses quest proving instant neurochemical shift',
+      icon: Coffee,
+      color: 'from-amber-600 to-yellow-600',
+      badge: isAr ? 'حواس وأعصاب' : 'Multi-Sensory'
+    },
+    {
+      id: 'speed-lie-detector' as GameMode,
+      title: isAr ? '٦. رادار كاشف الكذب الذاتي ⚡🕵️' : '6. Self-Lie Radar ⚡🕵️',
+      desc: isAr ? 'أسئلة خاطفة وسريعة تمنع عقلك من التجميل وتكشف حقيقة قلبك' : 'Sub-second reflex quiz bypassing analytical ego to reveal raw truth',
+      icon: Zap,
+      color: 'from-red-600 to-rose-700',
+      badge: isAr ? 'كاشف الكذب' : 'Speed Radar'
+    }
+  ];
 
   // The 9 Core Nesma Hayat Games
   const nesma9Games = [
@@ -403,6 +457,7 @@ export const GameMap: React.FC<GameMapProps> = ({
       <div className="flex items-center gap-2 p-1.5 bg-stone-200/60 rounded-2xl overflow-x-auto text-xs font-bold">
         {[
           { id: 'all' as CategoryTab, label: isAr ? 'كل الألعاب هنا 🎮' : 'All Games 🎮' },
+          { id: 'visceral' as CategoryTab, label: isAr ? 'ألعاب الصدمة الإيجابية والتفريغ الحسي 🪞💥' : 'Visceral & Tactile 🪞💥' },
           { id: 'nesma9' as CategoryTab, label: isAr ? 'ألعاب نسمة حياة (٩ ألعاب) 🌿' : '9 Nesma Games 🌿' },
           { id: 'projective' as CategoryTab, label: isAr ? 'استكشاف باطني وبصري 🔮' : 'Projective 🔮' },
           { id: 'physical_quests' as CategoryTab, label: isAr ? 'تحديات حركية وكروت حكمة ⚡' : 'Physical Quests ⚡' },
@@ -425,6 +480,66 @@ export const GameMap: React.FC<GameMapProps> = ({
           </button>
         ))}
       </div>
+
+      {/* ============================================================== */}
+      {/* SECTION 0: The 6 Visceral & Tactile Psychological Games */}
+      {/* ============================================================== */}
+      {(activeTab === 'all' || activeTab === 'visceral') && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
+                {isAr ? 'ألعاب الصدمة الإيجابية والتفريغ الحسي الجريء (٦ ألعاب جديدة)' : 'Visceral & Tactile Psychological Games'}
+              </span>
+              <h2 className="text-xl font-bold text-stone-900">
+                {isAr ? 'تحطيم الأوهام · تحدي الـ ١٥ ثانية · مسدس المشاعر · كاشف الكذب' : 'Break Illusions & Physical Dares'}
+              </h2>
+            </div>
+            <span className="text-xs text-stone-500 font-medium">
+              {isAr ? 'تفريغ حسي · إثبات عملي' : 'Tactile & Live Proof'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visceralGames.map((game) => {
+              const Icon = game.icon;
+              return (
+                <button
+                  key={game.id}
+                  onClick={() => {
+                    soundManager.playSoftTap();
+                    onNavigateMode(game.id);
+                  }}
+                  className="text-start bg-white rounded-3xl border-2 border-stone-200 p-5 shadow-xs hover:shadow-md hover:border-rose-400 transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
+                >
+                  <div className="space-y-3">
+                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-800 block w-fit mb-1 border border-rose-200">
+                        {game.badge}
+                      </span>
+                      <h3 className="text-base font-bold text-stone-900 group-hover:text-rose-800 transition-colors">
+                        {game.title}
+                      </h3>
+                      <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                        {game.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs font-bold text-rose-800 pt-2 border-t border-stone-100">
+                    <span>{isAr ? 'العب هذه اللعبة 💥' : 'Play Now 💥'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ============================================================== */}
       {/* SECTION 1: The 9 Core Nesma Hayat Games */}

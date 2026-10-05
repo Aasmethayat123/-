@@ -41,6 +41,14 @@ import { MicroChallenge30sGame } from './components/interactiveGames/MicroChalle
 import { DailyQuestCardsGame } from './components/interactiveGames/DailyQuestCardsGame';
 import { WisdomVaultView } from './components/interactiveGames/WisdomVaultView';
 
+// 6 Visceral & Tactile Psychological Games
+import { TouchAndBreakGame } from './components/visceralGames/TouchAndBreakGame';
+import { BodyMotionChallengeGame } from './components/visceralGames/BodyMotionChallengeGame';
+import { EmotionRouletteGame } from './components/visceralGames/EmotionRouletteGame';
+import { ScratchToRevealGame } from './components/visceralGames/ScratchToRevealGame';
+import { MultiSensoryQuestGame } from './components/visceralGames/MultiSensoryQuestGame';
+import { SpeedLieDetectorGame } from './components/visceralGames/SpeedLieDetectorGame';
+
 import { useGameState } from './utils/gameState';
 import { soundManager } from './utils/audio';
 
@@ -268,6 +276,55 @@ export default function App() {
           <WisdomVaultView
             language={language}
             playerXP={stats.xp}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {/* 6 Visceral & Tactile Psychological Games */}
+        {currentMode === 'touch-and-break' && (
+          <TouchAndBreakGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'body-motion-challenge' && (
+          <BodyMotionChallengeGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'emotion-roulette' && (
+          <EmotionRouletteGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'scratch-to-reveal' && (
+          <ScratchToRevealGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'multi-sensory-quest' && (
+          <MultiSensoryQuestGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'speed-lie-detector' && (
+          <SpeedLieDetectorGame
+            language={language}
+            onAddXP={addXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}

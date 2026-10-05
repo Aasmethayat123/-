@@ -30,6 +30,13 @@ export type GameMode =
   | 'micro-challenge-30s'
   | 'daily-quests'
   | 'wisdom-vault'
+  // 6 Visceral & Tactile Psychological Games:
+  | 'touch-and-break'
+  | 'body-motion-challenge'
+  | 'emotion-roulette'
+  | 'scratch-to-reveal'
+  | 'multi-sensory-quest'
+  | 'speed-lie-detector'
   // Classic interactive challenges:
   | 'challenge-separate' 
   | 'challenge-feeling' 
