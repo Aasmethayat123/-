@@ -48,6 +48,7 @@ import { EmotionRouletteGame } from './components/visceralGames/EmotionRouletteG
 import { ScratchToRevealGame } from './components/visceralGames/ScratchToRevealGame';
 import { MultiSensoryQuestGame } from './components/visceralGames/MultiSensoryQuestGame';
 import { SpeedLieDetectorGame } from './components/visceralGames/SpeedLieDetectorGame';
+import { GlobalImpactLeaderboard } from './components/GlobalImpactLeaderboard';
 
 import { useGameState } from './utils/gameState';
 import { soundManager } from './utils/audio';
@@ -263,6 +264,15 @@ export default function App() {
           <DiscoverReadings
             language={language}
             onNavigateToGame={(gameId) => setCurrentMode(gameId)}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {/* Global Impact Leaderboard */}
+        {currentMode === 'leaderboard' && (
+          <GlobalImpactLeaderboard
+            language={language}
+            playerStats={stats}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}

@@ -34,7 +34,8 @@ import {
   Palette,
   Timer,
   Flame,
-  Eraser
+  Eraser,
+  Trophy
 } from 'lucide-react';
 
 interface GameMapProps {
@@ -421,6 +422,18 @@ export const GameMap: React.FC<GameMapProps> = ({
           >
             <Bookmark className="w-3.5 h-3.5" />
             <span>{isAr ? `دفتر رحلتي (${savedCount})` : `Diary (${savedCount})`}</span>
+          </button>
+
+          <div className="h-6 w-px bg-stone-700" />
+
+          {/* Shortcut to Leaderboard */}
+          <button
+            onClick={() => onNavigateMode('leaderboard')}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-xl font-bold cursor-pointer transition-colors border border-amber-400/30"
+            title={isAr ? 'لوحة التأثير والسكينة العالمية' : 'Global Impact Leaderboard'}
+          >
+            <Trophy className="w-3.5 h-3.5 fill-amber-400" />
+            <span>{isAr ? 'لوحة التأثير' : 'Leaderboard'}</span>
           </button>
         </div>
       </div>

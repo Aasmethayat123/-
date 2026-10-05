@@ -21,7 +21,8 @@ import {
   Flame,
   CheckCircle2,
   Zap,
-  Calendar
+  Calendar,
+  Trophy
 } from 'lucide-react';
 import { GameMode, Language } from '../types';
 import { soundManager } from '../utils/audio';
@@ -58,6 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems = [
     { mode: 'map' as GameMode, label: isAr ? 'كل الألعاب' : 'All Games', icon: MapPin },
+    { mode: 'leaderboard' as GameMode, label: isAr ? 'لوحة التأثير 🏆' : 'Leaderboard 🏆', icon: Trophy },
     { mode: 'discover' as GameMode, label: isAr ? 'إضاءات ومقالات' : 'Discover', icon: BookOpen },
     { mode: 'my-journey' as GameMode, label: isAr ? 'دفتر رحلتي' : 'My Journey', icon: Bookmark },
     { mode: 'workshop' as GameMode, label: isAr ? 'دليل الورش' : 'Workshop', icon: Users },
