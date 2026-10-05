@@ -1,0 +1,7 @@
+{
+  "name": "Nesma Hayat: Think About It",
+  "description": "An interactive mental-health awareness game for understanding thoughts, emotions, and reactions — Who is leading?",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
