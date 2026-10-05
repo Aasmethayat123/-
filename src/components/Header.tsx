@@ -17,7 +17,11 @@ import {
   Gamepad2,
   BookOpen,
   Bookmark,
-  Award
+  Award,
+  Flame,
+  CheckCircle2,
+  Zap,
+  Calendar
 } from 'lucide-react';
 import { GameMode, Language } from '../types';
 import { soundManager } from '../utils/audio';
@@ -31,6 +35,8 @@ interface HeaderProps {
   soundEnabled: boolean;
   onToggleSound: () => void;
   playerXP: number;
+  streak?: number;
+  isGameCompletedToday?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -41,9 +47,12 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenBreathing,
   soundEnabled,
   onToggleSound,
-  playerXP
+  playerXP,
+  streak = 1,
+  isGameCompletedToday = false
 }) => {
   const [showInfo, setShowInfo] = useState(false);
+  const [showStreakInfo, setShowStreakInfo] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isAr = language === 'ar';
 
@@ -86,6 +95,29 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Global Controls & Actions */}
         <div className="flex items-center gap-2">
+          {/* Daily Streak Badge in Header */}
+          <button
+            onClick={() => {
+              soundManager.playSoftTap();
+              setShowStreakInfo(true);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-2xs ${
+              isGameCompletedToday
+                ? 'bg-amber-500/15 text-amber-900 border-amber-300 hover:bg-amber-500/25 ring-2 ring-amber-400/30'
+                : 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200'
+            }`}
+            title={isAr ? `التتابع اليومي: ${streak} أيام` : `Daily Streak: ${streak} Days`}
+          >
+            <Flame className={`w-4 h-4 ${isGameCompletedToday ? 'text-amber-500 fill-amber-500 animate-pulse' : 'text-stone-400'}`} />
+            <span className="font-mono font-extrabold">{streak}</span>
+            <span className="hidden sm:inline text-[11px]">
+              {isAr ? (streak === 1 ? 'يوم' : 'أيام') : (streak === 1 ? 'day' : 'days')}
+            </span>
+            {isGameCompletedToday && (
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title={isAr ? 'مكتمل اليوم' : 'Completed Today'} />
+            )}
+          </button>
+
           {/* Breathing Pause Quick Action */}
           <button
             onClick={() => {
@@ -194,6 +226,98 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             );
           })}
+        </div>
+      )}
+
+      {/* Daily Streak Info Modal */}
+      {showStreakInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border border-stone-200 shadow-xl space-y-5 text-center">
+            <div className="flex items-center justify-between border-b border-stone-100 pb-3 text-start">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                  <Flame className="w-5 h-5 fill-amber-500" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-stone-900">
+                    {isAr ? 'نظام التتابع اليومي' : 'Daily Streak System'}
+                  </h3>
+                  <span className="text-[11px] text-stone-400 font-medium">
+                    {isAr ? 'مكافآت الوعي اليومية' : 'Daily Awareness Rewards'}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowStreakInfo(false)}
+                className="p-1 text-stone-400 hover:text-stone-700 rounded-full cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Streak Number Showcase */}
+            <div className="py-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200/80 space-y-1">
+              <div className="flex items-center justify-center gap-2">
+                <Flame className="w-8 h-8 text-amber-500 fill-amber-500 animate-bounce" />
+                <span className="text-4xl font-extrabold text-stone-900 font-mono">
+                  {streak}
+                </span>
+              </div>
+              <span className="text-xs font-bold text-amber-800">
+                {isAr ? `${streak} ${streak === 1 ? 'يوم' : 'أيام متتالية'}` : `${streak} Consecutive Days`}
+              </span>
+            </div>
+
+            {/* Today's Mission Status */}
+            <div className={`p-4 rounded-2xl border text-start space-y-1.5 ${
+              isGameCompletedToday
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
+                : 'bg-amber-50 border-amber-200 text-amber-950'
+            }`}>
+              <div className="flex items-center gap-2 text-xs font-bold">
+                {isGameCompletedToday ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>{isAr ? 'مهمة اليوم: مكتملة بنجاح ✓' : 'Today: Completed ✓'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Calendar className="w-4 h-4 text-amber-600" />
+                    <span>{isAr ? 'مهمة اليوم: بانتظارك!' : 'Today: Waiting for you!'}</span>
+                  </>
+                )}
+              </div>
+              <p className="text-[11px] leading-relaxed opacity-90">
+                {isGameCompletedToday
+                  ? (isAr 
+                      ? 'لعبتِ لعبة واحدة على الأقل اليوم وحصلتِ على مكافأة التتابع وإكسترا XP!' 
+                      : 'You completed a game today and collected your streak bonus!')
+                  : (isAr 
+                      ? 'العب أي لعبة واحدة في التطبيق اليوم لكسب +50 XP والحفاظ على تتابعك من الانقطاع.' 
+                      : 'Play any game today to earn +50 XP and maintain your streak.')}
+              </p>
+            </div>
+
+            {/* Reward breakdown rules */}
+            <div className="space-y-2 text-xs text-stone-600 text-start bg-stone-50 p-4 rounded-2xl border border-stone-200">
+              <span className="font-bold text-stone-800 block">
+                🎁 {isAr ? 'كيف يعمل نظام المكافآت؟' : 'How does it work?'}
+              </span>
+              <ul className="space-y-1.5 text-[11px] leading-relaxed list-disc list-inside text-stone-600">
+                <li>{isAr ? 'فتح التطبيق يومياً يمنحك +20 XP هدية ترحيبية.' : 'Opening the app gives +20 XP daily gift.'}</li>
+                <li>{isAr ? 'إتمام لعبة واحدة يمنحك +50 XP أساسية + مكافأة متصاعدة عن كل يوم تتابع!' : 'Completing a game awards +50 XP + scaling streak bonuses!'}</li>
+              </ul>
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <button
+                onClick={() => setShowStreakInfo(false)}
+                className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold cursor-pointer"
+              >
+                {isAr ? 'استمرار في اللعب 🌿' : 'Keep Playing 🌿'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

@@ -72,6 +72,9 @@ export interface PlayerStats {
   gems: number;
   levelStars: Record<string, number>;
   streak: number;
+  lastActiveDate?: string;
+  lastGameCompletedDate?: string;
+  streakBonusClaimedToday?: boolean;
   badges: string[];
   avatarId: string;
 }

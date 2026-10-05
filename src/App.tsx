@@ -60,7 +60,15 @@ export default function App() {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
-  const { stats, addXP, recordLevelCompletion, setAvatar } = useGameState();
+  const { 
+    stats, 
+    addXP, 
+    recordLevelCompletion, 
+    setAvatar,
+    streakNotification,
+    dismissStreakNotification,
+    isGameCompletedToday
+  } = useGameState();
 
   useEffect(() => {
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
@@ -94,7 +102,36 @@ export default function App() {
         soundEnabled={soundEnabled}
         onToggleSound={toggleSound}
         playerXP={stats.xp}
+        streak={stats.streak}
+        isGameCompletedToday={isGameCompletedToday}
       />
+
+      {/* Daily Streak Celebration Toast */}
+      {streakNotification && (
+        <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 animate-bounce max-w-md w-full px-4">
+          <div className="bg-stone-900 text-white p-4 rounded-2xl shadow-2xl border-2 border-amber-400 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl animate-pulse">🔥</span>
+              <div>
+                <h4 className="text-xs font-bold text-amber-400">
+                  {streakNotification.type === 'game_complete' 
+                    ? (language === 'ar' ? 'مكافأة التتابع اليومي! 🔥' : 'Daily Streak Reward! 🔥') 
+                    : (language === 'ar' ? 'هدية تسجيل الدخول اليومي 🎁' : 'Daily Login Reward 🎁')}
+                </h4>
+                <p className="text-xs text-stone-200 font-medium">
+                  {streakNotification.message}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={dismissStreakNotification}
+              className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-stone-950 rounded-xl text-xs font-bold cursor-pointer shrink-0"
+            >
+              {language === 'ar' ? 'رائع!' : 'Awesome!'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Game Screen */}
       <main className="flex-1 pb-12">
