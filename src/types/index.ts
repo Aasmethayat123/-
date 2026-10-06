@@ -44,8 +44,7 @@ export type GameMode =
   | 'challenge-react' 
   | 'workshop' 
   | 'my-journey'
-  | 'profile'
-  | 'leaderboard';
+  | 'profile';
 
 export type StageId = 1 | 2 | 3 | 4 | 5;
 
@@ -73,9 +72,6 @@ export interface PlayerStats {
   gems: number;
   levelStars: Record<string, number>;
   streak: number;
-  lastActiveDate?: string;
-  lastGameCompletedDate?: string;
-  streakBonusClaimedToday?: boolean;
   badges: string[];
   avatarId: string;
 }
