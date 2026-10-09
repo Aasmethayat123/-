@@ -34,8 +34,12 @@ import {
   Palette,
   Timer,
   Flame,
-  Eraser
+  Eraser,
+  FolderKanban,
+  Settings,
+  Download
 } from 'lucide-react';
+import { downloadDistZip } from '../utils/downloadPackage';
 
 interface GameMapProps {
   language: Language;
@@ -451,6 +455,62 @@ export const GameMap: React.FC<GameMapProps> = ({
           <span>{isAr ? 'استكشاف المقالات والألعاب' : 'Explore Readings'}</span>
           <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
         </button>
+      </div>
+
+      {/* Real Projects Hub Banner */}
+      <div className="bg-gradient-to-r from-emerald-500/10 via-stone-500/5 to-transparent border border-emerald-300/60 rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-3 text-start">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-800 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <FolderKanban className="w-5 h-5 text-emerald-300" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-stone-900">
+                {isAr ? 'المشروعات الحقيقية المعتمدة (فكر فيها: نسمة حياة · عباقرة عيون مصر)' : 'Authentic Projects Hub'}
+              </h3>
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded-md">
+                {isAr ? 'بيانات حقيقية' : 'Verified'}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600 line-clamp-1">
+              {isAr ? 'استعراض المشروعات المعتمدة بدون إحصائيات وهمية، وإدارة المحتوى من لوحة التحكم.' : 'View authentic projects without fabricated metrics, and manage verified content.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <button
+            onClick={async () => {
+              soundManager.playSoftTap();
+              await downloadDistZip();
+            }}
+            className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer transition-transform hover:scale-103 shadow-xs flex items-center gap-1.5"
+            title={isAr ? 'تنزيل حزمة النشر fakkerfeha-dist.zip' : 'Download ZIP'}
+          >
+            <Download className="w-4 h-4" />
+            <span>{isAr ? 'تنزيل حزمة النشر (ZIP)' : 'Download ZIP'}</span>
+          </button>
+          <button
+            onClick={() => {
+              soundManager.playSoftTap();
+              onNavigateMode('projects');
+            }}
+            className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer transition-transform hover:scale-103 shadow-xs flex items-center gap-1.5"
+          >
+            <span>{isAr ? 'عرض المشروعات' : 'View Projects'}</span>
+            <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
+          </button>
+          <button
+            onClick={() => {
+              soundManager.playSoftTap();
+              onNavigateMode('admin-cms');
+            }}
+            className="p-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-bold cursor-pointer transition-colors border border-stone-200"
+            title={isAr ? 'إدارة المحتوى' : 'Content Management'}
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Filter Category Tabs */}

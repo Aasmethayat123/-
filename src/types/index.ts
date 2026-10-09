@@ -44,7 +44,25 @@ export type GameMode =
   | 'challenge-react' 
   | 'workshop' 
   | 'my-journey'
-  | 'profile';
+  | 'profile'
+  // Real projects & authentic content management:
+  | 'projects'
+  | 'admin-cms';
+
+export interface ProjectItem {
+  id: string;
+  name: string;
+  description: string;
+  category: 'psychology-games' | 'initiatives' | 'apps' | 'inventions' | 'other';
+  status: 'active' | 'in-development' | 'upcoming';
+  image?: string;
+  icon?: string;
+  realUrl?: string;
+  features: string[];
+  content: string;
+  createdAt: string;
+  isPublished: boolean;
+}
 
 export type StageId = 1 | 2 | 3 | 4 | 5;
 

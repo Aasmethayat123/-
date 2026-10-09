@@ -49,6 +49,10 @@ import { ScratchToRevealGame } from './components/visceralGames/ScratchToRevealG
 import { MultiSensoryQuestGame } from './components/visceralGames/MultiSensoryQuestGame';
 import { SpeedLieDetectorGame } from './components/visceralGames/SpeedLieDetectorGame';
 
+// Real Projects & Content Management CMS
+import { ProjectsHubView } from './components/ProjectsHubView';
+import { ContentManagementView } from './components/ContentManagementView';
+
 import { useGameState } from './utils/gameState';
 import { soundManager } from './utils/audio';
 
@@ -83,7 +87,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-800 transition-colors">
+    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-800 transition-colors overflow-x-hidden">
       {/* Game Header */}
       <Header
         currentMode={currentMode}
@@ -227,6 +231,22 @@ export default function App() {
             language={language}
             onNavigateToGame={(gameId) => setCurrentMode(gameId)}
             onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {/* Real Projects Showcase */}
+        {currentMode === 'projects' && (
+          <ProjectsHubView
+            language={language}
+            onNavigateMode={(mode) => setCurrentMode(mode)}
+          />
+        )}
+
+        {/* Dedicated Content Management (CMS) */}
+        {currentMode === 'admin-cms' && (
+          <ContentManagementView
+            language={language}
+            onNavigateMode={(mode) => setCurrentMode(mode)}
           />
         )}
 
@@ -402,14 +422,14 @@ export default function App() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-stone-800">
-              {language === 'ar' ? 'نسمة حياة' : 'Nesma Hayat'}
+              {language === 'ar' ? 'فكر فيها' : 'Think About It'}
             </span>
             <span>🌿</span>
             <span>·</span>
             <span>
               {language === 'ar' 
-                ? 'فكر فيها — ألعاب الوعي النفسي والحركي' 
-                : 'Nesma Hayat Mental Health & Psychomotor Games'}
+                ? 'ألعاب نفسية تفاعلية — كجزء من مبادرة نسمة حياة' 
+                : 'Interactive Psychological Games — Part of Nesma Hayat'}
             </span>
           </div>
 
@@ -419,6 +439,13 @@ export default function App() {
               className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
             >
               {language === 'ar' ? 'كل الألعاب' : 'All Games'}
+            </button>
+            <span>·</span>
+            <button
+              onClick={() => setCurrentMode('projects')}
+              className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
+            >
+              {language === 'ar' ? 'المشروعات' : 'Projects'}
             </button>
             <span>·</span>
             <button
@@ -433,6 +460,13 @@ export default function App() {
               className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
             >
               {language === 'ar' ? 'دليل الورش' : 'Workshop'}
+            </button>
+            <span>·</span>
+            <button
+              onClick={() => setCurrentMode('admin-cms')}
+              className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
+            >
+              {language === 'ar' ? 'إدارة المحتوى' : 'CMS'}
             </button>
           </div>
         </div>

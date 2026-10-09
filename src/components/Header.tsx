@@ -17,7 +17,9 @@ import {
   Gamepad2,
   BookOpen,
   Bookmark,
-  Award
+  Award,
+  FolderKanban,
+  Settings
 } from 'lucide-react';
 import { GameMode, Language } from '../types';
 import { soundManager } from '../utils/audio';
@@ -49,10 +51,11 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems = [
     { mode: 'map' as GameMode, label: isAr ? 'كل الألعاب' : 'All Games', icon: MapPin },
+    { mode: 'projects' as GameMode, label: isAr ? 'المشروعات' : 'Projects', icon: FolderKanban },
     { mode: 'discover' as GameMode, label: isAr ? 'إضاءات ومقالات' : 'Discover', icon: BookOpen },
     { mode: 'my-journey' as GameMode, label: isAr ? 'دفتر رحلتي' : 'My Journey', icon: Bookmark },
     { mode: 'workshop' as GameMode, label: isAr ? 'دليل الورش' : 'Workshop', icon: Users },
-    { mode: 'profile' as GameMode, label: isAr ? 'الإنجازات' : 'Achievements', icon: Award },
+    { mode: 'admin-cms' as GameMode, label: isAr ? 'إدارة المحتوى' : 'CMS', icon: Settings },
   ];
 
   return (
@@ -71,14 +74,14 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-extrabold text-base tracking-tight text-stone-900 font-serif">
-                  {isAr ? 'نسمة حياة' : 'Nesma Hayat'}
+                  {isAr ? 'فكر فيها' : 'Think About It'}
                 </span>
                 <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded-md">
-                  {isAr ? 'ألعاب نفسية' : 'Games'}
+                  {isAr ? 'نسمة حياة' : 'Nesma Hayat'}
                 </span>
               </div>
               <p className="text-[11px] text-stone-500 font-medium">
-                {isAr ? 'فكر فيها — من يقود أفكارنا أم مشاعرنا؟' : 'Think About It — Who leads?'}
+                {isAr ? 'ألعاب نفسية تفاعلية — جزء من نسمة حياة 🌿' : 'Interactive Games — Part of Nesma Hayat 🌿'}
               </p>
             </div>
           </button>

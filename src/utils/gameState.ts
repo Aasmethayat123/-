@@ -74,16 +74,14 @@ export const AVATARS: Record<'en' | 'ar', AvatarProfile[]> = {
   ]
 };
 
-const STORAGE_KEY = 'nesma_hayat_game_state_v1';
+const STORAGE_KEY = 'nesma_hayat_game_state_v2';
 
 const defaultStats: PlayerStats = {
-  xp: 120,
-  gems: 3,
-  levelStars: {
-    'unread-message': 3
-  },
-  streak: 1,
-  badges: ['welcome'],
+  xp: 0,
+  gems: 0,
+  levelStars: {},
+  streak: 0,
+  badges: [],
   avatarId: 'sara'
 };
 

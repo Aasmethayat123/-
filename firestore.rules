@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // Core Security & Identity Helper Functions
+    // =========================================================================
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 64 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // =========================================================================
+    // Explicit Denials: Zero Tolerance for Dummy, Test, or Sample Paths
+    // =========================================================================
+
+    match /test/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /tests/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /dummy/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /demo/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /mock/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /samples/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /temp/{document=**} {
+      allow read, write: if false;
+    }
+
+    // =========================================================================
+    // Production Users & Personal Progress
+    // =========================================================================
+
+    match /users/{userId} {
+      // Direct access allowed strictly to the authentic authenticated owner
+      allow get: if isOwner(userId);
+      allow list: if false; // Explicitly deny user list enumeration
+      allow create: if isOwner(userId) && isValidId(userId);
+      allow update: if isOwner(userId) && isValidId(userId);
+      allow delete: if isOwner(userId);
+
+      // Private User Sanctuary: Saved Moments & Reflections (دفتر رحلتي)
+      match /moments/{momentId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(momentId);
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // =========================================================================
+    // Authentic Projects (المشروعات المعتمدة الحقيقية فقط)
+    // =========================================================================
+
+    match /projects/{projectId} {
+      // Public visitors can only view verified published projects
+      allow get: if (resource.data.isPublished == true) || isAdmin();
+      allow list: if (resource.data.isPublished == true) || isAdmin();
+
+      // Only verified administrators can publish or modify project data
+      allow create, update, delete: if isAdmin() && isValidId(projectId);
+    }
+
+    // =========================================================================
+    // Global Default Fallback: Strict Deny-All
+    // =========================================================================
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
