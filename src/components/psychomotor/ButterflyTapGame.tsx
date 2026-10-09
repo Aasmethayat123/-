@@ -115,8 +115,8 @@ export const ButterflyTapGame: React.FC<ButterflyTapGameProps> = ({
             </h2>
             <p className="text-xs text-stone-600 leading-relaxed">
               {isAr
-                ? 'ضع يديك متصالبتين على كتفيك كجناحي فراشة. انقر الجناح الأيسر ثم الأيمن بإيقاع هادئ منتظم. هذه الحركة الجسدية (EMDR) تُعيد التوازن لنصفي الدماغ وتهدئ عاصفة المشاعر.'
-                : 'Cross your hands over your chest like butterfly wings. Tap left then right gently. This bilateral somatic stimulation calms the amygdala.'}
+                ? 'ضع يديك متصالبتين على كتفيك كجناحي فراشة. انقر الجناح الأيسر ثم الأيمن بإيقاع هادئ منتظم. هذا تمرين تحفيز حسي ثنائي مستوحى من تقنية التربيت الفراشي، يساعد كأداة تهدئة ذاتية جسدية (وليس كعلاج نفسي سريري متكامل).'
+                : 'Cross your hands over your chest like butterfly wings. Tap left then right gently. This bilateral sensory exercise is inspired by butterfly hug techniques for somatic self-soothing (not a substitute for clinical psychotherapy).'}
             </p>
           </div>
 

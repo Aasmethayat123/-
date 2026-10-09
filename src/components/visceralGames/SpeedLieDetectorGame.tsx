@@ -169,6 +169,11 @@ export const SpeedLieDetectorGame: React.FC<SpeedLieDetectorGameProps> = ({
                 ? 'عندما تفكرين طويلاً، يقوم عقلك الدفاعي بتجميل الواقع. السرعة المفرطة تجعل اللاوعي يجيب بحقيقته العارية دون فلتر.'
                 : 'Overthinking lets your defensive ego rationalize. Fast reflex tapping catches the raw truth of your heart.'}
             </p>
+            <div className="p-2.5 bg-red-50 rounded-2xl border border-red-200 text-red-900 text-[11px] leading-relaxed">
+              {isAr
+                ? '⚠️ إضاءة توعوية: هذا التمرين ليس كاشفاً قضائياً أو تشخيصاً طبياً للكذب، بل مساحة استكشافية سريعة لملاحظة إجاباتك العفوية الأولى دون لوم ذاتي.'
+                : '⚠️ Disclaimer: This is an experiential self-reflection exercise, not a clinical lie detector or psychiatric assessment.'}
+            </div>
           </div>
 
           <div className="pt-2">

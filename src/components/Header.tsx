@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { GameMode, Language } from '../types';
 import { soundManager } from '../utils/audio';
+import { PWAInstallPrompt } from './PWAInstallPrompt';
 
 interface HeaderProps {
   currentMode: GameMode;
@@ -89,6 +90,9 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Global Controls & Actions */}
         <div className="flex items-center gap-2">
+          {/* PWA In-App Install Prompt & Offline Info */}
+          <PWAInstallPrompt language={language} />
+
           {/* Breathing Pause Quick Action */}
           <button
             onClick={() => {
