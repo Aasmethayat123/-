@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Language, ProjectItem, GameMode } from '../types';
 import { getStoredProjects } from '../utils/projectsStore';
 import { soundManager } from '../utils/audio';
-import { downloadDistZip } from '../utils/downloadPackage';
 import { 
   FolderKanban, 
   ExternalLink, 
@@ -14,8 +13,7 @@ import {
   ArrowRight,
   ShieldCheck,
   Sparkles,
-  Info,
-  Download
+  Info
 } from 'lucide-react';
 
 interface ProjectsHubViewProps {
@@ -97,31 +95,17 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
           </p>
         </div>
 
-        {/* Actions: Download Production Zip & Content Management */}
-        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
-          <button
-            onClick={async () => {
-              soundManager.playSoftTap();
-              await downloadDistZip();
-            }}
-            className="flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-sm"
-            title={isAr ? 'تنزيل حزمة النشر fakkerfeha-dist.zip مباشرة' : 'Download Production ZIP'}
-          >
-            <Download className="w-4 h-4" />
-            <span>{isAr ? 'تنزيل حزمة النشر (ZIP)' : 'Download ZIP'}</span>
-          </button>
-
-          <button
-            onClick={() => {
-              soundManager.playSoftTap();
-              onNavigateMode('admin-cms');
-            }}
-            className="flex items-center justify-center gap-2 px-4 py-3 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-2xl text-xs font-bold cursor-pointer transition-all border border-stone-700 shadow-sm"
-          >
-            <Settings className="w-4 h-4 text-emerald-400" />
-            <span>{isAr ? 'لوحة إدارة المحتوى' : 'Content Management'}</span>
-          </button>
-        </div>
+        {/* Action to Content Management */}
+        <button
+          onClick={() => {
+            soundManager.playSoftTap();
+            onNavigateMode('admin-cms');
+          }}
+          className="flex items-center justify-center gap-2 px-5 py-3 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-2xl text-xs font-bold cursor-pointer transition-all border border-stone-700 shadow-sm shrink-0"
+        >
+          <Settings className="w-4 h-4 text-emerald-400" />
+          <span>{isAr ? 'لوحة إدارة المحتوى' : 'Content Management'}</span>
+        </button>
       </div>
 
       {/* Transparency & Authenticity Notice */}
