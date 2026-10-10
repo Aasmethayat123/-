@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Language, ProjectItem, GameMode } from '../types';
 import { getStoredProjects } from '../utils/projectsStore';
 import { soundManager } from '../utils/audio';
+import { isAdminAuthenticated } from '../utils/adminAuth';
 import { 
   FolderKanban, 
   ExternalLink, 
@@ -95,17 +96,19 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
           </p>
         </div>
 
-        {/* Action to Content Management */}
-        <button
-          onClick={() => {
-            soundManager.playSoftTap();
-            onNavigateMode('admin-cms');
-          }}
-          className="flex items-center justify-center gap-2 px-5 py-3 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-2xl text-xs font-bold cursor-pointer transition-all border border-stone-700 shadow-sm shrink-0"
-        >
-          <Settings className="w-4 h-4 text-emerald-400" />
-          <span>{isAr ? 'لوحة إدارة المحتوى' : 'Content Management'}</span>
-        </button>
+        {/* Action to Content Management (Restricted to Admin) */}
+        {isAdminAuthenticated() && (
+          <button
+            onClick={() => {
+              soundManager.playSoftTap();
+              onNavigateMode('admin-cms');
+            }}
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-2xl text-xs font-bold cursor-pointer transition-all border border-stone-700 shadow-sm shrink-0"
+          >
+            <Settings className="w-4 h-4 text-emerald-400" />
+            <span>{isAr ? 'لوحة إدارة المحتوى' : 'Content Management'}</span>
+          </button>
+        )}
       </div>
 
       {/* Transparency & Authenticity Notice */}

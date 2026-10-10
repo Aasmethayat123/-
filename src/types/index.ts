@@ -2,6 +2,7 @@ export type Language = 'en' | 'ar';
 
 export type GameMode = 
   | 'map'
+  | 'library'
   | 'journey' 
   // 9 Core Nesma Hayat Games:
   | 'hands-control'        // ١. في إيدي / برّا إيدي

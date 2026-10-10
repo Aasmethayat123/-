@@ -373,6 +373,11 @@ class SoundManager {
     setTimeout(() => this.playChime(783.99, 1.8), 240);
   }
 
+  // Success / completion chime
+  playSuccess() {
+    this.playHarmonicAffirmation();
+  }
+
   // Deep breath in / out chime
   playBreathBell(isIn: boolean) {
     if (!this.enabled) return;

@@ -49,19 +49,30 @@ import { ScratchToRevealGame } from './components/visceralGames/ScratchToRevealG
 import { MultiSensoryQuestGame } from './components/visceralGames/MultiSensoryQuestGame';
 import { SpeedLieDetectorGame } from './components/visceralGames/SpeedLieDetectorGame';
 
+// Choose Your Adventure & Creative Discovery Modals
+import { AdventureHome } from './components/AdventureHome';
+import { MinuteReflectionModal } from './components/creative/MinuteReflectionModal';
+import { HiddenPathModal } from './components/creative/HiddenPathModal';
+import { ExperienceMixerModal } from './components/creative/ExperienceMixerModal';
+
 // Real Projects & Content Management CMS
 import { ProjectsHubView } from './components/ProjectsHubView';
 import { ContentManagementView } from './components/ContentManagementView';
 
 import { useGameState } from './utils/gameState';
 import { soundManager } from './utils/audio';
+import { getInitialTheme, applyTheme, ThemeMode } from './utils/theme';
 
 export default function App() {
   const [currentMode, setCurrentMode] = useState<GameMode>('map');
   const [selectedLevelId, setSelectedLevelId] = useState<string>('unread-message');
   const [language, setLanguage] = useState<Language>('ar');
+  const [theme, setTheme] = useState<ThemeMode>(() => getInitialTheme());
   const [isBreathingOpen, setIsBreathingOpen] = useState<boolean>(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState<boolean>(false);
+  const [isMinuteReflectionOpen, setIsMinuteReflectionOpen] = useState<boolean>(false);
+  const [isHiddenPathsOpen, setIsHiddenPathsOpen] = useState<boolean>(false);
+  const [isExperienceMixerOpen, setIsExperienceMixerOpen] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
   const { stats, addXP, recordLevelCompletion, setAvatar } = useGameState();
@@ -70,6 +81,10 @@ export default function App() {
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === 'ar' ? 'en' : 'ar'));
@@ -81,13 +96,17 @@ export default function App() {
     soundManager.enabled = nextState;
   };
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   const handleStartLevel = (levelId: string) => {
     setSelectedLevelId(levelId);
     setCurrentMode('journey');
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-800 transition-colors overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 transition-colors duration-200 overflow-x-hidden">
       {/* Game Header */}
       <Header
         currentMode={currentMode}
@@ -98,11 +117,37 @@ export default function App() {
         soundEnabled={soundEnabled}
         onToggleSound={toggleSound}
         playerXP={stats.xp}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Game Screen */}
       <main className="flex-1 pb-12">
+        {/* Main 'Choose Your Adventure' System (اختار مغامرتك) */}
         {currentMode === 'map' && (
+          <AdventureHome
+            language={language}
+            onNavigateToGame={(gameId, levelId) => {
+              if (levelId) {
+                setSelectedLevelId(levelId);
+                setCurrentMode('journey');
+              } else {
+                setCurrentMode(gameId);
+              }
+            }}
+            onNavigateToLibrary={() => setCurrentMode('library')}
+            onNavigateToJourney={() => setCurrentMode('my-journey')}
+            onOpenMinuteReflection={() => setIsMinuteReflectionOpen(true)}
+            onOpenHiddenPaths={() => setIsHiddenPathsOpen(true)}
+            onOpenExperienceMixer={() => setIsExperienceMixerOpen(true)}
+            onOpenBreathing={() => setIsBreathingOpen(true)}
+            playerStats={{ xp: stats.xp, avatarId: stats.avatarId }}
+            onOpenAvatarModal={() => setIsAvatarModalOpen(true)}
+          />
+        )}
+
+        {/* Full 36 Games Catalog with Search & Filter (مكتبة الألعاب الـ ٣٦) */}
+        {currentMode === 'library' && (
           <GameMap
             language={language}
             onSelectLevel={handleStartLevel}
@@ -486,6 +531,30 @@ export default function App() {
         language={language}
         currentAvatarId={stats.avatarId}
         onSelectAvatar={setAvatar}
+      />
+
+      {/* 1-Minute Reflection Reset Modal */}
+      <MinuteReflectionModal
+        isOpen={isMinuteReflectionOpen}
+        onClose={() => setIsMinuteReflectionOpen(false)}
+        language={language}
+        onRewardXP={addXP}
+      />
+
+      {/* Hidden Paths Modal */}
+      <HiddenPathModal
+        isOpen={isHiddenPathsOpen}
+        onClose={() => setIsHiddenPathsOpen(false)}
+        language={language}
+        onSelectGame={(gameId) => setCurrentMode(gameId)}
+      />
+
+      {/* Experience Mixer Modal */}
+      <ExperienceMixerModal
+        isOpen={isExperienceMixerOpen}
+        onClose={() => setIsExperienceMixerOpen(false)}
+        language={language}
+        onSelectGame={(gameId) => setCurrentMode(gameId)}
       />
     </div>
   );

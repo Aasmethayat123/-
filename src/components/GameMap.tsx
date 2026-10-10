@@ -36,7 +36,9 @@ import {
   Flame,
   Eraser,
   FolderKanban,
-  Settings
+  Settings,
+  Search,
+  X
 } from 'lucide-react';
 
 interface GameMapProps {
@@ -66,7 +68,8 @@ export const GameMap: React.FC<GameMapProps> = ({
   const currentAvatar = AVATARS[language].find(a => a.id === playerStats.avatarId) || AVATARS[language][0];
   const savedCount = getSavedMoments().length;
 
-  const [activeTab, setActiveTab] = useState<CategoryTab>('all');
+  const [activeTab, setActiveTab] = useState<CategoryTab>('nesma9');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // 6 Visceral & Tactile Psychological Games
   const visceralGames = [
@@ -351,263 +354,404 @@ export const GameMap: React.FC<GameMapProps> = ({
     }
   ];
 
+  // Unified list of all 36 games for instant live search and universal filtering
+  const allGamesUnified = [
+    ...nesma9Games.map((g) => ({
+      id: g.id,
+      title: g.title,
+      desc: g.desc,
+      icon: g.icon,
+      color: g.color,
+      badge: g.badge,
+      category: 'nesma9' as CategoryTab,
+      categoryLabel: isAr ? 'ألعاب نسمة حياة' : 'Nesma Hayat',
+      actionType: 'navigate' as const
+    })),
+    ...visceralGames.map((g) => ({
+      id: g.id,
+      title: g.title,
+      desc: g.desc,
+      icon: g.icon,
+      color: g.color,
+      badge: g.badge,
+      category: 'visceral' as CategoryTab,
+      categoryLabel: isAr ? 'التفريغ الحسي والصدمة' : 'Visceral & Tactile',
+      actionType: 'navigate' as const
+    })),
+    ...projectiveGames.map((g) => ({
+      id: g.id,
+      title: g.title,
+      desc: g.desc,
+      icon: g.icon,
+      color: g.color,
+      badge: g.badge,
+      category: 'projective' as CategoryTab,
+      categoryLabel: isAr ? 'استكشاف باطني' : 'Projective',
+      actionType: 'navigate' as const
+    })),
+    ...physicalQuestGames.map((g) => ({
+      id: g.id,
+      title: g.title,
+      desc: g.desc,
+      icon: g.icon,
+      color: g.color,
+      badge: g.badge,
+      category: 'physical_quests' as CategoryTab,
+      categoryLabel: isAr ? 'تحديات وكروت حكمة' : 'Physical Quests',
+      actionType: 'navigate' as const
+    })),
+    ...somaticGames.map((g) => ({
+      id: g.id,
+      title: g.title,
+      desc: g.desc,
+      icon: g.icon,
+      color: g.color,
+      badge: g.badge,
+      category: 'somatic' as CategoryTab,
+      categoryLabel: isAr ? 'نفسية حركية' : 'Psychomotor',
+      actionType: 'navigate' as const
+    })),
+    ...cognitiveGames.map((g) => ({
+      id: g.id,
+      title: g.title,
+      desc: g.desc,
+      icon: g.icon,
+      color: g.color,
+      badge: g.badge,
+      category: 'cognitive' as CategoryTab,
+      categoryLabel: isAr ? 'حلبات فكر فيها' : 'Cognitive Arena',
+      actionType: 'navigate' as const
+    })),
+    ...scenarios.map((sc, idx) => ({
+      id: sc.id as GameMode,
+      title: sc.title,
+      desc: sc.situation,
+      icon: Sparkles,
+      color: 'from-indigo-600 to-blue-700',
+      badge: isAr ? `مستوى ${idx + 1} · ${sc.context}` : `Level ${idx + 1} · ${sc.context}`,
+      category: 'cognitive' as CategoryTab,
+      categoryLabel: isAr ? 'رحلة المواقف' : 'Story Level',
+      actionType: 'level' as const,
+      levelId: sc.id
+    }))
+  ];
+
+  // Filter games based on search query
+  const searchResults = searchQuery.trim()
+    ? allGamesUnified.filter((g) => {
+        const query = searchQuery.trim().toLowerCase();
+        return (
+          g.title.toLowerCase().includes(query) ||
+          g.desc.toLowerCase().includes(query) ||
+          g.badge.toLowerCase().includes(query)
+        );
+      })
+    : [];
+
+  const handleGameClick = (item: { actionType: 'navigate' | 'level'; id: GameMode; levelId?: string }) => {
+    soundManager.playSoftTap();
+    if (item.actionType === 'level' && item.levelId) {
+      onSelectLevel(item.levelId);
+    } else {
+      onNavigateMode(item.id);
+    }
+  };
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-8 animate-fade-in">
-      {/* Player Game HUD Header */}
-      <div className="bg-stone-900 text-stone-100 rounded-3xl p-5 sm:p-6 shadow-md border border-stone-800 flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Avatar info & switcher */}
-        <div className="flex items-center gap-3.5 w-full md:w-auto">
-          <button
-            onClick={() => {
-              soundManager.playSoftTap();
-              onOpenAvatarModal();
-            }}
-            className="relative group cursor-pointer"
-            title={isAr ? 'تغيير الشخصية' : 'Change Character'}
-          >
-            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${currentAvatar.color} flex items-center justify-center text-2xl shadow-inner border-2 border-stone-700 group-hover:scale-105 transition-transform`}>
-              {currentAvatar.avatarChar}
-            </div>
-            <span className="absolute -bottom-1 -right-1 bg-stone-800 text-[10px] px-1.5 py-0.5 rounded-full border border-stone-600 font-bold">
-              {isAr ? 'تبديل' : 'Edit'}
-            </span>
-          </button>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-base font-bold text-white tracking-wide">
-                {currentAvatar.name}
-              </span>
-              <span className="text-xs text-emerald-400 font-medium">
-                {currentAvatar.title}
-              </span>
-            </div>
-            <p className="text-[11px] text-stone-400 line-clamp-1 max-w-xs">
-              {currentAvatar.personality}
-            </p>
-          </div>
-        </div>
-
-        {/* Level Stats Bar & My Journey shortcut */}
-        <div className="flex items-center gap-3 sm:gap-4 bg-stone-800/80 px-4 py-2 rounded-2xl border border-stone-700/60 text-xs w-full md:w-auto justify-between md:justify-start">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-              <Zap className="w-4 h-4 fill-amber-400" />
-            </div>
-            <div>
-              <span className="text-[10px] text-stone-400 block font-bold">
-                {isAr ? 'نقاط الوعي' : 'XP'}
-              </span>
-              <span className="text-sm font-bold text-white font-mono">
-                {playerStats.xp}
-              </span>
-            </div>
-          </div>
-
-          {/* Awareness Level Badge & Shortcut to Wisdom Vault */}
-          <button
-            onClick={() => onNavigateMode('wisdom-vault')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-xl font-bold cursor-pointer transition-colors border border-amber-400/30"
-            title={isAr ? 'عرض مستوى الوعي وصندوق كروت الحكمة' : 'View Awareness Level & Wisdom Cards'}
-          >
-            <span>{currentLevel.badge}</span>
-            <span className="max-w-[120px] truncate">{currentLevel.title}</span>
-          </button>
-
-          <div className="h-6 w-px bg-stone-700" />
-
-          {/* Shortcut to My Journey */}
-          <button
-            onClick={() => onNavigateMode('my-journey')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/60 hover:bg-emerald-700 text-emerald-200 rounded-xl font-bold cursor-pointer transition-colors"
-          >
-            <Bookmark className="w-3.5 h-3.5" />
-            <span>{isAr ? `دفتر رحلتي (${savedCount})` : `Diary (${savedCount})`}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Discover Articles Callout Banner */}
-      <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/60 rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
-        <div className="flex items-center gap-3 text-start">
-          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-            <BookOpen className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-stone-900">
-              {isAr ? 'إضاءات ومقالات نسمة حياة 💡' : 'Nesma Hayat Discover & Readings 💡'}
-            </h3>
-            <p className="text-xs text-stone-600 line-clamp-1">
-              {isAr ? 'اقرأي الفكرة النظرية وادخلي فوراً للعبتها النفسية المرتبطة بها!' : 'Read practical psychological insights and jump into the linked game!'}
-            </p>
-          </div>
-        </div>
-
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6 animate-fade-in">
+      {/* Return to Choose Your Adventure Mode */}
+      <div className="flex items-center justify-between">
         <button
           onClick={() => {
             soundManager.playSoftTap();
-            onNavigateMode('discover');
+            onNavigateMode('map');
           }}
-          className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer transition-transform hover:scale-103 shrink-0 shadow-xs flex items-center gap-1.5"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 text-xs font-bold shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
         >
-          <span>{isAr ? 'استكشاف المقالات والألعاب' : 'Explore Readings'}</span>
-          <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
+          <span className="text-base group-hover:scale-110 transition-transform">🌿</span>
+          <span className="rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform">←</span>
+          <span>{isAr ? 'العودة إلى نظام: اختار مغامرتك' : 'Back to: Choose Your Adventure'}</span>
         </button>
+
+        <span className="text-xs font-extrabold text-stone-400 dark:text-stone-500 hidden sm:inline">
+          {isAr ? 'المكتبة الشاملة للألعاب (٣٦ لعبة)' : 'Full Games Catalog (36 Games)'}
+        </span>
       </div>
 
-      {/* Real Projects Hub Banner */}
-      <div className="bg-gradient-to-r from-emerald-500/10 via-stone-500/5 to-transparent border border-emerald-300/60 rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
-        <div className="flex items-center gap-3 text-start">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-800 text-white flex items-center justify-center shrink-0 shadow-xs">
-            <FolderKanban className="w-5 h-5 text-emerald-300" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-stone-900">
-                {isAr ? 'المشروعات الحقيقية المعتمدة (فكر فيها: نسمة حياة · عباقرة عيون مصر)' : 'Authentic Projects Hub'}
-              </h3>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded-md">
-                {isAr ? 'بيانات حقيقية' : 'Verified'}
+      {/* Calm & Refined Welcome Hero + Player Stats */}
+      <div className="bg-gradient-to-r from-emerald-50/80 via-white to-stone-50 dark:from-stone-900/90 dark:via-stone-900/95 dark:to-stone-950 border border-emerald-200/70 dark:border-stone-800 rounded-3xl p-5 sm:p-6 shadow-2xs transition-colors space-y-4">
+        {/* Top line: Greeting + Player Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          {/* Greeting */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                soundManager.playSoftTap();
+                onOpenAvatarModal();
+              }}
+              className="relative group cursor-pointer shrink-0"
+              title={isAr ? 'تغيير الشخصية' : 'Change Character'}
+            >
+              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${currentAvatar.color} flex items-center justify-center text-2xl shadow-xs border border-white/60 dark:border-stone-700 group-hover:scale-105 transition-transform`}>
+                {currentAvatar.avatarChar}
+              </div>
+              <span className="absolute -bottom-1 -right-1 bg-stone-900 dark:bg-emerald-600 text-[9px] text-white px-1 py-0.2 rounded-full font-bold">
+                {isAr ? 'تغيير' : 'Edit'}
               </span>
+            </button>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100 font-serif">
+                  {isAr ? 'فكّر فيها — نسمة حياة' : 'Think About It — Nesma Hayat'}
+                </h1>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                  {currentAvatar.name}
+                </span>
+              </div>
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 leading-snug">
+                {isAr
+                  ? 'مساحتك الهادئة لتفكيك الأفكار، تنظيم المشاعر، والتفريغ الحسي'
+                  : 'Your calm sanctuary for reframing thoughts and nervous system regulation'}
+              </p>
             </div>
-            <p className="text-xs text-stone-600 line-clamp-1">
-              {isAr ? 'استعراض المشروعات المعتمدة بدون إحصائيات وهمية، وإدارة المحتوى من لوحة التحكم.' : 'View authentic projects without fabricated metrics, and manage verified content.'}
-            </p>
+          </div>
+
+          {/* Quick Stats: XP + Awareness Level + Diary */}
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap sm:flex-nowrap">
+            {/* XP Badge */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-xs font-bold text-amber-900 dark:text-amber-200 shadow-2xs">
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span>{playerStats.xp} XP</span>
+            </div>
+
+            {/* Level Badge linking to Wisdom Vault */}
+            <button
+              onClick={() => {
+                soundManager.playSoftTap();
+                onNavigateMode('wisdom-vault');
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800/80 hover:bg-stone-200 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700/80 text-xs font-bold text-stone-800 dark:text-stone-200 cursor-pointer transition-colors shadow-2xs"
+              title={isAr ? 'مستوى الوعي الحالي وخزينة الحكمة' : 'Awareness Level & Wisdom Cards'}
+            >
+              <span>{currentLevel.badge}</span>
+              <span className="truncate max-w-[100px] sm:max-w-xs">{currentLevel.title}</span>
+            </button>
+
+            {/* Diary Shortcut */}
+            <button
+              onClick={() => {
+                soundManager.playSoftTap();
+                onNavigateMode('my-journey');
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white text-xs font-bold cursor-pointer transition-colors shadow-2xs"
+              title={isAr ? 'عرض اللحظات المحفوظة' : 'My Saved Diary'}
+            >
+              <Bookmark className="w-3.5 h-3.5 text-emerald-200" />
+              <span>{isAr ? `دفتر رحلتي (${savedCount})` : `Diary (${savedCount})`}</span>
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => {
-              soundManager.playSoftTap();
-              onNavigateMode('projects');
-            }}
-            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer transition-transform hover:scale-103 shadow-xs flex items-center gap-1.5"
-          >
-            <span>{isAr ? 'عرض المشروعات' : 'View Projects'}</span>
-            <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
-          </button>
+        {/* Bottom line: Quick compact shortcuts to Discover Readings, Projects & CMS */}
+        <div className="pt-3 border-t border-stone-200/60 dark:border-stone-800/80 flex items-center justify-between flex-wrap gap-2 text-xs">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => {
+                soundManager.playSoftTap();
+                onNavigateMode('discover');
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-750 text-stone-700 dark:text-stone-300 font-semibold cursor-pointer transition-colors border border-stone-200/80 dark:border-stone-700/60"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-amber-500" />
+              <span>{isAr ? 'إضاءات وقراءات نفسية' : 'Readings & Insights'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                soundManager.playSoftTap();
+                onNavigateMode('projects');
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-750 text-stone-700 dark:text-stone-300 font-semibold cursor-pointer transition-colors border border-stone-200/80 dark:border-stone-700/60"
+            >
+              <FolderKanban className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>{isAr ? 'المشروعات المعتمدة' : 'Verified Projects'}</span>
+            </button>
+          </div>
+
           <button
             onClick={() => {
               soundManager.playSoftTap();
               onNavigateMode('admin-cms');
             }}
-            className="p-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-bold cursor-pointer transition-colors border border-stone-200"
-            title={isAr ? 'إدارة المحتوى' : 'Content Management'}
+            className="flex items-center gap-1 text-[11px] text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 cursor-pointer transition-colors"
+            title={isAr ? 'إدارة المحتوى للمسؤول' : 'Content Management'}
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-3 h-3" />
+            <span>{isAr ? 'إدارة المحتوى' : 'CMS'}</span>
           </button>
         </div>
       </div>
 
-      {/* Filter Category Tabs */}
-      <div className="flex items-center gap-2 p-1.5 bg-stone-200/60 rounded-2xl overflow-x-auto text-xs font-bold">
-        {[
-          { id: 'all' as CategoryTab, label: isAr ? 'كل الألعاب هنا 🎮' : 'All Games 🎮' },
-          { id: 'visceral' as CategoryTab, label: isAr ? 'ألعاب الصدمة الإيجابية والتفريغ الحسي 🪞💥' : 'Visceral & Tactile 🪞💥' },
-          { id: 'nesma9' as CategoryTab, label: isAr ? 'ألعاب نسمة حياة (٩ ألعاب) 🌿' : '9 Nesma Games 🌿' },
-          { id: 'projective' as CategoryTab, label: isAr ? 'استكشاف باطني وبصري 🔮' : 'Projective 🔮' },
-          { id: 'physical_quests' as CategoryTab, label: isAr ? 'تحديات حركية وكروت حكمة ⚡' : 'Physical Quests ⚡' },
-          { id: 'somatic' as CategoryTab, label: isAr ? 'ألعاب نفسية حركية 🫨' : 'Psychomotor 🫨' },
-          { id: 'cognitive' as CategoryTab, label: isAr ? 'فكر فيها ورحلة المواقف 🧠' : 'Cognitive & Story 🧠' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => {
-              soundManager.playSoftTap();
-              setActiveTab(tab.id);
-            }}
-            className={`px-4 py-2 rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === tab.id
-                ? 'bg-stone-900 text-white shadow-xs'
-                : 'text-stone-600 hover:text-stone-900 hover:bg-stone-300/50'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* Search & Category Tabs Strip */}
+      <div className="space-y-3">
+        {/* Instant Search Bar */}
+        <div className="relative">
+          <Search className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={
+              isAr
+                ? 'ابحث في ٣٦ لعبة أو تمرين نفسي بالاسم، الكلمات الدلالية، أو الهدف...'
+                : 'Search any of 36 games or somatic exercises...'
+            }
+            className="w-full ps-10 pe-9 py-2.5 bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 rounded-2xl text-xs font-medium text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all shadow-2xs"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute end-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-0.5 cursor-pointer"
+              title={isAr ? 'مسح البحث' : 'Clear search'}
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
 
-      {/* ============================================================== */}
-      {/* SECTION 0: The 6 Visceral & Tactile Psychological Games */}
-      {/* ============================================================== */}
-      {(activeTab === 'all' || activeTab === 'visceral') && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
-                {isAr ? 'ألعاب الصدمة الإيجابية والتفريغ الحسي الجريء (٦ ألعاب جديدة)' : 'Visceral & Tactile Psychological Games'}
-              </span>
-              <h2 className="text-xl font-bold text-stone-900">
-                {isAr ? 'تحطيم الأوهام · تحدي الـ ١٥ ثانية · مسدس المشاعر · كاشف الكذب' : 'Break Illusions & Physical Dares'}
-              </h2>
-            </div>
-            <span className="text-xs text-stone-500 font-medium">
-              {isAr ? 'تفريغ حسي · إثبات عملي' : 'Tactile & Live Proof'}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {visceralGames.map((game) => {
-              const Icon = game.icon;
+        {/* Clean, Non-Crowded Category Filter Tabs */}
+        {!searchQuery && (
+          <div className="flex items-center gap-1.5 p-1.5 bg-stone-100/90 dark:bg-stone-900/90 rounded-2xl overflow-x-auto text-xs font-bold border border-stone-200/70 dark:border-stone-800 scrollbar-none">
+            {[
+              { id: 'nesma9' as CategoryTab, label: isAr ? 'نسمة حياة (٩)' : 'Nesma Hayat (9)', icon: '🌿' },
+              { id: 'visceral' as CategoryTab, label: isAr ? 'تفريغ وصدمة (٦)' : 'Visceral (6)', icon: '🪞' },
+              { id: 'projective' as CategoryTab, label: isAr ? 'استكشاف باطني (٣)' : 'Projective (3)', icon: '🔮' },
+              { id: 'physical_quests' as CategoryTab, label: isAr ? 'تحديات وكروت (٣)' : 'Quests (3)', icon: '⚡' },
+              { id: 'somatic' as CategoryTab, label: isAr ? 'نفسية حركية (٦)' : 'Psychomotor (6)', icon: '🫨' },
+              { id: 'cognitive' as CategoryTab, label: isAr ? 'مواقف وفكر فيها (٩)' : 'Cognitive (9)', icon: '🧠' },
+              { id: 'all' as CategoryTab, label: isAr ? 'عرض الكل (٣٦)' : 'All Games (36)', icon: '🎮' },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
               return (
                 <button
-                  key={game.id}
+                  key={tab.id}
                   onClick={() => {
                     soundManager.playSoftTap();
-                    onNavigateMode(game.id);
+                    setActiveTab(tab.id);
                   }}
-                  className="text-start bg-white rounded-3xl border-2 border-stone-200 p-5 shadow-xs hover:shadow-md hover:border-rose-400 transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap text-xs font-bold ${
+                    isActive
+                      ? 'bg-stone-900 dark:bg-emerald-700 text-white shadow-2xs'
+                      : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200/60 dark:hover:bg-stone-800'
+                  }`}
                 >
-                  <div className="space-y-3">
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-800 block w-fit mb-1 border border-rose-200">
-                        {game.badge}
-                      </span>
-                      <h3 className="text-base font-bold text-stone-900 group-hover:text-rose-800 transition-colors">
-                        {game.title}
-                      </h3>
-                      <p className="text-xs text-stone-500 mt-1 leading-relaxed">
-                        {game.desc}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs font-bold text-rose-800 pt-2 border-t border-stone-100">
-                    <span>{isAr ? 'العب هذه اللعبة 💥' : 'Play Now 💥'}</span>
-                    <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
-                  </div>
+                  <span className="text-xs">{tab.icon}</span>
+                  <span>{tab.label}</span>
                 </button>
               );
             })}
           </div>
+        )}
+      </div>
+
+      {/* ============================================================== */}
+      {/* SEARCH RESULTS VIEW (when searchQuery is active) */}
+      {/* ============================================================== */}
+      {searchQuery && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <span>{isAr ? 'نتائج البحث عن:' : 'Search Results for:'}</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono">«{searchQuery}»</span>
+              <span className="text-xs text-stone-400 font-normal">({searchResults.length})</span>
+            </h2>
+            <button
+              onClick={() => setSearchQuery('')}
+              className="text-xs text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 cursor-pointer font-semibold underline"
+            >
+              {isAr ? 'عرض الأقسام' : 'Back to categories'}
+            </button>
+          </div>
+
+          {searchResults.length === 0 ? (
+            <div className="text-center py-12 bg-white dark:bg-stone-900/60 rounded-3xl border border-stone-200 dark:border-stone-800 p-8 space-y-3">
+              <span className="text-3xl">🔍</span>
+              <h3 className="font-bold text-stone-800 dark:text-stone-200 text-sm">
+                {isAr ? 'لم يتم العثور على ألعاب مطابقة' : 'No matching games found'}
+              </h3>
+              <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
+                {isAr ? 'جرّب البحث بكلمة مختلفة مثل: تحكم، تنفس، جبل، مرآة، شعور' : 'Try searching for: control, breath, mountain, mirror'}
+              </p>
+              <button
+                onClick={() => setSearchQuery('')}
+                className="px-4 py-2 bg-stone-900 dark:bg-emerald-700 text-white rounded-xl text-xs font-bold cursor-pointer"
+              >
+                {isAr ? 'إعادة ضبط البحث' : 'Clear search'}
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {searchResults.map((game) => {
+                const Icon = game.icon;
+                return (
+                  <button
+                    key={`${game.category}-${game.id}`}
+                    onClick={() => handleGameClick(game)}
+                    className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 shadow-2xs hover:shadow-md hover:border-emerald-500/60 dark:hover:border-emerald-500/60 transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                          {game.badge}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                          {game.title}
+                        </h3>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed line-clamp-2">
+                          {game.desc}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs font-bold text-emerald-800 dark:text-emerald-400 pt-2 border-t border-stone-100 dark:border-stone-800/80">
+                      <span>{isAr ? 'فتح اللعبة 🌿' : 'Play Now 🌿'}</span>
+                      <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
       {/* ============================================================== */}
-      {/* SECTION 1: The 9 Core Nesma Hayat Games */}
+      {/* CATEGORY 1: The 9 Core Nesma Hayat Games */}
       {/* ============================================================== */}
-      {(activeTab === 'all' || activeTab === 'nesma9') && (
-        <div className="space-y-4">
+      {!searchQuery && (activeTab === 'all' || activeTab === 'nesma9') && (
+        <div className="space-y-3.5">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block">
-                {isAr ? 'خريطة نسمة حياة الرسمية (٩ ألعاب)' : 'Core Nesma Hayat Roadmap (9 Games)'}
+              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider block">
+                {isAr ? 'ألعاب نسمة حياة الأساسية (٩ ألعاب)' : 'Core Nesma Hayat Games (9)'}
               </span>
-              <h2 className="text-xl font-bold text-stone-900">
-                {isAr ? 'ألعاب استكشاف الذات والهدوء الداخلي' : 'Inner Peace & Self-Exploration Games'}
+              <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100">
+                {isAr ? 'استكشاف الذات، السيطرة، والهدوء الداخلي' : 'Inner Peace & Self-Exploration'}
               </h2>
             </div>
-            <span className="text-xs text-stone-500 font-medium">
-              {isAr ? 'بدون تقييم · حفظ اختياري في رحلتي' : 'Non-diagnostic · Save to diary'}
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+              {isAr ? 'بدون تشخيص · حفظ اختياري' : 'Self-guided'}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {nesma9Games.map((game) => {
               const Icon = game.icon;
               return (
@@ -617,32 +761,32 @@ export const GameMap: React.FC<GameMapProps> = ({
                     soundManager.playSoftTap();
                     onNavigateMode(game.id);
                   }}
-                  className="text-start bg-white rounded-3xl border-2 border-stone-200 p-5 shadow-xs hover:shadow-md hover:border-emerald-400 transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
+                  className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 sm:p-4.5 shadow-2xs hover:shadow-md hover:border-emerald-500/60 dark:hover:border-emerald-500/60 transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
                 >
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform`}>
-                        <Icon className="w-5 h-5" />
+                      <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
+                        <Icon className="w-4 h-4" />
                       </div>
-                      <span className="text-xs font-bold text-stone-400 font-mono">
+                      <span className="text-xs font-bold text-stone-400 dark:text-stone-500 font-mono">
                         {game.number}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 block w-fit mb-1">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 block w-fit mb-1 border border-stone-200 dark:border-stone-700">
                         {game.badge}
                       </span>
-                      <h3 className="text-base font-bold text-stone-900 group-hover:text-emerald-800 transition-colors">
+                      <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                         {game.title}
                       </h3>
-                      <p className="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">
+                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed line-clamp-2">
                         {game.desc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-bold text-emerald-800 pt-2 border-t border-stone-100">
+                  <div className="flex items-center justify-between text-xs font-bold text-emerald-800 dark:text-emerald-400 pt-2 border-t border-stone-100 dark:border-stone-800/80">
                     <span>{isAr ? 'العب الآن 🌿' : 'Play Now 🌿'}</span>
                     <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                   </div>
@@ -654,25 +798,85 @@ export const GameMap: React.FC<GameMapProps> = ({
       )}
 
       {/* ============================================================== */}
-      {/* SECTION 2: Subconscious & Projective Gamified Exploration */}
+      {/* CATEGORY 2: Visceral & Tactile Psychological Games */}
       {/* ============================================================== */}
-      {(activeTab === 'all' || activeTab === 'projective') && (
-        <div className="space-y-4 pt-4 border-t border-stone-200">
+      {!searchQuery && (activeTab === 'all' || activeTab === 'visceral') && (
+        <div className={`space-y-3.5 ${activeTab === 'all' ? 'pt-4 border-t border-stone-200 dark:border-stone-800' : ''}`}>
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-bold text-violet-700 uppercase tracking-wider block">
-                {isAr ? 'استكشاف الذات غير المباشر (Subconscious & Projective)' : 'Subconscious & Projective Games'}
+              <span className="text-[11px] font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider block">
+                {isAr ? 'ألعاب الصدمة والتفريغ الحسي الجريء (٦ ألعاب)' : 'Visceral & Tactile Games (6)'}
               </span>
-              <h2 className="text-xl font-bold text-stone-900">
-                {isAr ? 'بدل السؤال المباشر.. أسئلة وسيناريوهات غير متوقعة' : 'Insight Cards & Projective Dilemmas'}
+              <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100">
+                {isAr ? 'تحطيم الأوهام، تحدي الحركة، ومسدس المشاعر' : 'Tactile Smash & Motion Dares'}
               </h2>
             </div>
-            <span className="text-xs text-stone-500 font-medium">
-              {isAr ? 'بدون استجواب · اكتشاف النمط' : 'Intuitive Archetypes'}
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+              {isAr ? 'تفريغ فوري · إثبات حي' : 'Immediate Release'}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {visceralGames.map((game) => {
+              const Icon = game.icon;
+              return (
+                <button
+                  key={game.id}
+                  onClick={() => {
+                    soundManager.playSoftTap();
+                    onNavigateMode(game.id);
+                  }}
+                  className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 sm:p-4.5 shadow-2xs hover:shadow-md hover:border-rose-400 dark:hover:border-rose-500/70 transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
+                >
+                  <div className="space-y-2.5">
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 block w-fit mb-1 border border-rose-200 dark:border-rose-900/60">
+                        {game.badge}
+                      </span>
+                      <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 group-hover:text-rose-700 dark:group-hover:text-rose-400 transition-colors">
+                        {game.title}
+                      </h3>
+                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed line-clamp-2">
+                        {game.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs font-bold text-rose-800 dark:text-rose-400 pt-2 border-t border-stone-100 dark:border-stone-800/80">
+                    <span>{isAr ? 'العب هذه اللعبة 💥' : 'Play Now 💥'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* CATEGORY 3: Subconscious & Projective Gamified Exploration */}
+      {/* ============================================================== */}
+      {!searchQuery && (activeTab === 'all' || activeTab === 'projective') && (
+        <div className={`space-y-3.5 ${activeTab === 'all' ? 'pt-4 border-t border-stone-200 dark:border-stone-800' : ''}`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-bold text-violet-700 dark:text-violet-400 uppercase tracking-wider block">
+                {isAr ? 'استكشاف الذات الباطني والإسقاط (٣ ألعاب)' : 'Subconscious & Projective (3)'}
+              </span>
+              <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100">
+                {isAr ? 'كروت البصيرة، السيناريوهات السريعة، والإسقاط البصري' : 'Insight Cards & Projective Dilemmas'}
+              </h2>
+            </div>
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+              {isAr ? 'بدون استجواب' : 'Archetype Insights'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {projectiveGames.map((game) => {
               const Icon = game.icon;
               return (
@@ -682,27 +886,27 @@ export const GameMap: React.FC<GameMapProps> = ({
                     soundManager.playSoftTap();
                     onNavigateMode(game.id);
                   }}
-                  className="text-start bg-white rounded-3xl border-2 border-stone-200 p-5 shadow-xs hover:shadow-md hover:border-violet-400 transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
+                  className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 sm:p-4.5 shadow-2xs hover:shadow-md hover:border-violet-400 dark:hover:border-violet-500/70 transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
                 >
-                  <div className="space-y-3">
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform`}>
-                      <Icon className="w-5 h-5" />
+                  <div className="space-y-2.5">
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
+                      <Icon className="w-4 h-4" />
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-50 text-violet-800 block w-fit mb-1 border border-violet-200">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-50 dark:bg-violet-950/60 text-violet-800 dark:text-violet-300 block w-fit mb-1 border border-violet-200 dark:border-violet-900/60">
                         {game.badge}
                       </span>
-                      <h3 className="text-base font-bold text-stone-900 group-hover:text-violet-800 transition-colors">
+                      <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
                         {game.title}
                       </h3>
-                      <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed line-clamp-2">
                         {game.desc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-bold text-violet-800 pt-2 border-t border-stone-100">
+                  <div className="flex items-center justify-between text-xs font-bold text-violet-800 dark:text-violet-400 pt-2 border-t border-stone-100 dark:border-stone-800/80">
                     <span>{isAr ? 'ابدأي الاستكشاف 🔮' : 'Explore 🔮'}</span>
                     <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                   </div>
@@ -714,25 +918,25 @@ export const GameMap: React.FC<GameMapProps> = ({
       )}
 
       {/* ============================================================== */}
-      {/* SECTION 3: Physical & Somatic Gamified Quests & Rewards */}
+      {/* CATEGORY 4: Physical Quests & Wisdom Rewards */}
       {/* ============================================================== */}
-      {(activeTab === 'all' || activeTab === 'physical_quests') && (
-        <div className="space-y-4 pt-4 border-t border-stone-200">
+      {!searchQuery && (activeTab === 'all' || activeTab === 'physical_quests') && (
+        <div className={`space-y-3.5 ${activeTab === 'all' ? 'pt-4 border-t border-stone-200 dark:border-stone-800' : ''}`}>
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-bold text-orange-700 uppercase tracking-wider block">
-                {isAr ? 'الألعاب والتحديات الحركية في يومك (Physical & Gamified Actions)' : 'Physical Gamified Micro-Quests'}
+              <span className="text-[11px] font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider block">
+                {isAr ? 'التحديات الحركية وكروت الحكمة (٣ أدوات)' : 'Physical Quests & Rewards (3)'}
               </span>
-              <h2 className="text-xl font-bold text-stone-900">
-                {isAr ? 'حركة حقيقية في يومك + نظام مكافآت وكروت حكمة' : 'Embodied Actions & Wisdom Rewards'}
+              <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100">
+                {isAr ? 'تحدي ٣٠ ثانية، كروت المهام، وصندوق مستويات الوعي' : 'Embodied Actions & Wisdom Vault'}
               </h2>
             </div>
-            <span className="text-xs text-stone-500 font-medium">
-              {isAr ? 'تحدي ٣٠ ثانية · مهام يومية' : '30s Challenges & Quests'}
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+              {isAr ? 'مكافآت وXP' : 'Quests & Badges'}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {physicalQuestGames.map((game) => {
               const Icon = game.icon;
               return (
@@ -742,27 +946,27 @@ export const GameMap: React.FC<GameMapProps> = ({
                     soundManager.playSoftTap();
                     onNavigateMode(game.id);
                   }}
-                  className="text-start bg-white rounded-3xl border-2 border-stone-200 p-5 shadow-xs hover:shadow-md hover:border-orange-400 transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
+                  className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 sm:p-4.5 shadow-2xs hover:shadow-md hover:border-orange-400 dark:hover:border-orange-500/70 transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
                 >
-                  <div className="space-y-3">
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform`}>
-                      <Icon className="w-5 h-5" />
+                  <div className="space-y-2.5">
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
+                      <Icon className="w-4 h-4" />
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-800 block w-fit mb-1 border border-orange-200">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 dark:bg-orange-950/60 text-orange-800 dark:text-orange-300 block w-fit mb-1 border border-orange-200 dark:border-orange-900/60">
                         {game.badge}
                       </span>
-                      <h3 className="text-base font-bold text-stone-900 group-hover:text-orange-800 transition-colors">
+                      <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 group-hover:text-orange-700 dark:group-hover:text-orange-400 transition-colors">
                         {game.title}
                       </h3>
-                      <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed line-clamp-2">
                         {game.desc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-bold text-orange-800 pt-2 border-t border-stone-100">
+                  <div className="flex items-center justify-between text-xs font-bold text-orange-800 dark:text-orange-400 pt-2 border-t border-stone-100 dark:border-stone-800/80">
                     <span>{isAr ? 'فتح التحدي ⚡' : 'Open Quest ⚡'}</span>
                     <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                   </div>
@@ -774,20 +978,25 @@ export const GameMap: React.FC<GameMapProps> = ({
       )}
 
       {/* ============================================================== */}
-      {/* SECTION 4: Psychomotor Somatic Games */}
+      {/* CATEGORY 5: Psychomotor Somatic Games */}
       {/* ============================================================== */}
-      {(activeTab === 'all' || activeTab === 'somatic') && (
-        <div className="space-y-4 pt-4 border-t border-stone-200">
-          <div>
-            <span className="text-xs font-bold text-teal-700 uppercase tracking-wider block">
-              {isAr ? 'الألعاب النفسية الحركية والجسدية (Psychomotor & Somatic)' : 'Psychomotor & Somatic Games'}
+      {!searchQuery && (activeTab === 'all' || activeTab === 'somatic') && (
+        <div className={`space-y-3.5 ${activeTab === 'all' ? 'pt-4 border-t border-stone-200 dark:border-stone-800' : ''}`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider block">
+                {isAr ? 'الألعاب النفسية الحركية (٦ ألعاب)' : 'Psychomotor Somatic Games (6)'}
+              </span>
+              <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100">
+                {isAr ? 'تنظيم الجهاز العصبي وتفريغ التوتر حركياً' : 'Nervous System Regulation'}
+              </h2>
+            </div>
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+              {isAr ? 'تهدئة حركية' : 'Somatic Flow'}
             </span>
-            <h2 className="text-xl font-bold text-stone-900">
-              {isAr ? 'تنظيم الجهاز العصبي وتفريغ التوتر حركياً' : 'Nervous System & Somatic Regulation'}
-            </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {somaticGames.map((game) => {
               const Icon = game.icon;
               return (
@@ -797,27 +1006,27 @@ export const GameMap: React.FC<GameMapProps> = ({
                     soundManager.playSoftTap();
                     onNavigateMode(game.id);
                   }}
-                  className="text-start bg-white rounded-3xl border-2 border-stone-200 p-5 shadow-xs hover:shadow-md hover:border-teal-400 transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
+                  className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 sm:p-4.5 shadow-2xs hover:shadow-md hover:border-teal-400 dark:hover:border-teal-500/70 transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
                 >
-                  <div className="space-y-3">
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform`}>
-                      <Icon className="w-5 h-5" />
+                  <div className="space-y-2.5">
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
+                      <Icon className="w-4 h-4" />
                     </div>
 
                     <div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 block w-fit mb-1 border border-teal-200">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 block w-fit mb-1 border border-teal-200 dark:border-teal-900/60">
                         {game.badge}
                       </span>
-                      <h3 className="text-base font-bold text-stone-900 group-hover:text-teal-800 transition-colors">
+                      <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
                         {game.title}
                       </h3>
-                      <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed line-clamp-2">
                         {game.desc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-bold text-teal-800 pt-2 border-t border-stone-100">
+                  <div className="flex items-center justify-between text-xs font-bold text-teal-800 dark:text-teal-400 pt-2 border-t border-stone-100 dark:border-stone-800/80">
                     <span>{isAr ? 'بدء التمرين الحركي 🫨' : 'Start Somatic 🫨'}</span>
                     <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                   </div>
@@ -829,62 +1038,67 @@ export const GameMap: React.FC<GameMapProps> = ({
       )}
 
       {/* ============================================================== */}
-      {/* SECTION 3: Think About It Story Levels & Arenas */}
+      {/* CATEGORY 6: Cognitive Scenarios & Arenas (فكر فيها) */}
       {/* ============================================================== */}
-      {(activeTab === 'all' || activeTab === 'cognitive') && (
-        <div className="space-y-6 pt-4 border-t border-stone-200">
-          <div>
-            <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider block">
-              {isAr ? 'لعبة: فَكِّر فِيهَا — رحلة المواقف اليومية' : 'Think About It — Everyday Situations'}
+      {!searchQuery && (activeTab === 'all' || activeTab === 'cognitive') && (
+        <div className={`space-y-4 ${activeTab === 'all' ? 'pt-4 border-t border-stone-200 dark:border-stone-800' : ''}`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider block">
+                {isAr ? 'فَكِّر فِيهَا — رحلة المواقف وحلبات الأفكار (٩ تجارب)' : 'Cognitive Story & Arenas (9)'}
+              </span>
+              <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100">
+                {isAr ? 'من يقود: أفكارنا أم مشاعرنا؟' : 'Thoughts vs. Feelings'}
+              </h2>
+            </div>
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+              {isAr ? '٥ مستويات + ٤ حلبات' : '5 Levels + 4 Arenas'}
             </span>
-            <h2 className="text-xl font-bold text-stone-900">
-              {isAr ? 'من يقود: أفكارنا أم مشاعرنا؟ (المستويات الخمسة)' : 'Who Leads: Thoughts or Feelings?'}
-            </h2>
           </div>
 
-          {/* Story Levels */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Story Levels (5 levels) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {scenarios.map((sc, index) => {
               const starsWon = playerStats.levelStars[sc.id] || 0;
               return (
                 <div
                   key={sc.id}
-                  className="bg-white rounded-3xl border-2 border-stone-200 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-3"
+                  className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 sm:p-4.5 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-3"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider block">
                         {isAr ? `المستوى ${index + 1}` : `Level ${index + 1}`} · {sc.context}
                       </span>
-                      <h3 className="text-base font-bold text-stone-900">
+                      <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 mt-0.5">
                         {sc.title}
                       </h3>
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5">
                       {[1, 2, 3].map((starIdx) => (
                         <Star
                           key={starIdx}
                           className={`w-3.5 h-3.5 ${
-                            starIdx <= starsWon ? 'text-amber-400 fill-amber-400' : 'text-stone-200'
+                            starIdx <= starsWon ? 'text-amber-400 fill-amber-400' : 'text-stone-200 dark:text-stone-700'
                           }`}
                         />
                       ))}
                     </div>
                   </div>
 
-                  <p className="text-xs text-stone-600 font-serif leading-relaxed line-clamp-2">
+                  <p className="text-xs text-stone-600 dark:text-stone-400 font-serif leading-relaxed line-clamp-2">
                     «{sc.situation}»
                   </p>
 
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-[11px] text-emerald-800 font-bold">+150 XP</span>
+                    <span className="text-[11px] text-emerald-800 dark:text-emerald-400 font-bold">+150 XP</span>
                     <button
                       onClick={() => {
                         soundManager.playSoftTap();
                         onSelectLevel(sc.id);
                       }}
-                      className="px-4 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold cursor-pointer"
+                      className="px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors"
                     >
                       {isAr ? 'خوض الموقف' : 'Play Level'}
                     </button>
@@ -894,8 +1108,8 @@ export const GameMap: React.FC<GameMapProps> = ({
             })}
           </div>
 
-          {/* Cognitive Arenas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+          {/* Cognitive Arenas (4 games) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
             {cognitiveGames.map((arena) => {
               const Icon = arena.icon;
               return (
@@ -905,15 +1119,17 @@ export const GameMap: React.FC<GameMapProps> = ({
                     soundManager.playSoftTap();
                     onNavigateMode(arena.id);
                   }}
-                  className="text-start bg-white rounded-2xl border border-stone-200 p-4 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all cursor-pointer flex flex-col justify-between space-y-2"
+                  className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-3.5 shadow-2xs hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-500/70 transition-all cursor-pointer flex flex-col justify-between space-y-2 group"
                 >
                   <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${arena.color} text-white flex items-center justify-center shrink-0`}>
-                      <Icon className="w-4 h-4" />
+                    <div className={`w-7 h-7 rounded-lg bg-gradient-to-tr ${arena.color} text-white flex items-center justify-center shrink-0`}>
+                      <Icon className="w-3.5 h-3.5" />
                     </div>
-                    <span className="text-xs font-bold text-stone-900 truncate">{arena.title}</span>
+                    <span className="text-xs font-bold text-stone-900 dark:text-stone-100 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {arena.title}
+                    </span>
                   </div>
-                  <p className="text-[11px] text-stone-500 leading-snug line-clamp-2">{arena.desc}</p>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-snug line-clamp-2">{arena.desc}</p>
                 </button>
               );
             })}

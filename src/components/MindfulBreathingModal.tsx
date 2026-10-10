@@ -66,42 +66,42 @@ export const MindfulBreathingModal: React.FC<MindfulBreathingModalProps> = ({
   const getScaleClass = () => {
     switch (phase) {
       case 'inhale':
-        return 'scale-115 transition-transform duration-4000 ease-out bg-emerald-100 border-emerald-300';
+        return 'scale-115 transition-transform duration-4000 ease-out bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700';
       case 'hold':
-        return 'scale-115 transition-transform duration-1000 bg-teal-100 border-teal-300';
+        return 'scale-115 transition-transform duration-1000 bg-teal-100 dark:bg-teal-950/60 border-teal-300 dark:border-teal-700';
       case 'exhale':
-        return 'scale-85 transition-transform duration-4000 ease-in bg-stone-100 border-stone-300';
+        return 'scale-85 transition-transform duration-4000 ease-in bg-stone-100 dark:bg-stone-800 border-stone-300 dark:border-stone-700';
       case 'rest':
-        return 'scale-85 transition-transform duration-1000 bg-stone-50 border-stone-200';
+        return 'scale-85 transition-transform duration-1000 bg-stone-50 dark:bg-stone-850 border-stone-200 dark:border-stone-800';
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 dark:bg-stone-950/80 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-xl border border-stone-200 relative text-center"
+        className="bg-white dark:bg-stone-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-xl border border-stone-200 dark:border-stone-800 relative text-center transition-colors"
         role="dialog"
         aria-modal="true"
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-1.5 text-stone-400 hover:text-stone-700 rounded-full hover:bg-stone-100 transition-colors"
+          className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           aria-label="Close breathing modal"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center justify-center gap-2 mb-2 text-emerald-700">
+        <div className="flex items-center justify-center gap-2 mb-2 text-emerald-700 dark:text-emerald-400">
           <HeartHandshake className="w-5 h-5" />
           <span className="text-xs uppercase font-semibold tracking-wider">
             {isAr ? 'وقفة الأنفاس الواعية' : 'The Mindful Reset'}
           </span>
         </div>
 
-        <h3 className="text-lg font-bold text-stone-900 mb-1">
+        <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 mb-1">
           {isAr ? 'تنفس المربع (Box Breathing)' : 'Box Breathing'}
         </h3>
-        <p className="text-xs text-stone-500 mb-8 max-w-xs mx-auto">
+        <p className="text-xs text-stone-500 dark:text-stone-400 mb-8 max-w-xs mx-auto">
           {isAr 
             ? 'عندما ترتفع وتيرة الأفكار أو تشتعل المشاعر، أعد جهازك العصبي إلى نقطة الأمان أولاً.'
             : 'When thoughts accelerate or emotions surge, return your nervous system to safety first.'}
@@ -112,10 +112,10 @@ export const MindfulBreathingModal: React.FC<MindfulBreathingModalProps> = ({
           <div 
             className={`w-40 h-40 rounded-full border-2 flex flex-col items-center justify-center transition-all ${getScaleClass()}`}
           >
-            <span className="text-3xl font-light text-stone-800 tracking-tight font-mono">
+            <span className="text-3xl font-light text-stone-800 dark:text-stone-100 tracking-tight font-mono">
               {secondsLeft}
             </span>
-            <span className="text-xs font-medium text-stone-600 capitalize mt-1">
+            <span className="text-xs font-medium text-stone-600 dark:text-stone-300 capitalize mt-1">
               {phase === 'inhale' ? (isAr ? 'شهيق' : 'Inhale') :
                phase === 'hold' ? (isAr ? 'حبس' : 'Hold') :
                phase === 'exhale' ? (isAr ? 'زفير' : 'Exhale') :
@@ -124,7 +124,7 @@ export const MindfulBreathingModal: React.FC<MindfulBreathingModalProps> = ({
           </div>
         </div>
 
-        <p className="text-sm font-medium text-stone-700 min-h-6 mb-6">
+        <p className="text-sm font-medium text-stone-700 dark:text-stone-200 min-h-6 mb-6">
           {phaseInstruction[phase]}
         </p>
 
@@ -132,21 +132,21 @@ export const MindfulBreathingModal: React.FC<MindfulBreathingModalProps> = ({
         <div className="flex items-center justify-center gap-3">
           <button
             onClick={() => setIsActive(!isActive)}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 rounded-xl transition-colors cursor-pointer"
           >
             {isActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             <span>{isActive ? (isAr ? 'إيقاف مؤقت' : 'Pause') : (isAr ? 'استئناف' : 'Resume')}</span>
           </button>
           <button
             onClick={onClose}
-            className="px-5 py-2 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg transition-colors cursor-pointer shadow-xs"
+            className="px-5 py-2 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 rounded-xl transition-colors cursor-pointer shadow-xs"
           >
             {isAr ? 'العودة بتوازن' : 'Return Centered'}
           </button>
         </div>
 
         {cyclesCompleted > 0 && (
-          <p className="text-[11px] text-stone-600 mt-4">
+          <p className="text-[11px] text-stone-600 dark:text-stone-400 mt-4">
             {isAr 
               ? `أتممتَ ${cyclesCompleted} دورات تنفس كاملة 🌿`
               : `Completed ${cyclesCompleted} full breath cycles 🌿`}

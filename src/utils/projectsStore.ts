@@ -1,5 +1,6 @@
 import { ProjectItem } from '../types';
 import { INITIAL_REAL_PROJECTS } from '../data/projectsData';
+import { isAdminAuthenticated } from './adminAuth';
 
 const STORAGE_KEY = 'nesma_real_projects_v4';
 
@@ -34,7 +35,12 @@ export function saveStoredProjects(projects: ProjectItem[]): void {
   }
 }
 
-export function addStoredProject(project: Omit<ProjectItem, 'id' | 'createdAt'>): ProjectItem {
+export function addStoredProject(project: Omit<ProjectItem, 'id' | 'createdAt'>): ProjectItem | null {
+  if (!isAdminAuthenticated()) {
+    console.warn('Unauthorized: Admin access required to add projects.');
+    return null;
+  }
+
   const current = getStoredProjects();
   const newProject: ProjectItem = {
     ...project,
@@ -48,6 +54,11 @@ export function addStoredProject(project: Omit<ProjectItem, 'id' | 'createdAt'>)
 }
 
 export function updateStoredProject(id: string, updates: Partial<ProjectItem>): ProjectItem[] {
+  if (!isAdminAuthenticated()) {
+    console.warn('Unauthorized: Admin access required to update projects.');
+    return getStoredProjects();
+  }
+
   const current = getStoredProjects();
   const updated = current.map(p => {
     if (p.id === id) {
@@ -60,6 +71,11 @@ export function updateStoredProject(id: string, updates: Partial<ProjectItem>): 
 }
 
 export function deleteStoredProject(id: string): ProjectItem[] {
+  if (!isAdminAuthenticated()) {
+    console.warn('Unauthorized: Admin access required to delete projects.');
+    return getStoredProjects();
+  }
+
   // Prevent deleting primary core projects
   if (id === 'nesma-hayat' || id === 'abaqirat-oyoun-misr') {
     return getStoredProjects();
@@ -72,6 +88,10 @@ export function deleteStoredProject(id: string): ProjectItem[] {
 }
 
 export function resetProjectsToDefault(): ProjectItem[] {
+  if (!isAdminAuthenticated()) {
+    console.warn('Unauthorized: Admin access required to reset projects.');
+    return getStoredProjects();
+  }
   saveStoredProjects(INITIAL_REAL_PROJECTS);
   return INITIAL_REAL_PROJECTS;
 }
