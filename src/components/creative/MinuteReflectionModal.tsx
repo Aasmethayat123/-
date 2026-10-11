@@ -12,7 +12,8 @@ import {
   CheckCircle2, 
   Shuffle, 
   Lightbulb, 
-  Compass
+  Compass,
+  AlertCircle
 } from 'lucide-react';
 
 interface MinuteReflectionModalProps {
@@ -36,6 +37,7 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
   const [activeExercise, setActiveExercise] = useState<ExerciseType>('observation');
   const [stage, setStage] = useState<'intro' | 'playing' | 'completed'>('intro');
   const [secondsLeft, setSecondsLeft] = useState<number>(45);
+  const [hasRewardedThisSession, setHasRewardedThisSession] = useState<boolean>(false);
 
   // 1. Observation state
   const [observedItems, setObservedItems] = useState<Record<number, boolean>>({});
@@ -46,7 +48,7 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
 
   // 3. Unravel state
   const [unravelOrder, setUnravelOrder] = useState<number[]>([]);
-  const targetUnravelSequence = [1, 2, 3, 4];
+  const [unravelError, setUnravelError] = useState<string | null>(null);
 
   // Timer effect
   useEffect(() => {
@@ -71,6 +73,7 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
     setSelectedInitial(null);
     setIsSecretRevealed(false);
     setUnravelOrder([]);
+    setUnravelError(null);
     setSecondsLeft(exercise === 'perspective' ? 60 : 45);
     setStage('playing');
   };
@@ -78,8 +81,9 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
   const handleFinish = () => {
     soundManager.playSuccess();
     setStage('completed');
-    if (onRewardXP) {
+    if (onRewardXP && !hasRewardedThisSession) {
       onRewardXP(80);
+      setHasRewardedThisSession(true);
     }
   };
 
@@ -95,17 +99,33 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
   const handleUnravelClick = (num: number) => {
     soundManager.playSoftTap();
     if (unravelOrder.includes(num)) return;
+
+    // Check if clicked in correct sequence: next expected is unravelOrder.length + 1
+    const expected = unravelOrder.length + 1;
+    if (num !== expected) {
+      setUnravelError(isAr ? `تلميح: ابدأ بالخطوة (${expected}) أولاً بالترتيب المنطقي.` : `Hint: Start with step (${expected}) in logical order.`);
+      return;
+    }
+
+    setUnravelError(null);
     const next = [...unravelOrder, num];
     setUnravelOrder(next);
+
     if (next.length === 4) {
       setTimeout(() => handleFinish(), 500);
     }
   };
 
+  const handleResetUnravel = () => {
+    soundManager.playSoftTap();
+    setUnravelOrder([]);
+    setUnravelError(null);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/70 dark:bg-stone-950/80 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-white dark:bg-stone-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-stone-200 dark:border-stone-800 relative text-start transition-colors space-y-5"
+        className="bg-white dark:bg-stone-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-stone-200 dark:border-stone-800 relative text-start transition-colors space-y-5 max-h-[90vh] overflow-y-auto"
         role="dialog"
       >
         {/* Header */}
@@ -334,11 +354,29 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
             {/* EXERCISE 3: UNRAVEL */}
             {activeExercise === 'unravel' && (
               <div className="space-y-3">
-                <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
-                  {isAr 
-                    ? 'رتّب الخطوات الأربع بالتسلسل السليم للخروج من دوامة التفكير المفرط (اضغط بالترتيب الصحيح):'
-                    : 'Sequence the 4 steps to escape overthinking in correct order:'}
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+                    {isAr 
+                      ? 'رتّب الخطوات الأربع بالتسلسل السليم للخروج من دوامة التفكير المفرط (اضغط بالترتيب ١ إلى ٤):'
+                      : 'Sequence the 4 steps to escape overthinking in correct order (1 to 4):'}
+                  </p>
+                  {unravelOrder.length > 0 && (
+                    <button
+                      onClick={handleResetUnravel}
+                      className="text-[11px] text-stone-500 hover:text-stone-800 dark:text-stone-400 flex items-center gap-1 cursor-pointer shrink-0"
+                    >
+                      <RotateCw className="w-3 h-3" />
+                      <span>{isAr ? 'إعادة' : 'Reset'}</span>
+                    </button>
+                  )}
+                </div>
+
+                {unravelError && (
+                  <div className="p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-center gap-1.5 animate-shake">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{unravelError}</span>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {[
@@ -386,8 +424,8 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
               </h4>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 max-w-sm mx-auto leading-relaxed">
                 {isAr
-                  ? 'دقيقة واحدة من اليقظة وإعادة التوجيه كافية لخفض نشاط اللوزة الدماغية واستعادة زمام الموقف.'
-                  : 'A single 60s pause is enough to silence automatic threat loops and restore autonomy.'}
+                  ? 'دقيقة واحدة من اليقظة وإعادة التوجيه كافية لخفض التوتر العصبي وتوسيع زاوية الرؤية.'
+                  : 'A single 60s pause is enough to quiet automatic loops and restore cognitive perspective.'}
               </p>
             </div>
 
@@ -407,6 +445,13 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
             </div>
           </div>
         )}
+
+        {/* Explicit Non-Diagnostic Disclaimer */}
+        <div className="pt-2 border-t border-stone-100 dark:border-stone-800 text-[10px] text-stone-400 dark:text-stone-500 leading-relaxed text-center">
+          {isAr
+            ? 'تنبيه توعوي: هذه التمارين التفاعلية السريعة مصممة لإعادة توجيه الانتباه والتأمل الذاتي، وليست مقياساً شخصياً أو بديلاً عن التقييم والاستشارة المتخصصة.'
+            : 'Awareness note: These interactive micro-exercises are for mindful focus, not psychological diagnosis.'}
+        </div>
       </div>
     </div>
   );

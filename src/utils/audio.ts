@@ -3,6 +3,12 @@
 class SoundManager {
   private ctx: AudioContext | null = null;
   public enabled: boolean = true;
+  private pendingTimeouts: number[] = [];
+
+  private clearPendingTimeouts() {
+    this.pendingTimeouts.forEach(id => clearTimeout(id));
+    this.pendingTimeouts = [];
+  }
 
   private initCtx() {
     if (!this.ctx && typeof window !== 'undefined') {
@@ -365,12 +371,14 @@ class SoundManager {
     }
   }
 
-  // Positive harmony chime
+  // Optional harmonic audio feedback chime (C5, E5, G5)
   playHarmonicAffirmation() {
     if (!this.enabled) return;
+    this.clearPendingTimeouts();
     this.playChime(523.25, 1.2);
-    setTimeout(() => this.playChime(659.25, 1.4), 120);
-    setTimeout(() => this.playChime(783.99, 1.8), 240);
+    const t1 = window.setTimeout(() => this.playChime(659.25, 1.4), 120);
+    const t2 = window.setTimeout(() => this.playChime(783.99, 1.8), 240);
+    this.pendingTimeouts.push(t1, t2);
   }
 
   // Success / completion chime

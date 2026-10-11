@@ -65,6 +65,7 @@ export const SpeedLieDetectorGame: React.FC<SpeedLieDetectorGameProps> = ({
   const [questionIdx, setQuestionIdx] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, 'yes' | 'no' | 'timed_out'>>({});
   const [timeLeftMs, setTimeLeftMs] = useState<number>(2500); // 2.5s per rapid question
+  const [playMode, setPlayMode] = useState<'speed' | 'zen'>('speed');
   const [isGameActive, setIsGameActive] = useState<boolean>(false);
   const [isFinished, setIsFinished] = useState<boolean>(false);
   const [userReflection, setUserReflection] = useState<string>('');
@@ -72,14 +73,14 @@ export const SpeedLieDetectorGame: React.FC<SpeedLieDetectorGameProps> = ({
 
   const currentQ = SPEED_QUESTIONS[questionIdx];
 
-  // Timer loop for rapid response
+  // Timer loop for rapid response (disabled in Zen Mode)
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
-    if (isGameActive && !isFinished && timeLeftMs > 0) {
+    if (isGameActive && !isFinished && playMode === 'speed' && timeLeftMs > 0) {
       timer = setTimeout(() => {
         setTimeLeftMs(prev => prev - 50);
       }, 50);
-    } else if (timeLeftMs <= 0 && isGameActive && !isFinished) {
+    } else if (timeLeftMs <= 0 && isGameActive && !isFinished && playMode === 'speed') {
       // Time ran out on this question
       handleAnswer('timed_out');
     }
@@ -87,7 +88,7 @@ export const SpeedLieDetectorGame: React.FC<SpeedLieDetectorGameProps> = ({
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [isGameActive, timeLeftMs, isFinished]);
+  }, [isGameActive, timeLeftMs, isFinished, playMode]);
 
   const handleStartGame = () => {
     soundManager.playSoftTap();
@@ -176,26 +177,62 @@ export const SpeedLieDetectorGame: React.FC<SpeedLieDetectorGameProps> = ({
             </div>
           </div>
 
+          {/* Play Mode Selector: Speed vs Zen */}
+          <div className="flex items-center justify-center gap-2 max-w-xs mx-auto">
+            <button
+              onClick={() => setPlayMode('speed')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                playMode === 'speed'
+                  ? 'bg-red-600 text-white shadow-2xs'
+                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
+            >
+              ⚡ {isAr ? 'النمط السريع (2.5ث)' : 'Speed Dare'}
+            </button>
+            <button
+              onClick={() => setPlayMode('zen')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                playMode === 'zen'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
+            >
+              🌿 {isAr ? 'نمط السكينة (بدون مؤقت)' : 'Zen Mode'}
+            </button>
+          </div>
+
           <div className="pt-2">
             <button
               onClick={handleStartGame}
-              className="px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-extrabold text-sm shadow-md cursor-pointer transition-transform hover:scale-103 flex items-center gap-2 mx-auto"
+              className={`px-8 py-3.5 text-white rounded-2xl font-extrabold text-sm shadow-md cursor-pointer transition-transform hover:scale-103 flex items-center gap-2 mx-auto ${
+                playMode === 'speed' ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-700 hover:bg-emerald-800'
+              }`}
             >
               <Zap className="w-4 h-4 fill-white" />
-              <span>{isAr ? 'ابدأي الرادار السريع الآن! ⚡' : 'Start Speed Radar!'}</span>
+              <span>
+                {playMode === 'speed' 
+                  ? (isAr ? 'ابدأي الرادار السريع الآن! ⚡' : 'Start Speed Radar! ⚡')
+                  : (isAr ? 'ابدأي في نمط السكينة 🌿' : 'Start Zen Mode 🌿')}
+              </span>
             </button>
           </div>
         </div>
       ) : isGameActive && !isFinished ? (
         /* Rapid Question Active */
         <div className="bg-white rounded-3xl border-2 border-red-300 p-6 sm:p-8 shadow-lg space-y-6 text-center animate-fade-in">
-          {/* Rapid Timer Bar */}
-          <div className="w-full h-2.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200">
-            <div
-              className="h-full bg-gradient-to-r from-amber-500 to-red-600 transition-all duration-75 rounded-full"
-              style={{ width: `${(timeLeftMs / 2500) * 100}%` }}
-            />
-          </div>
+          {/* Rapid Timer Bar or Zen Mode Indicator */}
+          {playMode === 'speed' ? (
+            <div className="w-full h-2.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200">
+              <div
+                className="h-full bg-gradient-to-r from-amber-500 to-red-600 transition-all duration-75 rounded-full"
+                style={{ width: `${(timeLeftMs / 2500) * 100}%` }}
+              />
+            </div>
+          ) : (
+            <div className="py-1 px-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-bold inline-block mx-auto">
+              🌿 {isAr ? 'نمط السكينة: خذي كامل وقتك في التأمل بلا ضغط' : 'Zen Mode: Take your time freely'}
+            </div>
+          )}
 
           <div className="py-4 space-y-3 max-w-md mx-auto">
             <span className="text-xs font-bold text-red-700 uppercase tracking-widest block">

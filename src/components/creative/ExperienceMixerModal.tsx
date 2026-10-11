@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Language, GameMode } from '../../types';
 import { ALL_36_GAMES, GameCatalogItem } from '../../data/gamesCatalog';
 import { soundManager } from '../../utils/audio';
-import { X, Sparkles, Clock, Compass, ArrowRight, Check } from 'lucide-react';
+import { recordLastPlayedGame } from '../../utils/adventures';
+import { X, Sparkles, Clock, Compass, ArrowRight, Check, AlertCircle } from 'lucide-react';
 
 interface ExperienceMixerModalProps {
   isOpen: boolean;
@@ -11,8 +12,8 @@ interface ExperienceMixerModalProps {
   onSelectGame: (gameId: GameMode, levelId?: string) => void;
 }
 
-type DurationFilter = '1min' | '2-3min' | 'all';
-type MoodFilter = 'calm' | 'move' | 'think';
+type DurationTier = '1min' | '3min' | '5min' | 'all';
+type MoodTarget = 'calm' | 'move' | 'think' | 'insight';
 
 export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
   isOpen,
@@ -23,30 +24,46 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
   if (!isOpen) return null;
   const isAr = language === 'ar';
 
-  const [selectedDuration, setSelectedDuration] = useState<DurationFilter>('2-3min');
-  const [selectedMood, setSelectedMood] = useState<MoodFilter>('calm');
+  const [selectedDuration, setSelectedDuration] = useState<DurationTier>('3min');
+  const [selectedMood, setSelectedMood] = useState<MoodTarget>('calm');
 
-  // Compute recommendations strictly from verified 36 games data
-  const matchingGames = ALL_36_GAMES.filter((g) => {
+  // Exact matching games based on structured catalog metadata
+  const primaryMatches = ALL_36_GAMES.filter((g) => {
     // Mood match
     const matchMood = 
       selectedMood === 'calm' ? (g.experienceType === 'calm' || g.states.includes('calm')) :
       selectedMood === 'move' ? (g.experienceType === 'somatic' || g.experienceType === 'sensory' || g.states.includes('move_release')) :
-      (g.experienceType === 'cognitive' || g.experienceType === 'projective' || g.states.includes('mental_challenge'));
+      selectedMood === 'insight' ? (g.experienceType === 'projective' || g.states.includes('understand_self')) :
+      (g.experienceType === 'cognitive' || g.states.includes('mental_challenge') || g.states.includes('focus'));
 
     if (!matchMood) return false;
 
     // Duration match
     if (selectedDuration === '1min') {
-      return g.approxDuration.includes('١') || g.approxDuration.includes('٣٠ ثانية');
-    } else if (selectedDuration === '2-3min') {
-      return g.approxDuration.includes('٢') || g.approxDuration.includes('٣');
+      return g.approxDuration.includes('١') || g.approxDuration.includes('٣٠ ثانية') || g.approxDuration.includes('45s') || g.approxDuration.includes('1-2');
+    } else if (selectedDuration === '3min') {
+      return g.approxDuration.includes('٢') || g.approxDuration.includes('٣') || g.approxDuration.includes('3-5');
+    } else if (selectedDuration === '5min') {
+      return g.approxDuration.includes('٥') || g.approxDuration.includes('5') || g.approxDuration.includes('مفتوحة');
     }
     return true;
-  }).slice(0, 4); // Keep top 4 non-crowded recommendations
+  });
+
+  // Resilient fallback: If no exact matches for the strict duration, take top games from the same mood
+  const isFallback = primaryMatches.length === 0;
+  const displayGames = (isFallback 
+    ? ALL_36_GAMES.filter((g) => {
+        return selectedMood === 'calm' ? (g.experienceType === 'calm' || g.states.includes('calm')) :
+               selectedMood === 'move' ? (g.experienceType === 'somatic' || g.experienceType === 'sensory' || g.states.includes('move_release')) :
+               selectedMood === 'insight' ? (g.experienceType === 'projective' || g.states.includes('understand_self')) :
+               (g.experienceType === 'cognitive' || g.states.includes('mental_challenge'));
+      })
+    : primaryMatches
+  ).slice(0, 4);
 
   const handlePick = (game: GameCatalogItem) => {
     soundManager.playSoftTap();
+    recordLastPlayedGame(game);
     onClose();
     onSelectGame(game.id, game.levelId);
   };
@@ -68,7 +85,7 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
                 {isAr ? 'اصنع تجربتك 🎛️' : 'Experience Mixer 🎛️'}
               </h3>
               <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                {isAr ? 'حددي وقتك وطاقتك المقترحة لاكتشاف اللعبة الأنسب لك فوراً' : 'Select your available time & energy to get exact matches'}
+                {isAr ? 'حدّد وقتك والهدف المطلوب لاقتراح التجربة الأنسب من المكتبة' : 'Set your available time and goal for curated matches'}
               </p>
             </div>
           </div>
@@ -84,13 +101,14 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
         <div className="space-y-2">
           <label className="text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-stone-400" />
-            <span>{isAr ? 'كم دقيقة تملك الآن؟' : 'How much time do you have?'}</span>
+            <span>{isAr ? 'المدة المتاحة لك الآن:' : 'Available duration:'}</span>
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
-              { id: '1min' as DurationFilter, labelAr: 'دقيقة خاطفة ⏱️', labelEn: '1-2 Mins' },
-              { id: '2-3min' as DurationFilter, labelAr: '٢-٣ دقائق ⏳', labelEn: '2-3 Mins' },
-              { id: 'all' as DurationFilter, labelAr: 'أي مدة 🕰️', labelEn: 'Any Time' },
+              { id: '1min' as DurationTier, labelAr: 'دقيقة خاطفة ⏱️', labelEn: '1-2 Mins' },
+              { id: '3min' as DurationTier, labelAr: '٣ دقائق ⏳', labelEn: '3 Mins' },
+              { id: '5min' as DurationTier, labelAr: '٥ دقائق 🕰️', labelEn: '5 Mins' },
+              { id: 'all' as DurationTier, labelAr: 'تجربة مفتوحة 🚀', labelEn: 'Open Time' },
             ].map((dur) => (
               <button
                 key={dur.id}
@@ -98,7 +116,7 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
                   soundManager.playSoftTap();
                   setSelectedDuration(dur.id);
                 }}
-                className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer text-center ${
                   selectedDuration === dur.id
                     ? 'bg-stone-900 dark:bg-amber-600 text-white border-stone-900 dark:border-amber-600 shadow-2xs'
                     : 'bg-stone-50 dark:bg-stone-850 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-800 hover:border-stone-400'
@@ -110,17 +128,18 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
           </div>
         </div>
 
-        {/* Step 2: Desired Energy / Mood */}
+        {/* Step 2: Desired Goal / State */}
         <div className="space-y-2">
           <label className="text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-stone-400" />
-            <span>{isAr ? 'ما نوع الطاقة التي تبحث عنها؟' : 'What kind of energy do you seek?'}</span>
+            <span>{isAr ? 'الهدف المطلوب من التجربة:' : 'Desired outcome:'}</span>
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
-              { id: 'calm' as MoodFilter, labelAr: 'سكينة وهدوء 🌿', labelEn: 'Calm & Settle 🌿' },
-              { id: 'move' as MoodFilter, labelAr: 'حركة وتفريغ 🫨', labelEn: 'Move & Release 🫨' },
-              { id: 'think' as MoodFilter, labelAr: 'تحدٍ وفهم 🧠', labelEn: 'Think & Insight 🧠' },
+              { id: 'calm' as MoodTarget, labelAr: 'الهدوء والسكينة 🌿', labelEn: 'Calm 🌿' },
+              { id: 'move' as MoodTarget, labelAr: 'تفريغ وحركة 🫨', labelEn: 'Release 🫨' },
+              { id: 'think' as MoodTarget, labelAr: 'تفكير وتركيز 🧠', labelEn: 'Focus 🧠' },
+              { id: 'insight' as MoodTarget, labelAr: 'فهم الذات 🔍', labelEn: 'Insight 🔍' },
             ].map((mood) => (
               <button
                 key={mood.id}
@@ -128,7 +147,7 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
                   soundManager.playSoftTap();
                   setSelectedMood(mood.id);
                 }}
-                className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                className={`py-2 px-2 rounded-xl border text-xs font-bold transition-all cursor-pointer text-center ${
                   selectedMood === mood.id
                     ? 'bg-stone-900 dark:bg-emerald-700 text-white border-stone-900 dark:border-emerald-700 shadow-2xs'
                     : 'bg-stone-50 dark:bg-stone-850 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-800 hover:border-stone-400'
@@ -144,12 +163,14 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
         <div className="space-y-2.5 pt-2 border-t border-stone-100 dark:border-stone-800">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-stone-600 dark:text-stone-400">
-              {isAr ? `الألعاب الأنسب لاختيارك (${matchingGames.length}):` : `Best Matches (${matchingGames.length}):`}
+              {isFallback 
+                ? (isAr ? 'أقرب تجارب مقترحة تناسب هدفك:' : 'Closest matches for your goal:')
+                : (isAr ? `تجارب مطابقة تماماً لاختيارك (${displayGames.length}):` : `Exact matches (${displayGames.length}):`)}
             </span>
           </div>
 
           <div className="space-y-2">
-            {matchingGames.map((game) => {
+            {displayGames.map((game) => {
               const Icon = game.icon;
               return (
                 <div
@@ -180,6 +201,13 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
               );
             })}
           </div>
+        </div>
+
+        {/* Footer Disclaimer */}
+        <div className="pt-2 border-t border-stone-100 dark:border-stone-800 text-[10px] text-stone-400 dark:text-stone-500 leading-relaxed">
+          {isAr
+            ? 'تعتمد التوصيات على قواعد برمجية لتصنيف ألعاب المشروع الـ٣٦ ومددها الموثقة لتسهيل الوصول، وليست تشخيصاً أو قياساً نفسياً معتمداً.'
+            : 'Recommendations are based on catalog tags & estimated durations, not clinical evaluation.'}
         </div>
       </div>
     </div>

@@ -62,6 +62,8 @@ import { ContentManagementView } from './components/ContentManagementView';
 import { useGameState } from './utils/gameState';
 import { soundManager } from './utils/audio';
 import { getInitialTheme, applyTheme, ThemeMode } from './utils/theme';
+import { ALL_36_GAMES } from './data/gamesCatalog';
+import { recordLastPlayedGame } from './utils/adventures';
 
 export default function App() {
   const [currentMode, setCurrentMode] = useState<GameMode>('map');
@@ -101,6 +103,10 @@ export default function App() {
   };
 
   const handleStartLevel = (levelId: string) => {
+    const game = ALL_36_GAMES.find((g) => g.id === 'journey' && g.levelId === levelId);
+    if (game) {
+      recordLastPlayedGame(game);
+    }
     setSelectedLevelId(levelId);
     setCurrentMode('journey');
   };
@@ -128,6 +134,11 @@ export default function App() {
           <AdventureHome
             language={language}
             onNavigateToGame={(gameId, levelId) => {
+              const game = ALL_36_GAMES.find((g) => g.id === gameId && (!levelId || g.levelId === levelId)) ||
+                           ALL_36_GAMES.find((g) => g.id === gameId);
+              if (game) {
+                recordLastPlayedGame(game);
+              }
               if (levelId) {
                 setSelectedLevelId(levelId);
                 setCurrentMode('journey');
@@ -546,7 +557,11 @@ export default function App() {
         isOpen={isHiddenPathsOpen}
         onClose={() => setIsHiddenPathsOpen(false)}
         language={language}
-        onSelectGame={(gameId) => setCurrentMode(gameId)}
+        onSelectGame={(gameId) => {
+          const game = ALL_36_GAMES.find((g) => g.id === gameId);
+          if (game) recordLastPlayedGame(game);
+          setCurrentMode(gameId);
+        }}
       />
 
       {/* Experience Mixer Modal */}
@@ -554,7 +569,17 @@ export default function App() {
         isOpen={isExperienceMixerOpen}
         onClose={() => setIsExperienceMixerOpen(false)}
         language={language}
-        onSelectGame={(gameId) => setCurrentMode(gameId)}
+        onSelectGame={(gameId, levelId) => {
+          const game = ALL_36_GAMES.find((g) => g.id === gameId && (!levelId || g.levelId === levelId)) ||
+                       ALL_36_GAMES.find((g) => g.id === gameId);
+          if (game) recordLastPlayedGame(game);
+          if (levelId) {
+            setSelectedLevelId(levelId);
+            setCurrentMode('journey');
+          } else {
+            setCurrentMode(gameId);
+          }
+        }}
       />
     </div>
   );

@@ -9,7 +9,8 @@ import {
   getLastPlayedGame, 
   getTodayChallenge, 
   getUnplayedDoorGame, 
-  getGamesByState
+  getGamesByState,
+  recordLastPlayedGame
 } from '../utils/adventures';
 import { soundManager } from '../utils/audio';
 import { getSavedMoments } from '../utils/moments';
@@ -71,6 +72,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
   // Selected Category State from the 4 primary gateways
   const [activeCategory, setActiveCategory] = useState<ExperienceState | null>(null);
   const [doorRevealedGame, setDoorRevealedGame] = useState<GameCatalogItem | null>(null);
+  const [doorIsAllCompleted, setDoorIsAllCompleted] = useState<boolean>(false);
 
   // 4 Primary Category Gateways
   const primaryGateways: {
@@ -137,12 +139,18 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
 
   const handleOpenDoor = () => {
     soundManager.playSuccess();
-    const game = getUnplayedDoorGame();
-    setDoorRevealedGame(game);
+    const res = getUnplayedDoorGame();
+    setDoorRevealedGame(res.game);
+    setDoorIsAllCompleted(res.isAllCompleted);
   };
 
   const handleStartGame = (gameId: GameMode, levelId?: string) => {
     soundManager.playSoftTap();
+    const game = ALL_36_GAMES.find((g) => g.id === gameId && (!levelId || g.levelId === levelId)) ||
+                 ALL_36_GAMES.find((g) => g.id === gameId);
+    if (game) {
+      recordLastPlayedGame(game);
+    }
     onNavigateToGame(gameId, levelId);
   };
 
@@ -176,7 +184,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
                 {isAr ? 'اختار مغامرتك اليوم 🌿' : 'Choose Your Adventure 🌿'}
               </h1>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-                {isAr ? currentLevel.title : currentLevel.titleEn}
+                {currentLevel.title}
               </span>
             </div>
             <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
@@ -601,8 +609,14 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-                {isAr ? 'باب الاكتشاف المفتوح' : 'Open Door Discovery'}
+              <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                doorIsAllCompleted 
+                  ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300'
+                  : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
+              }`}>
+                {doorIsAllCompleted 
+                  ? (isAr ? '🎉 بطل الوعي: استكشفت جميع ألعاب المكتبة! (اقتراح مميز)' : '🎉 Library Champion: All 36 Explored!')
+                  : (isAr ? 'باب الاكتشاف المفتوح (لعبة جديدة لم تخضها بعد)' : 'Open Door Discovery (Unplayed)')}
               </span>
               <h3 className="font-extrabold text-lg text-stone-900 dark:text-stone-100 mt-1">
                 {isAr ? doorRevealedGame.nameAr : doorRevealedGame.nameEn}
