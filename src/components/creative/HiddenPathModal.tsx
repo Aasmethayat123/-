@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language, GameMode } from '../../types';
 import { 
   HIDDEN_PATHS, 
@@ -26,6 +26,16 @@ export const HiddenPathModal: React.FC<HiddenPathModalProps> = ({
 }) => {
   if (!isOpen) return null;
   const isAr = language === 'ar';
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const [selectedPath, setSelectedPath] = useState<HiddenPath>(HIDDEN_PATHS[0]);
   const [completedSteps, setCompletedSteps] = useState<GameMode[]>(() => 

@@ -34,6 +34,17 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
   if (!isOpen) return null;
   const isAr = language === 'ar';
 
+  // Handle Escape key to close modal for accessibility
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [activeExercise, setActiveExercise] = useState<ExerciseType>('observation');
   const [stage, setStage] = useState<'intro' | 'playing' | 'completed'>('intro');
   const [secondsLeft, setSecondsLeft] = useState<number>(45);
@@ -76,6 +87,17 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
     setUnravelError(null);
     setSecondsLeft(exercise === 'perspective' ? 60 : 45);
     setStage('playing');
+  };
+
+  const handleCloseModal = () => {
+    soundManager.playSoftTap();
+    setStage('intro');
+    setObservedItems({});
+    setSelectedInitial(null);
+    setIsSecretRevealed(false);
+    setUnravelOrder([]);
+    setUnravelError(null);
+    onClose();
   };
 
   const handleFinish = () => {
@@ -144,7 +166,7 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleCloseModal}
             className="p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -437,7 +459,7 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
                 {isAr ? 'تجربة أخرى ↺' : 'Another Minute'}
               </button>
               <button
-                onClick={onClose}
+                onClick={handleCloseModal}
                 className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-xs"
               >
                 {isAr ? 'العودة للمغامرة' : 'Back to Adventure'}

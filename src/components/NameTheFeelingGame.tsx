@@ -115,27 +115,27 @@ export const NameTheFeelingGame: React.FC<NameTheFeelingGameProps> = ({
           </div>
 
           {/* Scenario & Clues Scanner */}
-          <div className="bg-white rounded-3xl border-2 border-stone-200 p-6 sm:p-8 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 p-6 sm:p-8 shadow-sm space-y-4">
             <div className="flex items-center gap-2.5">
-              <span className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 font-extrabold text-base flex items-center justify-center">
+              <span className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-extrabold text-base flex items-center justify-center">
                 {currentChallenge.character.slice(0, 1)}
               </span>
               <div>
-                <span className="text-[10px] text-stone-400 font-bold uppercase tracking-wider block">
+                <span className="text-[10px] text-stone-400 dark:text-stone-500 font-bold uppercase tracking-wider block">
                   {isAr ? 'ملف الشخصية:' : 'Character Case:'}
                 </span>
-                <span className="text-base font-extrabold text-stone-900">{currentChallenge.character}</span>
+                <span className="text-base font-extrabold text-stone-900 dark:text-stone-100">{currentChallenge.character}</span>
               </div>
             </div>
 
-            <p className="text-base sm:text-lg text-stone-900 leading-relaxed font-serif">
+            <p className="text-base sm:text-lg text-stone-900 dark:text-stone-100 leading-relaxed font-serif">
               «{currentChallenge.situation}»
             </p>
 
             {/* Interactive Clue Scanner Buttons */}
-            <div className="pt-3 border-t border-stone-100 space-y-2">
-              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Search className="w-3.5 h-3.5 text-amber-600" />
+            <div className="pt-3 border-t border-stone-100 dark:border-stone-800 space-y-2">
+              <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Search className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 <span>{isAr ? 'أدلة الجسد المكتشفة:' : 'Detectable Somatic Signals:'}</span>
               </span>
 
@@ -148,8 +148,8 @@ export const NameTheFeelingGame: React.FC<NameTheFeelingGameProps> = ({
                       onClick={() => handleRevealClue(idx)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                         isDiscovered
-                          ? 'bg-amber-100/80 border-amber-300 text-amber-950 shadow-xs'
-                          : 'bg-stone-100 border-stone-200 text-stone-400 hover:bg-stone-200'
+                          ? 'bg-amber-100/80 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 shadow-xs'
+                          : 'bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-750'
                       }`}
                     >
                       {isDiscovered ? `🔎 ${clue}` : (isAr ? '🔒 دليل مستتر (انقر لكشفه)' : '🔒 Tap to scan clue')}
@@ -162,21 +162,21 @@ export const NameTheFeelingGame: React.FC<NameTheFeelingGameProps> = ({
 
           {/* Options */}
           <div className="space-y-3">
-            <span className="text-xs font-bold text-stone-700 block px-1">
+            <span className="text-xs font-bold text-stone-700 dark:text-stone-300 block px-1">
               {isAr ? 'أي من هذه الخيارات يصف الشعور الدفين الحقيقي؟' : 'Which option identifies the authentic core emotion?'}
             </span>
 
             {currentChallenge.options.map((opt, idx) => {
               const isSelected = selectedOptionIndex === idx;
 
-              let style = 'border-stone-200 bg-white hover:bg-stone-50';
+              let style = 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-850 text-stone-900 dark:text-stone-100';
               if (selectedOptionIndex !== null) {
                 if (opt.isPrimary) {
-                  style = 'border-emerald-500 bg-emerald-50 text-emerald-950 font-bold ring-2 ring-emerald-400';
+                  style = 'border-emerald-500 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-950 dark:text-emerald-200 font-bold ring-2 ring-emerald-400';
                 } else if (isSelected && !opt.isPrimary) {
-                  style = 'border-rose-300 bg-rose-50 text-rose-950 font-semibold';
+                  style = 'border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/50 text-rose-950 dark:text-rose-200 font-semibold';
                 } else {
-                  style = 'border-stone-200 bg-stone-50 text-stone-400 opacity-50';
+                  style = 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-850 text-stone-400 dark:text-stone-600 opacity-50';
                 }
               }
 
@@ -209,19 +209,19 @@ export const NameTheFeelingGame: React.FC<NameTheFeelingGameProps> = ({
 
           {/* Deeper Takeaway Box */}
           {showTakeaway && (
-            <div className="p-5 bg-amber-50 border-2 border-amber-300 rounded-2xl text-xs text-amber-950 space-y-2 animate-fade-in shadow-xs">
-              <div className="flex items-center gap-1.5 font-bold text-amber-900 text-sm">
-                <Sparkles className="w-4 h-4 text-amber-700" />
+            <div className="p-5 bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-800 rounded-2xl text-xs text-amber-950 dark:text-amber-200 space-y-2 animate-fade-in shadow-xs">
+              <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-300 text-sm">
+                <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                 <span>{isAr ? 'إضاءة نسمة حياة النفسية:' : 'Psychological Insight:'}</span>
               </div>
-              <p className="leading-relaxed text-stone-800 font-medium">
+              <p className="leading-relaxed text-stone-800 dark:text-stone-200 font-medium">
                 {currentChallenge.deeperTakeaway}
               </p>
 
               <div className="flex justify-end pt-2">
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-1.5 px-6 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold cursor-pointer shadow-md"
+                  className="flex items-center gap-1.5 px-6 py-2.5 bg-stone-900 hover:bg-stone-800 dark:bg-amber-700 dark:hover:bg-amber-600 text-white rounded-xl text-xs font-bold cursor-pointer shadow-md"
                 >
                   <span>{isAr ? 'الحالة التالية' : 'Next Case'}</span>
                   <ArrowRight className="w-4 h-4 rtl:rotate-180" />
@@ -232,15 +232,15 @@ export const NameTheFeelingGame: React.FC<NameTheFeelingGameProps> = ({
         </div>
       ) : (
         /* Victory Screen */
-        <div className="bg-white rounded-3xl border-2 border-stone-200 p-8 text-center space-y-5 animate-fade-in shadow-md">
-          <div className="w-20 h-20 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto text-4xl shadow-inner">
+        <div className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 p-8 text-center space-y-5 animate-fade-in shadow-md">
+          <div className="w-20 h-20 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 flex items-center justify-center mx-auto text-4xl shadow-inner">
             💛
           </div>
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100">
               {isAr ? 'أحسنت كشف المشاعر الدفينة!' : 'Detective Mastery Complete!'}
             </h2>
-            <p className="text-stone-600 text-sm mt-1 max-w-md mx-auto">
+            <p className="text-stone-600 dark:text-stone-400 text-sm mt-1 max-w-md mx-auto">
               {isAr
                 ? 'تذكر: الغضب غالباً ما يكون مجرد حارس شخصي لمشاعر أكثر رهافة مثل الخيبة أو الرغبة في التقدير.'
                 : 'Remember: Anger is often just a bodyguard for more tender feelings like disappointment or longing.'}

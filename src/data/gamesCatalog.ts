@@ -26,7 +26,9 @@ import {
   Brain,
   Eye,
   Smile,
-  Compass
+  Compass,
+  Scale,
+  Scissors
 } from 'lucide-react';
 import { GameMode } from '../types';
 
@@ -36,7 +38,7 @@ export type ExperienceState =
   | 'focus'            // أريد أن أركّز
   | 'move_release'     // أريد أن أتحرك وأفرّغ طاقتي
   | 'try_new'          // أريد أن أجرّب شيئاً جديداً
-  | 'mental_challenge';// أريد تحدياً ذهparamاً
+  | 'mental_challenge';// أريد تحدياً ذهنياً
 
 export type ExperienceType = 'calm' | 'somatic' | 'sensory' | 'cognitive' | 'projective' | 'focus' | 'understand_self';
 
@@ -47,7 +49,7 @@ export interface GameCatalogItem {
   nameEn: string;
   descAr: string;
   descEn: string;
-  categoryKey: 'nesma9' | 'visceral' | 'projective' | 'quests' | 'somatic' | 'cognitive';
+  categoryKey: 'nesma9' | 'visceral' | 'projective' | 'quests' | 'somatic' | 'cognitive' | 'advanced_psych';
   categoryAr: string;
   categoryEn: string;
   ideaAndGoalAr: string;
@@ -1157,7 +1159,126 @@ export const ALL_36_GAMES: GameCatalogItem[] = [
     color: 'from-rose-500 to-rose-700',
     badgeAr: 'محاكي العواقب',
     badgeEn: 'The Pause'
+  },
+  // =========================================================================
+  // 7. عيادة التفكير والتحرر المعرفي المتقدمة (4 ألعاب احترافية جديدة)
+  // =========================================================================
+  {
+    id: 'decisional-balance',
+    nameAr: 'ميزان الأفكار والقرارات',
+    nameEn: 'Decisional Balance Scales',
+    descAr: 'ميزان كفتين فيزيائي حركي لوزن عواقب القرارات وكسر شلل التردد والأمان الوهمي.',
+    descEn: 'Tactile physical scale to weigh long-term growth vs temporary comfort avoidance.',
+    categoryKey: 'advanced_psych',
+    categoryAr: 'عيادة التفكير والتحرر',
+    categoryEn: 'Deep Mind & Release',
+    ideaAndGoalAr: 'موازنة عقلانية لتكلفة الصمت مقابل ثمار الشجاعة المستحقة وفق بروتوكول CBT.',
+    ideaAndGoalEn: 'Rational decisional balance weighing comfort costs vs courageous growth.',
+    howToPlayAr: 'إضافة أثقال الأفكار والمشاعر لكفتي الميزان وملاحظة ميلان المؤشر واستخلاص البصيرة.',
+    howToPlayEn: 'Add cognitive weights to both pans, observe the dynamic tilt, and reveal insight.',
+    approxDuration: '٢-٣ دقائق',
+    interactionTypeAr: 'ميزان فيزيائي تفاعلي مع كتل أوزان',
+    interactionTypeEn: 'Dynamic physical beam scale with custom weight tokens',
+    experienceType: 'cognitive',
+    suitableForAr: 'شلل التردد، الخوف من اتخاذ القرارات، وإرضاء الآخرين على حساب النفس',
+    suitableForEn: 'Decisional paralysis, people-pleasing, fear of boundary setting',
+    worksOffline: true,
+    savesData: true,
+    overlapNoteAr: 'مستقلة: تجربة فريدة لوزن التكلفة الخفية للراحة المؤقتة مقابل النمو الحقيقي.',
+    overlapNoteEn: 'Unique physical decisional balance for overcoming conflict avoidance.',
+    states: ['understand_self', 'mental_challenge', 'focus'],
+    icon: Scale,
+    color: 'from-amber-500 to-indigo-600',
+    badgeAr: 'الميزان المعرفي',
+    badgeEn: 'Decisional CBT'
+  },
+  {
+    id: 'thought-shredder',
+    nameAr: 'مفرمة الأفكار ونهر التحرر',
+    nameEn: 'Thought Shredder & River',
+    descAr: 'فك الاندماج المعرفي (ACT) عبر تمزيق الأفكار الخانقة حسياً أو إطلاقها كأوراق شجر على النهر.',
+    descEn: 'ACT cognitive defusion: shred intrusive thoughts tactilely or let them drift on water.',
+    categoryKey: 'advanced_psych',
+    categoryAr: 'عيادة التفكير والتحرر',
+    categoryEn: 'Deep Mind & Release',
+    ideaAndGoalAr: 'تدريب الدماغ على إدراك أن الأفكار مجرد أصوات عابرة وليست حقائق مقدسة تتحكم فينا.',
+    ideaAndGoalEn: 'Train awareness that thoughts are transient mental events, not immutable truths.',
+    howToPlayAr: 'كتابة الفكرة المزعجة واختيار تمزيقها الفيزيائي بصوت مفرمة حقيقي أو إطلاقها في نهر التنفس.',
+    howToPlayEn: 'Type or choose a sticky thought, shred it with haptic sound or float it downriver.',
+    approxDuration: '٢ دقيقة',
+    interactionTypeAr: 'تمزيق حركي وفيزيائي وتدفق نهري',
+    interactionTypeEn: 'Tactile paper shredder & guided stream floating',
+    experienceType: 'calm',
+    suitableForAr: 'الاجترار الفكري، الوساوس الخانقة، والأفكار الكارثية الملحة',
+    suitableForEn: 'Rumination, sticky intrusive thoughts, catastrophe bias',
+    worksOffline: true,
+    savesData: true,
+    overlapNoteAr: 'مستقلة: تجمع بين التمزيق الحركي المفرغ وتأمل التدفق النهري الصافي.',
+    overlapNoteEn: 'Dual-mode ACT defusion with tactile shredding and stream meditation.',
+    states: ['calm', 'move_release', 'understand_self'],
+    icon: Scissors,
+    color: 'from-rose-500 to-teal-600',
+    badgeAr: 'فك الاندماج ACT',
+    badgeEn: 'ACT Defusion'
+  },
+  {
+    id: 'core-needs-compass',
+    nameAr: 'بوصلة الاحتياجات النفسية',
+    nameEn: 'Core Needs Compass',
+    descAr: 'بوصلة مغناطيسية تفاعلية تفكك المشاعر العاصفة إلى الاحتياج الإنساني العميق غير الملبي.',
+    descEn: 'Interactive magnetic compass decoding storm emotions into core unmet human needs.',
+    categoryKey: 'advanced_psych',
+    categoryAr: 'عيادة التفكير والتحرر',
+    categoryEn: 'Deep Mind & Release',
+    ideaAndGoalAr: 'تطبيق علاج المخططات والتواصل غير العنيف (NVC) لصياغة جملة القوة النفسية الواضحة.',
+    ideaAndGoalEn: 'Translate raw reactivity into grounded NVC statements of power.',
+    howToPlayAr: 'اختيار العاطفة العاصفة، متابعة دوران الإبرة المغناطيسية نحو الاحتياج الحقيقي، واعتماد جملة القوة.',
+    howToPlayEn: 'Select surface reaction, watch needle lock onto the core need, and craft power statement.',
+    approxDuration: '٢ دقيقة',
+    interactionTypeAr: 'بوصلة دائرية مغناطيسية مع تحليل شعوري',
+    interactionTypeEn: 'Rotating magnetic dial with NVC communicative translation',
+    experienceType: 'understand_self',
+    suitableForAr: 'الانفجار العاطفي، الشعور بالاختناق، صعوبة فهم ما نريده، وسوء الفهم مع المقربين',
+    suitableForEn: 'Emotional outbursts, feeling misunderstood, relationship friction',
+    worksOffline: true,
+    savesData: true,
+    overlapNoteAr: 'مستقلة: تحديد فوري للاحتياج النفسي الأصيل وصياغة رسالة واضحة له.',
+    overlapNoteEn: 'Instant identification of core psychological need with clear expression.',
+    states: ['understand_self', 'calm', 'focus'],
+    icon: Compass,
+    color: 'from-emerald-500 to-indigo-600',
+    badgeAr: 'بوصلة الاحتياج',
+    badgeEn: 'NVC Compass'
+  },
+  {
+    id: 'inner-mirror',
+    nameAr: 'مرآة الحوار الداخلي والناقد الرحيم',
+    nameEn: 'Inner Dialogue Mirror',
+    descAr: 'مرآة بلورية تفاعلية تحول صوت جلد الذات القاسي إلى صوت المشجع الحكيم بركائز التعاطف الثلاث.',
+    descEn: 'Reflective frosted mirror transforming the harsh inner critic into a wise, soothing ally.',
+    categoryKey: 'advanced_psych',
+    categoryAr: 'عيادة التفكير والتحرر',
+    categoryEn: 'Deep Mind & Release',
+    ideaAndGoalAr: 'تطبيق بروتوكول العلاج المرتكز على الشفقة بالذات (CFT) لإصلاح العلاقة الحميمية مع النفس.',
+    ideaAndGoalEn: 'Compassion-Focused Therapy (CFT) to heal the internal dialogue.',
+    howToPlayAr: 'مواجهة عبارة الناقد، ثم تفعيل ركائز الشفقة الثلاث تدريجياً لترميم شروخ المرآة وإضاءتها بالذهب.',
+    howToPlayEn: 'Confront the critic phrase, activate the 3 compassion pillars to mend mirror cracks.',
+    approxDuration: '٢-٣ دقائق',
+    interactionTypeAr: 'مرآة زجاجية عاكسة متغيرة الوضوح والإضاءة',
+    interactionTypeEn: 'Reflective glass mirror with dynamic crack mending and golden glow',
+    experienceType: 'understand_self',
+    suitableForAr: 'جلد الذات القاسي، عقدة الذنب المزمنة، وانعدام الرأفة بالنفس عند الخطأ',
+    suitableForEn: 'Harsh self-criticism, chronic guilt, lack of self-compassion',
+    worksOffline: true,
+    savesData: true,
+    overlapNoteAr: 'مستقلة: تركز بالكامل على هندسة الحوار الداخلي وصناعة المشجع الحكيم.',
+    overlapNoteEn: 'Dedicated CFT experience for healing internal self-dialogue.',
+    states: ['understand_self', 'calm'],
+    icon: Sparkles,
+    color: 'from-amber-400 via-rose-500 to-indigo-600',
+    badgeAr: 'الشفقة بالذات CFT',
+    badgeEn: 'CFT Compassion'
   }
 ];
 
-export const TOTAL_GAMES_COUNT = ALL_36_GAMES.length; // Exactly 36 games!
+export const TOTAL_GAMES_COUNT = ALL_36_GAMES.length;

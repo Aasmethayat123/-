@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language, GameMode } from '../types';
 import { 
   ALL_36_GAMES, 
@@ -153,6 +153,20 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
     }
     onNavigateToGame(gameId, levelId);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (doorRevealedGame) {
+          setDoorRevealedGame(null);
+        } else if (activeCategory) {
+          setActiveCategory(null);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [doorRevealedGame, activeCategory]);
 
   const activeCategoryGames = activeCategory ? getGamesByState(activeCategory) : [];
   const activeGatewayObj = primaryGateways.find((g) => g.id === activeCategory);
@@ -467,7 +481,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
                   {isAr ? 'مكتبة الألعاب الكاملة' : 'Full Games Catalog'}
                 </h3>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-extrabold">
-                  {isAr ? '٣٦ لعبة' : '36 Games'}
+                  {isAr ? '٤٠ لعبة' : '40 Games'}
                 </span>
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
@@ -615,7 +629,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
                   : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
               }`}>
                 {doorIsAllCompleted 
-                  ? (isAr ? '🎉 بطل الوعي: استكشفت جميع ألعاب المكتبة! (اقتراح مميز)' : '🎉 Library Champion: All 36 Explored!')
+                  ? (isAr ? '🎉 بطل الوعي: استكشفت جميع ألعاب المكتبة! (اقتراح مميز)' : '🎉 Library Champion: All 40 Explored!')
                   : (isAr ? 'باب الاكتشاف المفتوح (لعبة جديدة لم تخضها بعد)' : 'Open Door Discovery (Unplayed)')}
               </span>
               <h3 className="font-extrabold text-lg text-stone-900 dark:text-stone-100 mt-1">

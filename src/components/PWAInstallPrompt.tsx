@@ -140,7 +140,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ language }) 
               <ul className="space-y-2 text-stone-700 bg-stone-50 p-3.5 rounded-2xl border border-stone-100">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>{isAr ? 'جميع الألعاب الـ 36 (ألعاب نسمة حياة، التمارين الحركية، التحديات المعرفية، والرحلة).' : 'All 36 games and interactive challenges.'}</span>
+                  <span>{isAr ? 'جميع الألعاب الـ 40 (ألعاب نسمة حياة، التمارين الحركية، التحديات المعرفية، والرحلة).' : 'All 40 games and interactive challenges.'}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />

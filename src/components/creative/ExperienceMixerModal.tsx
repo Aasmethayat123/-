@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language, GameMode } from '../../types';
 import { ALL_36_GAMES, GameCatalogItem } from '../../data/gamesCatalog';
 import { soundManager } from '../../utils/audio';
@@ -23,6 +23,16 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
 }) => {
   if (!isOpen) return null;
   const isAr = language === 'ar';
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const [selectedDuration, setSelectedDuration] = useState<DurationTier>('3min');
   const [selectedMood, setSelectedMood] = useState<MoodTarget>('calm');
@@ -206,7 +216,7 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
         {/* Footer Disclaimer */}
         <div className="pt-2 border-t border-stone-100 dark:border-stone-800 text-[10px] text-stone-400 dark:text-stone-500 leading-relaxed">
           {isAr
-            ? 'تعتمد التوصيات على قواعد برمجية لتصنيف ألعاب المشروع الـ٣٦ ومددها الموثقة لتسهيل الوصول، وليست تشخيصاً أو قياساً نفسياً معتمداً.'
+            ? 'تعتمد التوصيات على قواعد برمجية لتصنيف ألعاب المشروع الـ٤٠ ومددها الموثقة لتسهيل الوصول، وليست تشخيصاً أو قياساً نفسياً معتمداً.'
             : 'Recommendations are based on catalog tags & estimated durations, not clinical evaluation.'}
         </div>
       </div>

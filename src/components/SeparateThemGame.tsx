@@ -92,22 +92,22 @@ export const SeparateThemGame: React.FC<SeparateThemGameProps> = ({
       title: isAr ? '💭 فكرة (Thought)' : '💭 Thought',
       desc: isAr ? 'حكم أو تأويل عقلي قد يخطئ' : 'Mental narrative or judgment',
       icon: Sparkles,
-      color: 'border-indigo-400 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-950',
-      activeColor: 'border-indigo-600 bg-indigo-600 text-white'
+      color: 'border-indigo-400 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-950 dark:bg-indigo-950/40 dark:border-indigo-800 dark:text-indigo-200 dark:hover:bg-indigo-900/50',
+      activeColor: 'border-indigo-600 bg-indigo-600 text-white dark:bg-indigo-600'
     },
     feeling: {
       title: isAr ? '💛 شعور (Feeling)' : '💛 Feeling',
       desc: isAr ? 'استجابة وجدانية وجسدية حيوية' : 'Biological emotion and sensation',
       icon: Heart,
-      color: 'border-amber-400 bg-amber-50/70 hover:bg-amber-100 text-amber-950',
-      activeColor: 'border-amber-600 bg-amber-600 text-white'
+      color: 'border-amber-400 bg-amber-50/70 hover:bg-amber-100 text-amber-950 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-200 dark:hover:bg-amber-900/50',
+      activeColor: 'border-amber-600 bg-amber-600 text-white dark:bg-amber-600'
     },
     fact: {
       title: isAr ? '📋 حقيقة (Fact)' : '📋 Fact',
       desc: isAr ? 'واقعة محايدة تسجلها الكاميرا' : 'Objective verifiable data',
       icon: FileText,
-      color: 'border-emerald-400 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-950',
-      activeColor: 'border-emerald-600 bg-emerald-600 text-white'
+      color: 'border-emerald-400 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-200 dark:hover:bg-emerald-900/50',
+      activeColor: 'border-emerald-600 bg-emerald-600 text-white dark:bg-emerald-600'
     }
   };
 
@@ -157,7 +157,7 @@ export const SeparateThemGame: React.FC<SeparateThemGameProps> = ({
             </span>
           </div>
 
-          <div className="w-full h-2 bg-stone-200 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
             <div 
               className="h-full bg-indigo-600 transition-all duration-300"
               style={{ width: `${((currentIndex + 1) / items.length) * 100}%` }}
@@ -165,12 +165,12 @@ export const SeparateThemGame: React.FC<SeparateThemGameProps> = ({
           </div>
 
           {/* Main Statement Game Card */}
-          <div className="bg-white rounded-3xl border-2 border-stone-200 p-8 sm:p-10 text-center shadow-md relative overflow-hidden">
-            <div className="absolute top-3 left-4 rtl:left-auto rtl:right-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+          <div className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 p-8 sm:p-10 text-center shadow-md relative overflow-hidden">
+            <div className="absolute top-3 left-4 rtl:left-auto rtl:right-4 text-[11px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
               {isAr ? 'البطاقة الحالية' : 'Current Card'}
             </div>
 
-            <p className="text-2xl sm:text-3xl font-extrabold text-stone-900 leading-snug max-w-lg mx-auto font-serif py-3">
+            <p className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 leading-snug max-w-lg mx-auto font-serif py-3">
               {currentItem.statement}
             </p>
           </div>
@@ -221,18 +221,18 @@ export const SeparateThemGame: React.FC<SeparateThemGameProps> = ({
           {isAnswered && (
             <div className={`p-5 rounded-2xl border text-xs animate-fade-in space-y-2 ${
               selectedCategory === currentItem.correctCategory
-                ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
-                : 'bg-amber-50 border-amber-300 text-amber-950'
+                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200'
+                : 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-950 dark:text-amber-200'
             }`}>
               <div className="flex items-center gap-2 font-bold text-sm">
                 {selectedCategory === currentItem.correctCategory ? (
                   <>
-                    <CheckCircle2 className="w-5 h-5 text-emerald-700" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                     <span>{isAr ? 'فرز صحيح ومتقن! 🎯' : 'Spot on! 🎯'}</span>
                   </>
                 ) : (
                   <>
-                    <XCircle className="w-5 h-5 text-amber-700" />
+                    <XCircle className="w-5 h-5 text-amber-700 dark:text-amber-400" />
                     <span>
                       {isAr 
                         ? `هذه في الحقيقة: ${categoryLabels[currentItem.correctCategory].title}`
@@ -241,14 +241,14 @@ export const SeparateThemGame: React.FC<SeparateThemGameProps> = ({
                   </>
                 )}
               </div>
-              <p className="text-stone-700 leading-relaxed font-medium">
+              <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-medium">
                 {currentItem.explanation}
               </p>
 
               <div className="flex justify-end pt-2">
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-1.5 px-6 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold cursor-pointer shadow-md"
+                  className="flex items-center gap-1.5 px-6 py-2.5 bg-stone-900 hover:bg-stone-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white rounded-xl text-xs font-bold cursor-pointer shadow-md"
                 >
                   <span>{isAr ? 'البطاقة التالية' : 'Next Card'}</span>
                   <ArrowRight className="w-4 h-4 rtl:rotate-180" />
@@ -259,20 +259,20 @@ export const SeparateThemGame: React.FC<SeparateThemGameProps> = ({
         </div>
       ) : (
         /* Victory Screen */
-        <div className="bg-white rounded-3xl border-2 border-stone-200 p-8 text-center space-y-5 animate-fade-in shadow-md">
-          <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-4xl shadow-inner">
+        <div className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 p-8 text-center space-y-5 animate-fade-in shadow-md">
+          <div className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mx-auto text-4xl shadow-inner">
             🏆
           </div>
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100">
               {isAr ? 'انتصار الفرز السريع!' : 'Sorting Victory!'}
             </h2>
-            <p className="text-stone-600 text-sm mt-1">
+            <p className="text-stone-600 dark:text-stone-400 text-sm mt-1">
               {isAr ? `جمعتَ ${score} نقطة وعي!` : `Total Score: ${score} XP!`}
             </p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-2xl max-w-md mx-auto text-xs text-stone-700 border border-stone-200">
+          <div className="p-4 bg-stone-50 dark:bg-stone-850 rounded-2xl max-w-md mx-auto text-xs text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-800">
             {isAr
               ? 'تذكر دائماً: المشاعر تُقبل وتُفهم، والحقائق لا تتغير، أما الأفكار فأنت سيدها ويمكنك دائماً فحصها واختبارها.'
               : 'Remember: Emotions are felt and honored, facts are accepted, but thoughts can always be questioned.'}

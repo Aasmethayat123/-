@@ -159,7 +159,7 @@ export function getUnplayedDoorGame(): UnplayedDoorResult {
     };
   }
 
-  // If all 36 games have been played
+  // If all 40 games have been played
   const rand = Math.floor(Math.random() * ALL_36_GAMES.length);
   return {
     game: ALL_36_GAMES[rand],

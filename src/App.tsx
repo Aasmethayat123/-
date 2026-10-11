@@ -49,6 +49,12 @@ import { ScratchToRevealGame } from './components/visceralGames/ScratchToRevealG
 import { MultiSensoryQuestGame } from './components/visceralGames/MultiSensoryQuestGame';
 import { SpeedLieDetectorGame } from './components/visceralGames/SpeedLieDetectorGame';
 
+// 4 Advanced Psychological Games (عيادة التفكير والتحرر)
+import { DecisionalScalesGame } from './components/interactiveGames/DecisionalScalesGame';
+import { ThoughtShredderGame } from './components/interactiveGames/ThoughtShredderGame';
+import { CoreNeedsCompassGame } from './components/interactiveGames/CoreNeedsCompassGame';
+import { InnerMirrorGame } from './components/interactiveGames/InnerMirrorGame';
+
 // Choose Your Adventure & Creative Discovery Modals
 import { AdventureHome } from './components/AdventureHome';
 import { MinuteReflectionModal } from './components/creative/MinuteReflectionModal';
@@ -75,7 +81,17 @@ export default function App() {
   const [isMinuteReflectionOpen, setIsMinuteReflectionOpen] = useState<boolean>(false);
   const [isHiddenPathsOpen, setIsHiddenPathsOpen] = useState<boolean>(false);
   const [isExperienceMixerOpen, setIsExperienceMixerOpen] = useState<boolean>(false);
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+
+  const SOUND_STORAGE_KEY = 'fakkerfeha_sound_v1';
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    try {
+      const val = localStorage.getItem(SOUND_STORAGE_KEY);
+      return val !== 'false';
+    } catch {
+      return true;
+    }
+  });
 
   const { stats, addXP, recordLevelCompletion, setAvatar } = useGameState();
 
@@ -88,14 +104,21 @@ export default function App() {
     applyTheme(theme);
   }, [theme]);
 
+  useEffect(() => {
+    soundManager.enabled = soundEnabled;
+    try {
+      localStorage.setItem(SOUND_STORAGE_KEY, String(soundEnabled));
+    } catch {
+      // ignore
+    }
+  }, [soundEnabled]);
+
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === 'ar' ? 'en' : 'ar'));
   };
 
   const toggleSound = () => {
-    const nextState = !soundEnabled;
-    setSoundEnabled(nextState);
-    soundManager.enabled = nextState;
+    setSoundEnabled((prev) => !prev);
   };
 
   const toggleTheme = () => {
@@ -157,7 +180,7 @@ export default function App() {
           />
         )}
 
-        {/* Full 36 Games Catalog with Search & Filter (مكتبة الألعاب الـ ٣٦) */}
+        {/* Full 40 Games Catalog with Search & Filter (مكتبة الألعاب الـ ٤٠) */}
         {currentMode === 'library' && (
           <GameMap
             language={language}
@@ -446,6 +469,39 @@ export default function App() {
           <BeforeYouReactGame
             language={language}
             onOpenBreathing={() => setIsBreathingOpen(true)}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {/* 4 Advanced Psychological Games (عيادة التفكير والتحرر) */}
+        {currentMode === 'decisional-balance' && (
+          <DecisionalScalesGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'thought-shredder' && (
+          <ThoughtShredderGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'core-needs-compass' && (
+          <CoreNeedsCompassGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'inner-mirror' && (
+          <InnerMirrorGame
+            language={language}
             onAddXP={addXP}
             onBackToMap={() => setCurrentMode('map')}
           />

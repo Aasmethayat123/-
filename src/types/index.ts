@@ -43,6 +43,11 @@ export type GameMode =
   | 'challenge-feeling' 
   | 'challenge-perspective' 
   | 'challenge-react' 
+  // 4 Advanced Psychological & Emotional Games (عيادة التفكير والتحرر):
+  | 'decisional-balance'      // ميزان الأفكار والقرارات
+  | 'thought-shredder'        // مفرمة الأفكار ونهر التحرر
+  | 'core-needs-compass'      // بوصلة الاحتياجات النفسية
+  | 'inner-mirror'            // مرآة الحوار الداخلي والناقد الرحيم
   | 'workshop' 
   | 'my-journey'
   | 'profile'

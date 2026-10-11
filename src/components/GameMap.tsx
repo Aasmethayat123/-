@@ -354,7 +354,7 @@ export const GameMap: React.FC<GameMapProps> = ({
     }
   ];
 
-  // Unified list of all 36 games for instant live search and universal filtering
+  // Unified list of games for instant live search and universal filtering
   const allGamesUnified = [
     ...nesma9Games.map((g) => ({
       id: g.id,
@@ -474,7 +474,7 @@ export const GameMap: React.FC<GameMapProps> = ({
         </button>
 
         <span className="text-xs font-extrabold text-stone-400 dark:text-stone-500 hidden sm:inline">
-          {isAr ? 'المكتبة الشاملة للألعاب (٣٦ لعبة)' : 'Full Games Catalog (36 Games)'}
+          {isAr ? 'المكتبة الشاملة للألعاب (٤٠ لعبة)' : 'Full Games Catalog (40 Games)'}
         </span>
       </div>
 
@@ -604,8 +604,8 @@ export const GameMap: React.FC<GameMapProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={
               isAr
-                ? 'ابحث في ٣٦ لعبة أو تمرين نفسي بالاسم، الكلمات الدلالية، أو الهدف...'
-                : 'Search any of 36 games or somatic exercises...'
+                ? 'ابحث في ٤٠ لعبة أو تمرين نفسي بالاسم، الكلمات الدلالية، أو الهدف...'
+                : 'Search any of 40 games or somatic exercises...'
             }
             className="w-full ps-10 pe-9 py-2.5 bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 rounded-2xl text-xs font-medium text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all shadow-2xs"
           />
@@ -630,7 +630,7 @@ export const GameMap: React.FC<GameMapProps> = ({
               { id: 'physical_quests' as CategoryTab, label: isAr ? 'تحديات وكروت (٣)' : 'Quests (3)', icon: '⚡' },
               { id: 'somatic' as CategoryTab, label: isAr ? 'نفسية حركية (٦)' : 'Psychomotor (6)', icon: '🫨' },
               { id: 'cognitive' as CategoryTab, label: isAr ? 'مواقف وفكر فيها (٩)' : 'Cognitive (9)', icon: '🧠' },
-              { id: 'all' as CategoryTab, label: isAr ? 'عرض الكل (٣٦)' : 'All Games (36)', icon: '🎮' },
+              { id: 'all' as CategoryTab, label: isAr ? 'عرض الكل (٤٠)' : 'All Games (40)', icon: '🎮' },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
