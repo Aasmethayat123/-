@@ -21,11 +21,14 @@ import {
   FolderKanban,
   Settings,
   Sun,
-  Moon
+  Moon,
+  Terminal,
+  HeartHandshake
 } from 'lucide-react';
 import { GameMode, Language } from '../types';
 import { soundManager } from '../utils/audio';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
+import { StreakHeaderBadge } from './StreakHeaderBadge';
 
 interface HeaderProps {
   currentMode: GameMode;
@@ -38,6 +41,8 @@ interface HeaderProps {
   playerXP: number;
   theme?: 'light' | 'dark';
   onToggleTheme?: () => void;
+  onAddXP?: (amount: number) => void;
+  onOpenTechnicalAudit?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -50,7 +55,9 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleSound,
   playerXP,
   theme = 'light',
-  onToggleTheme
+  onToggleTheme,
+  onAddXP,
+  onOpenTechnicalAudit
 }) => {
   const [showInfo, setShowInfo] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -59,6 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   const navItems = [
     { mode: 'map' as GameMode, label: isAr ? 'الرئيسية 🌿' : 'Home 🌿', icon: Compass },
     { mode: 'library' as GameMode, label: isAr ? 'مكتبة الألعاب 🎮' : 'Library 🎮', icon: Gamepad2 },
+    { mode: 'weekly-session' as GameMode, label: isAr ? 'الجلسة الأسبوعية 🛋️' : 'Weekly Session 🛋️', icon: HeartHandshake },
     { mode: 'projects' as GameMode, label: isAr ? 'المشروعات' : 'Projects', icon: FolderKanban },
     { mode: 'discover' as GameMode, label: isAr ? 'إضاءات ومقالات' : 'Discover', icon: BookOpen },
     { mode: 'my-journey' as GameMode, label: isAr ? 'دفتر رحلتي' : 'My Journey', icon: Bookmark },
@@ -96,6 +104,9 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Global Controls & Actions */}
         <div className="flex items-center gap-2">
+          {/* Daily Streak Fire Tracking */}
+          <StreakHeaderBadge language={language} onAddXP={onAddXP} />
+
           {/* PWA In-App Install Prompt & Offline Info */}
           <PWAInstallPrompt language={language} />
 
@@ -167,6 +178,21 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Info className="w-4 h-4" />
           </button>
+
+          {/* Technical Audit & Code Verification Trigger */}
+          {onOpenTechnicalAudit && (
+            <button
+              onClick={() => {
+                soundManager.playSoftTap();
+                onOpenTechnicalAudit();
+              }}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-colors cursor-pointer"
+              title={isAr ? 'التدقيق التقني وفحص الكود والأمان' : 'Technical Audit & Code Verification'}
+            >
+              <Terminal className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline">{isAr ? 'تدقيق الكود' : 'Code Audit'}</span>
+            </button>
+          )}
 
           {/* Mobile Menu Button */}
           <button

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Language, GameMode } from '../types';
 import { SCENARIOS } from '../data/scenarios';
+import { ALL_36_GAMES } from '../data/gamesCatalog';
 import { AVATARS } from '../utils/gameState';
 import { soundManager } from '../utils/audio';
 import { getSavedMoments } from '../utils/moments';
@@ -54,7 +55,7 @@ interface GameMapProps {
   onOpenAvatarModal: () => void;
 }
 
-type CategoryTab = 'all' | 'visceral' | 'nesma9' | 'projective' | 'physical_quests' | 'somatic' | 'cognitive';
+type CategoryTab = 'all' | 'nesma9' | 'advanced_psych' | 'visceral' | 'projective' | 'physical_quests' | 'somatic' | 'cognitive';
 
 export const GameMap: React.FC<GameMapProps> = ({
   language,
@@ -68,7 +69,7 @@ export const GameMap: React.FC<GameMapProps> = ({
   const currentAvatar = AVATARS[language].find(a => a.id === playerStats.avatarId) || AVATARS[language][0];
   const savedCount = getSavedMoments().length;
 
-  const [activeTab, setActiveTab] = useState<CategoryTab>('nesma9');
+  const [activeTab, setActiveTab] = useState<CategoryTab>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // 6 Visceral & Tactile Psychological Games
@@ -354,87 +355,33 @@ export const GameMap: React.FC<GameMapProps> = ({
     }
   ];
 
-  // Unified list of games for instant live search and universal filtering
-  const allGamesUnified = [
-    ...nesma9Games.map((g) => ({
+  // 4 Advanced Psychological Games (عيادة التفكير والتحرر)
+  const advancedPsychGames = ALL_36_GAMES
+    .filter((g) => g.categoryKey === 'advanced_psych')
+    .map((g) => ({
       id: g.id,
-      title: g.title,
-      desc: g.desc,
+      title: isAr ? g.nameAr : g.nameEn,
+      desc: isAr ? g.descAr : g.descEn,
       icon: g.icon,
       color: g.color,
-      badge: g.badge,
-      category: 'nesma9' as CategoryTab,
-      categoryLabel: isAr ? 'ألعاب نسمة حياة' : 'Nesma Hayat',
-      actionType: 'navigate' as const
-    })),
-    ...visceralGames.map((g) => ({
-      id: g.id,
-      title: g.title,
-      desc: g.desc,
-      icon: g.icon,
-      color: g.color,
-      badge: g.badge,
-      category: 'visceral' as CategoryTab,
-      categoryLabel: isAr ? 'التفريغ الحسي والصدمة' : 'Visceral & Tactile',
-      actionType: 'navigate' as const
-    })),
-    ...projectiveGames.map((g) => ({
-      id: g.id,
-      title: g.title,
-      desc: g.desc,
-      icon: g.icon,
-      color: g.color,
-      badge: g.badge,
-      category: 'projective' as CategoryTab,
-      categoryLabel: isAr ? 'استكشاف باطني' : 'Projective',
-      actionType: 'navigate' as const
-    })),
-    ...physicalQuestGames.map((g) => ({
-      id: g.id,
-      title: g.title,
-      desc: g.desc,
-      icon: g.icon,
-      color: g.color,
-      badge: g.badge,
-      category: 'physical_quests' as CategoryTab,
-      categoryLabel: isAr ? 'تحديات وكروت حكمة' : 'Physical Quests',
-      actionType: 'navigate' as const
-    })),
-    ...somaticGames.map((g) => ({
-      id: g.id,
-      title: g.title,
-      desc: g.desc,
-      icon: g.icon,
-      color: g.color,
-      badge: g.badge,
-      category: 'somatic' as CategoryTab,
-      categoryLabel: isAr ? 'نفسية حركية' : 'Psychomotor',
-      actionType: 'navigate' as const
-    })),
-    ...cognitiveGames.map((g) => ({
-      id: g.id,
-      title: g.title,
-      desc: g.desc,
-      icon: g.icon,
-      color: g.color,
-      badge: g.badge,
-      category: 'cognitive' as CategoryTab,
-      categoryLabel: isAr ? 'حلبات فكر فيها' : 'Cognitive Arena',
-      actionType: 'navigate' as const
-    })),
-    ...scenarios.map((sc, idx) => ({
-      id: sc.id as GameMode,
-      title: sc.title,
-      desc: sc.situation,
-      icon: Sparkles,
-      color: 'from-indigo-600 to-blue-700',
-      badge: isAr ? `مستوى ${idx + 1} · ${sc.context}` : `Level ${idx + 1} · ${sc.context}`,
-      category: 'cognitive' as CategoryTab,
-      categoryLabel: isAr ? 'رحلة المواقف' : 'Story Level',
-      actionType: 'level' as const,
-      levelId: sc.id
-    }))
-  ];
+      badge: isAr ? g.badgeAr : g.badgeEn
+    }));
+
+  // Unified list of 40 games for instant live search and universal filtering
+  const allGamesUnified = ALL_36_GAMES.map((g) => ({
+    id: g.id,
+    title: isAr ? g.nameAr : g.nameEn,
+    desc: isAr ? g.descAr : g.descEn,
+    icon: g.icon,
+    color: g.color,
+    badge: isAr ? g.badgeAr : g.badgeEn,
+    category: (g.categoryKey === 'quests' ? 'physical_quests' : g.categoryKey) as CategoryTab,
+    categoryLabel: isAr ? g.categoryAr : g.categoryEn,
+    actionType: (g.id === 'journey' ? 'level' : 'navigate') as 'level' | 'navigate',
+    levelId: g.levelId,
+    interactionType: isAr ? g.interactionTypeAr : g.interactionTypeEn,
+    howToPlay: isAr ? g.howToPlayAr : g.howToPlayEn
+  }));
 
   // Filter games based on search query
   const searchResults = searchQuery.trim()
@@ -443,7 +390,9 @@ export const GameMap: React.FC<GameMapProps> = ({
         return (
           g.title.toLowerCase().includes(query) ||
           g.desc.toLowerCase().includes(query) ||
-          g.badge.toLowerCase().includes(query)
+          g.badge.toLowerCase().includes(query) ||
+          g.interactionType.toLowerCase().includes(query) ||
+          g.howToPlay.toLowerCase().includes(query)
         );
       })
     : [];
@@ -474,7 +423,7 @@ export const GameMap: React.FC<GameMapProps> = ({
         </button>
 
         <span className="text-xs font-extrabold text-stone-400 dark:text-stone-500 hidden sm:inline">
-          {isAr ? 'المكتبة الشاملة للألعاب (٤٠ لعبة)' : 'Full Games Catalog (40 Games)'}
+          {isAr ? `المكتبة الشاملة للألعاب (${ALL_36_GAMES.length} لعبة)` : `Full Games Catalog (${ALL_36_GAMES.length} Games)`}
         </span>
       </div>
 
@@ -604,8 +553,8 @@ export const GameMap: React.FC<GameMapProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={
               isAr
-                ? 'ابحث في ٤٠ لعبة أو تمرين نفسي بالاسم، الكلمات الدلالية، أو الهدف...'
-                : 'Search any of 40 games or somatic exercises...'
+                ? `ابحث في ${ALL_36_GAMES.length} لعبة وتمرين نفسي بالاسم، الكلمات الدلالية، أو الهدف...`
+                : `Search any of ${ALL_36_GAMES.length} games or somatic exercises...`
             }
             className="w-full ps-10 pe-9 py-2.5 bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 rounded-2xl text-xs font-medium text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all shadow-2xs"
           />
@@ -624,13 +573,14 @@ export const GameMap: React.FC<GameMapProps> = ({
         {!searchQuery && (
           <div className="flex items-center gap-1.5 p-1.5 bg-stone-100/90 dark:bg-stone-900/90 rounded-2xl overflow-x-auto text-xs font-bold border border-stone-200/70 dark:border-stone-800 scrollbar-none">
             {[
-              { id: 'nesma9' as CategoryTab, label: isAr ? 'نسمة حياة (٩)' : 'Nesma Hayat (9)', icon: '🌿' },
-              { id: 'visceral' as CategoryTab, label: isAr ? 'تفريغ وصدمة (٦)' : 'Visceral (6)', icon: '🪞' },
-              { id: 'projective' as CategoryTab, label: isAr ? 'استكشاف باطني (٣)' : 'Projective (3)', icon: '🔮' },
-              { id: 'physical_quests' as CategoryTab, label: isAr ? 'تحديات وكروت (٣)' : 'Quests (3)', icon: '⚡' },
-              { id: 'somatic' as CategoryTab, label: isAr ? 'نفسية حركية (٦)' : 'Psychomotor (6)', icon: '🫨' },
-              { id: 'cognitive' as CategoryTab, label: isAr ? 'مواقف وفكر فيها (٩)' : 'Cognitive (9)', icon: '🧠' },
-              { id: 'all' as CategoryTab, label: isAr ? 'عرض الكل (٤٠)' : 'All Games (40)', icon: '🎮' },
+              { id: 'all' as CategoryTab, label: isAr ? `عرض الكل (${ALL_36_GAMES.length})` : `All Games (${ALL_36_GAMES.length})`, icon: '🎮' },
+              { id: 'nesma9' as CategoryTab, label: isAr ? `نسمة حياة (${nesma9Games.length})` : `Nesma Hayat (${nesma9Games.length})`, icon: '🌿' },
+              { id: 'advanced_psych' as CategoryTab, label: isAr ? `عيادة التفكير والتحرر (${advancedPsychGames.length})` : `Deep Mind & Release (${advancedPsychGames.length})`, icon: '⚖️' },
+              { id: 'visceral' as CategoryTab, label: isAr ? `تفريغ وصدمة (${visceralGames.length})` : `Visceral (${visceralGames.length})`, icon: '🪞' },
+              { id: 'somatic' as CategoryTab, label: isAr ? `نفسية حركية (${somaticGames.length})` : `Psychomotor (${somaticGames.length})`, icon: '🫨' },
+              { id: 'cognitive' as CategoryTab, label: isAr ? `مواقف وفكر فيها (${cognitiveGames.length + scenarios.length})` : `Cognitive (${cognitiveGames.length + scenarios.length})`, icon: '🧠' },
+              { id: 'projective' as CategoryTab, label: isAr ? `استكشاف باطني (${projectiveGames.length})` : `Projective (${projectiveGames.length})`, icon: '🔮' },
+              { id: 'physical_quests' as CategoryTab, label: isAr ? `تحديات وكروت (${physicalQuestGames.length})` : `Quests (${physicalQuestGames.length})`, icon: '⚡' },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -696,7 +646,7 @@ export const GameMap: React.FC<GameMapProps> = ({
                 const Icon = game.icon;
                 return (
                   <button
-                    key={`${game.category}-${game.id}`}
+                    key={`${game.category}-${game.id}-${game.levelId || ''}`}
                     onClick={() => handleGameClick(game)}
                     className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 shadow-2xs hover:shadow-md hover:border-emerald-500/60 dark:hover:border-emerald-500/60 transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
                   >
@@ -788,6 +738,66 @@ export const GameMap: React.FC<GameMapProps> = ({
 
                   <div className="flex items-center justify-between text-xs font-bold text-emerald-800 dark:text-emerald-400 pt-2 border-t border-stone-100 dark:border-stone-800/80">
                     <span>{isAr ? 'العب الآن 🌿' : 'Play Now 🌿'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* CATEGORY: Advanced Psychological Clinic (عيادة التفكير والتحرر) */}
+      {/* ============================================================== */}
+      {!searchQuery && (activeTab === 'all' || activeTab === 'advanced_psych') && (
+        <div className={`space-y-3.5 ${activeTab === 'all' ? 'pt-4 border-t border-stone-200 dark:border-stone-800' : ''}`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider block">
+                {isAr ? `عيادة التفكير والتحرر المعرفي (${advancedPsychGames.length} ألعاب متقدمة)` : `Deep Mind & Release Games (${advancedPsychGames.length})`}
+              </span>
+              <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100">
+                {isAr ? 'غرفة الصدى، نول الأمان، ساعة الرمل، شجرة الامتنان، الميزان، والمفرمة' : 'Defusion, Safety Loom, Sand Sifter, Gratitude Tree, & Balance'}
+              </h2>
+            </div>
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+              {isAr ? 'بروتوكولات CBT & ACT' : 'CBT & ACT Protocols'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {advancedPsychGames.map((game) => {
+              const Icon = game.icon;
+              return (
+                <button
+                  key={game.id}
+                  onClick={() => {
+                    soundManager.playSoftTap();
+                    onNavigateMode(game.id);
+                  }}
+                  className="text-start bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/90 dark:border-stone-800 p-4 sm:p-4.5 shadow-2xs hover:shadow-md hover:border-amber-400 dark:hover:border-amber-500/70 transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
+                >
+                  <div className="space-y-2.5">
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${game.color} text-white flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 block w-fit mb-1 border border-amber-200 dark:border-amber-900/60">
+                        {game.badge}
+                      </span>
+                      <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
+                        {game.title}
+                      </h3>
+                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed line-clamp-2">
+                        {game.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs font-bold text-amber-800 dark:text-amber-400 pt-2 border-t border-stone-100 dark:border-stone-800/80">
+                    <span>{isAr ? 'خوض التجربة 🌿' : 'Play Now 🌿'}</span>
                     <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                   </div>
                 </button>

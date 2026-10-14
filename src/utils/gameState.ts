@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PlayerStats, AvatarProfile } from '../types';
 import { soundManager } from './audio';
 import { triggerConfetti } from './confetti';
+import { getStreakData, recordStreakActivity } from './streakManager';
 
 export const AVATARS: Record<'en' | 'ar', AvatarProfile[]> = {
   ar: [
@@ -87,16 +88,21 @@ const defaultStats: PlayerStats = {
 
 export function useGameState() {
   const [stats, setStats] = useState<PlayerStats>(() => {
-    if (typeof window === 'undefined') return defaultStats;
+    const currentStreakCount = typeof window !== 'undefined' ? getStreakData().currentStreak : 0;
+    if (typeof window === 'undefined') return { ...defaultStats, streak: currentStreakCount };
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        return {
+          ...parsed,
+          streak: currentStreakCount
+        };
       }
     } catch {
       // fallback
     }
-    return defaultStats;
+    return { ...defaultStats, streak: currentStreakCount };
   });
 
   useEffect(() => {
@@ -124,6 +130,8 @@ export function useGameState() {
   };
 
   const recordLevelCompletion = (levelId: string, stars: number) => {
+    const streakResult = recordStreakActivity('level_completed');
+
     setStats((prev) => {
       const currentStars = prev.levelStars[levelId] || 0;
       const bestStars = Math.max(currentStars, stars);
@@ -137,7 +145,8 @@ export function useGameState() {
 
       return {
         ...prev,
-        xp: prev.xp + stars * 50,
+        xp: prev.xp + stars * 50 + (streakResult.isFirstToday ? streakResult.xpAwarded : 0),
+        streak: streakResult.streak,
         levelStars: newStars,
         badges: newBadges
       };

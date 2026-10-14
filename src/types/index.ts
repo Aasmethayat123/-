@@ -48,8 +48,23 @@ export type GameMode =
   | 'thought-shredder'        // مفرمة الأفكار ونهر التحرر
   | 'core-needs-compass'      // بوصلة الاحتياجات النفسية
   | 'inner-mirror'            // مرآة الحوار الداخلي والناقد الرحيم
+  // 4 Creative & Deep Interactive Experiences:
+  | 'cognitive-reframing-puzzle' // صانع الأنماط: فك شفرة الأفكار التلقائية
+  | 'inner-labyrinth'            // متاهة الهدوء التفاعلية
+  | 'digital-release-ritual'      // مرآة الأعماق: طقوس التحرر الرقمي
+  | 'relational-energy-matrix'   // حصاد طاقة الروابط
+  // 4 New Innovative & Mindful Games (إبداعات الوعي والسكينة):
+  | 'resonance-chamber'          // غرفة الصدى: تفكيك الصوت الناقد
+  | 'mental-loom'                // نول الحياكة الذهنية: شبكة الأمان النفسي
+  | 'worry-sandbox'              // ساعة الرمل العكسية: فن تأجيل القلق
+  | 'blooming-gratitude'         // شجرة الامتنان ذات البراعم المتفتحة
+  // Real Tactical, Organizing & Satisfying Puzzle Games:
+  | 'mindful-organizer'          // ترتيب الفوضى والرفوف والسكينة
+  | 'zen-puzzle'                 // بازل وتوازن أحجار الزن والماندالا
+  | 'emotion-sort-puzzle'        // بازل فرز وسكب قوارير المشاعر
   | 'workshop' 
   | 'my-journey'
+  | 'weekly-session'
   | 'profile'
   // Real projects & authentic content management:
   | 'projects'

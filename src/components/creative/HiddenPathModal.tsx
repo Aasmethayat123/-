@@ -24,10 +24,14 @@ export const HiddenPathModal: React.FC<HiddenPathModalProps> = ({
   language,
   onSelectGame
 }) => {
-  if (!isOpen) return null;
   const isAr = language === 'ar';
+  const [selectedPath, setSelectedPath] = useState<HiddenPath>(HIDDEN_PATHS[0]);
+  const [completedSteps, setCompletedSteps] = useState<GameMode[]>(() => 
+    getHiddenPathProgress(selectedPath.id)
+  );
 
   useEffect(() => {
+    if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -35,12 +39,9 @@ export const HiddenPathModal: React.FC<HiddenPathModalProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [isOpen, onClose]);
 
-  const [selectedPath, setSelectedPath] = useState<HiddenPath>(HIDDEN_PATHS[0]);
-  const [completedSteps, setCompletedSteps] = useState<GameMode[]>(() => 
-    getHiddenPathProgress(selectedPath.id)
-  );
+  if (!isOpen) return null;
 
   const getGameItem = (id: GameMode): GameCatalogItem | undefined => {
     return ALL_36_GAMES.find((g) => g.id === id);

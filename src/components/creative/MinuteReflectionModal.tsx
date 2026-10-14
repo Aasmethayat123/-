@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Language } from '../../types';
 import { soundManager } from '../../utils/audio';
 import { 
@@ -12,8 +12,8 @@ import {
   CheckCircle2, 
   Shuffle, 
   Lightbulb, 
-  Compass,
-  AlertCircle
+  Compass, 
+  AlertCircle 
 } from 'lucide-react';
 
 interface MinuteReflectionModalProps {
@@ -31,19 +31,7 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
   language,
   onRewardXP
 }) => {
-  if (!isOpen) return null;
   const isAr = language === 'ar';
-
-  // Handle Escape key to close modal for accessibility
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
 
   const [activeExercise, setActiveExercise] = useState<ExerciseType>('observation');
   const [stage, setStage] = useState<'intro' | 'playing' | 'completed'>('intro');
@@ -61,9 +49,30 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
   const [unravelOrder, setUnravelOrder] = useState<number[]>([]);
   const [unravelError, setUnravelError] = useState<string | null>(null);
 
+  // Handle Escape key to close modal for accessibility
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  const handleFinish = useCallback(() => {
+    soundManager.playSuccess();
+    setStage('completed');
+    if (onRewardXP && !hasRewardedThisSession) {
+      onRewardXP(80);
+      setHasRewardedThisSession(true);
+    }
+  }, [hasRewardedThisSession, onRewardXP]);
+
   // Timer effect
   useEffect(() => {
-    if (stage !== 'playing') return;
+    if (!isOpen || stage !== 'playing') return;
     const interval = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
@@ -75,7 +84,9 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [stage]);
+  }, [isOpen, stage, handleFinish]);
+
+  if (!isOpen) return null;
 
   const handleStart = (exercise: ExerciseType) => {
     soundManager.playSoftTap();
@@ -100,14 +111,6 @@ export const MinuteReflectionModal: React.FC<MinuteReflectionModalProps> = ({
     onClose();
   };
 
-  const handleFinish = () => {
-    soundManager.playSuccess();
-    setStage('completed');
-    if (onRewardXP && !hasRewardedThisSession) {
-      onRewardXP(80);
-      setHasRewardedThisSession(true);
-    }
-  };
 
   const toggleObserved = (index: number) => {
     soundManager.playSoftTap();

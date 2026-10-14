@@ -21,10 +21,12 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
   language,
   onSelectGame
 }) => {
-  if (!isOpen) return null;
   const isAr = language === 'ar';
+  const [selectedDuration, setSelectedDuration] = useState<DurationTier>('3min');
+  const [selectedMood, setSelectedMood] = useState<MoodTarget>('calm');
 
   useEffect(() => {
+    if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -32,10 +34,9 @@ export const ExperienceMixerModal: React.FC<ExperienceMixerModalProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [isOpen, onClose]);
 
-  const [selectedDuration, setSelectedDuration] = useState<DurationTier>('3min');
-  const [selectedMood, setSelectedMood] = useState<MoodTarget>('calm');
+  if (!isOpen) return null;
 
   // Exact matching games based on structured catalog metadata
   const primaryMatches = ALL_36_GAMES.filter((g) => {

@@ -32,6 +32,9 @@ import { SensoryGroundingGame } from './components/psychomotor/SensoryGroundingG
 import { InfinityFlowGame } from './components/psychomotor/InfinityFlowGame';
 import { BalloonBreathGame } from './components/psychomotor/BalloonBreathGame';
 import { DiscoverReadings } from './components/DiscoverReadings';
+import { WeeklyPsychologicalSession } from './components/WeeklyPsychologicalSession';
+import { CrisisSafetyModal } from './components/CrisisSafetyModal';
+import { TechnicalAuditModal } from './components/TechnicalAuditModal';
 
 // Subconscious & Physical Gamified Games
 import { InsightCardsGame } from './components/interactiveGames/InsightCardsGame';
@@ -54,6 +57,23 @@ import { DecisionalScalesGame } from './components/interactiveGames/DecisionalSc
 import { ThoughtShredderGame } from './components/interactiveGames/ThoughtShredderGame';
 import { CoreNeedsCompassGame } from './components/interactiveGames/CoreNeedsCompassGame';
 import { InnerMirrorGame } from './components/interactiveGames/InnerMirrorGame';
+
+// 4 Creative & Deep Interactive Experiences
+import { CognitiveReframingPuzzleGame } from './components/interactiveGames/CognitiveReframingPuzzleGame';
+import { InnerLabyrinthGame } from './components/interactiveGames/InnerLabyrinthGame';
+import { DigitalReleaseRitualGame } from './components/interactiveGames/DigitalReleaseRitualGame';
+import { RelationalEnergyMatrixGame } from './components/interactiveGames/RelationalEnergyMatrixGame';
+
+// 4 New Innovative & Mindful Games (إبداعات الوعي والسكينة)
+import { ResonanceChamberGame } from './components/interactiveGames/ResonanceChamberGame';
+import { MentalLoomGame } from './components/interactiveGames/MentalLoomGame';
+import { WorrySandboxGame } from './components/interactiveGames/WorrySandboxGame';
+import { BloomingGratitudeGame } from './components/interactiveGames/BloomingGratitudeGame';
+
+// Real Tactical, Organizing & Satisfying Puzzle Games (ألعاب الترتيب والبازل اللمسية)
+import { MindfulOrganizerGame } from './components/interactiveGames/MindfulOrganizerGame';
+import { ZenStonePuzzleGame } from './components/interactiveGames/ZenStonePuzzleGame';
+import { EmotionSortPuzzleGame } from './components/interactiveGames/EmotionSortPuzzleGame';
 
 // Choose Your Adventure & Creative Discovery Modals
 import { AdventureHome } from './components/AdventureHome';
@@ -81,6 +101,7 @@ export default function App() {
   const [isMinuteReflectionOpen, setIsMinuteReflectionOpen] = useState<boolean>(false);
   const [isHiddenPathsOpen, setIsHiddenPathsOpen] = useState<boolean>(false);
   const [isExperienceMixerOpen, setIsExperienceMixerOpen] = useState<boolean>(false);
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
 
   const SOUND_STORAGE_KEY = 'fakkerfeha_sound_v1';
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
@@ -136,6 +157,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-stone-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 transition-colors duration-200 overflow-x-hidden">
+      {/* Skip to main content link for screen reader accessibility */}
+      <a
+        href="#main-content"
+        role="link"
+        aria-label={language === 'ar' ? 'الانتقال مباشرة إلى المحتوى الرئيسي' : 'Skip directly to main content'}
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-stone-900 focus:text-amber-300 focus:border-2 focus:border-amber-400 focus:rounded-lg focus:shadow-xl focus:outline-none text-xs font-bold transition-all"
+      >
+        {language === 'ar' ? 'الانتقال مباشرة إلى المحتوى الرئيسي' : 'Skip to main content'}
+      </a>
+
       {/* Game Header */}
       <Header
         currentMode={currentMode}
@@ -148,10 +179,18 @@ export default function App() {
         playerXP={stats.xp}
         theme={theme}
         onToggleTheme={toggleTheme}
+        onAddXP={addXP}
+        onOpenTechnicalAudit={() => setIsAuditModalOpen(true)}
       />
 
       {/* Main Game Screen */}
-      <main className="flex-1 pb-12">
+      <main 
+        id="main-content" 
+        tabIndex={-1} 
+        role="main" 
+        aria-label={language === 'ar' ? 'المحتوى الرئيسي للتطبيق والألعاب التفاعلية' : 'Main application and interactive games content'} 
+        className="flex-1 pb-12 outline-none"
+      >
         {/* Main 'Choose Your Adventure' System (اختار مغامرتك) */}
         {currentMode === 'map' && (
           <AdventureHome
@@ -171,6 +210,7 @@ export default function App() {
             }}
             onNavigateToLibrary={() => setCurrentMode('library')}
             onNavigateToJourney={() => setCurrentMode('my-journey')}
+            onNavigateToWorkshop={() => setCurrentMode('workshop')}
             onOpenMinuteReflection={() => setIsMinuteReflectionOpen(true)}
             onOpenHiddenPaths={() => setIsHiddenPathsOpen(true)}
             onOpenExperienceMixer={() => setIsExperienceMixerOpen(true)}
@@ -507,6 +547,107 @@ export default function App() {
           />
         )}
 
+        {/* 4 Creative & Deep Interactive Experiences */}
+        {currentMode === 'cognitive-reframing-puzzle' && (
+          <CognitiveReframingPuzzleGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'inner-labyrinth' && (
+          <InnerLabyrinthGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'digital-release-ritual' && (
+          <DigitalReleaseRitualGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'relational-energy-matrix' && (
+          <RelationalEnergyMatrixGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {/* 4 New Innovative & Mindful Games (إبداعات الوعي والسكينة) */}
+        {currentMode === 'resonance-chamber' && (
+          <ResonanceChamberGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'mental-loom' && (
+          <MentalLoomGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'worry-sandbox' && (
+          <WorrySandboxGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'blooming-gratitude' && (
+          <BloomingGratitudeGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {/* Real Tactical, Organizing & Satisfying Puzzle Games (ألعاب الترتيب والبازل اللمسية) */}
+        {currentMode === 'mindful-organizer' && (
+          <MindfulOrganizerGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'zen-puzzle' && (
+          <ZenStonePuzzleGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {currentMode === 'emotion-sort-puzzle' && (
+          <EmotionSortPuzzleGame
+            language={language}
+            onAddXP={addXP}
+            onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {/* Weekly Psychological Reflection & Companion Session (الجلسة النفسية الأسبوعية) */}
+        {currentMode === 'weekly-session' && (
+          <WeeklyPsychologicalSession
+            language={language}
+            onBackToMap={() => setCurrentMode('map')}
+            onAddXP={addXP}
+            onOpenBreathing={() => setIsBreathingOpen(true)}
+          />
+        )}
+
         {/* My Journey Saved Moments */}
         {currentMode === 'my-journey' && (
           <MyJourneyDrawer
@@ -517,7 +658,11 @@ export default function App() {
 
         {/* Workshop Mode */}
         {currentMode === 'workshop' && (
-          <WorkshopMode language={language} />
+          <WorkshopMode 
+            language={language}
+            onNavigateGame={(mode) => setCurrentMode(mode)}
+            onBackToHome={() => setCurrentMode('map')}
+          />
         )}
 
         {currentMode === 'profile' && (
@@ -530,14 +675,18 @@ export default function App() {
       </main>
 
       {/* Game Footer */}
-      <footer className="border-t border-stone-200/80 bg-stone-100/60 py-5 px-4 text-xs text-stone-500">
+      <footer 
+        role="contentinfo" 
+        aria-label={language === 'ar' ? 'تذييل الصفحة ومعلومات المبادرة' : 'Page footer and initiative info'} 
+        className="border-t border-stone-200/80 bg-stone-100/60 py-5 px-4 text-xs text-stone-500"
+      >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-stone-800">
               {language === 'ar' ? 'فكر فيها' : 'Think About It'}
             </span>
-            <span>🌿</span>
-            <span>·</span>
+            <span aria-hidden="true">🌿</span>
+            <span aria-hidden="true">·</span>
             <span>
               {language === 'ar' 
                 ? 'ألعاب نفسية تفاعلية — كجزء من مبادرة نسمة حياة' 
@@ -545,97 +694,155 @@ export default function App() {
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] text-stone-500">
+          <nav 
+            role="navigation" 
+            aria-label={language === 'ar' ? 'روابط التنقل السريع في التذييل' : 'Footer quick navigation links'} 
+            className="flex items-center gap-4 text-[11px] text-stone-500"
+          >
             <button
+              type="button"
+              role="button"
               onClick={() => setCurrentMode('map')}
-              className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
+              aria-label={language === 'ar' ? 'الانتقال إلى خريطة الألعاب وكل الألعاب' : 'Navigate to all games map'}
+              aria-current={currentMode === 'map' ? 'page' : undefined}
+              className={`hover:text-stone-900 transition-colors cursor-pointer font-bold ${currentMode === 'map' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
             >
               {language === 'ar' ? 'كل الألعاب' : 'All Games'}
             </button>
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             <button
+              type="button"
+              role="button"
               onClick={() => setCurrentMode('projects')}
-              className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
+              aria-label={language === 'ar' ? 'الانتقال إلى ركن المشروعات والتدخلات النفسية' : 'Navigate to projects hub'}
+              aria-current={currentMode === 'projects' ? 'page' : undefined}
+              className={`hover:text-stone-900 transition-colors cursor-pointer font-bold ${currentMode === 'projects' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
             >
               {language === 'ar' ? 'المشروعات' : 'Projects'}
             </button>
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             <button
+              type="button"
+              role="button"
+              onClick={() => setCurrentMode('weekly-session')}
+              aria-label={language === 'ar' ? 'الانتقال إلى الجلسة النفسية الأسبوعية' : 'Navigate to weekly session'}
+              aria-current={currentMode === 'weekly-session' ? 'page' : undefined}
+              className={`hover:text-stone-900 transition-colors cursor-pointer font-bold ${currentMode === 'weekly-session' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
+            >
+              {language === 'ar' ? 'الجلسة الأسبوعية 🛋️' : 'Weekly Session 🛋️'}
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              role="button"
               onClick={() => setCurrentMode('my-journey')}
-              className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
+              aria-label={language === 'ar' ? 'الانتقال إلى سجل ودفتر رحلتي' : 'Navigate to my journey notebook'}
+              aria-current={currentMode === 'my-journey' ? 'page' : undefined}
+              className={`hover:text-stone-900 transition-colors cursor-pointer font-bold ${currentMode === 'my-journey' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
             >
               {language === 'ar' ? 'دفتر رحلتي' : 'My Journey'}
             </button>
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             <button
+              type="button"
+              role="button"
               onClick={() => setCurrentMode('workshop')}
-              className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
+              aria-label={language === 'ar' ? 'الانتقال إلى دليل واستمارات الورش التفاعلية' : 'Navigate to interactive workshops guide'}
+              aria-current={currentMode === 'workshop' ? 'page' : undefined}
+              className={`hover:text-stone-900 transition-colors cursor-pointer font-bold ${currentMode === 'workshop' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
             >
               {language === 'ar' ? 'دليل الورش' : 'Workshop'}
             </button>
-            <span>·</span>
+            <span aria-hidden="true">·</span>
             <button
+              type="button"
+              role="button"
               onClick={() => setCurrentMode('admin-cms')}
-              className="hover:text-stone-900 transition-colors cursor-pointer font-bold"
+              aria-label={language === 'ar' ? 'الانتقال إلى نظام إدارة المحتوى والأنشطة' : 'Navigate to content management system'}
+              aria-current={currentMode === 'admin-cms' ? 'page' : undefined}
+              className={`hover:text-stone-900 transition-colors cursor-pointer font-bold ${currentMode === 'admin-cms' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
             >
               {language === 'ar' ? 'إدارة المحتوى' : 'CMS'}
             </button>
-          </div>
+          </nav>
         </div>
       </footer>
 
       {/* Mindful Pause Modal */}
-      <MindfulBreathingModal
-        isOpen={isBreathingOpen}
-        onClose={() => setIsBreathingOpen(false)}
-        language={language}
-      />
+      {isBreathingOpen && (
+        <MindfulBreathingModal
+          isOpen={isBreathingOpen}
+          onClose={() => setIsBreathingOpen(false)}
+          language={language}
+        />
+      )}
 
       {/* Character Selection Modal */}
-      <AvatarModal
-        isOpen={isAvatarModalOpen}
-        onClose={() => setIsAvatarModalOpen(false)}
-        language={language}
-        currentAvatarId={stats.avatarId}
-        onSelectAvatar={setAvatar}
-      />
+      {isAvatarModalOpen && (
+        <AvatarModal
+          isOpen={isAvatarModalOpen}
+          onClose={() => setIsAvatarModalOpen(false)}
+          language={language}
+          currentAvatarId={stats.avatarId}
+          onSelectAvatar={setAvatar}
+        />
+      )}
 
       {/* 1-Minute Reflection Reset Modal */}
-      <MinuteReflectionModal
-        isOpen={isMinuteReflectionOpen}
-        onClose={() => setIsMinuteReflectionOpen(false)}
-        language={language}
-        onRewardXP={addXP}
-      />
+      {isMinuteReflectionOpen && (
+        <MinuteReflectionModal
+          isOpen={isMinuteReflectionOpen}
+          onClose={() => setIsMinuteReflectionOpen(false)}
+          language={language}
+          onRewardXP={addXP}
+        />
+      )}
 
       {/* Hidden Paths Modal */}
-      <HiddenPathModal
-        isOpen={isHiddenPathsOpen}
-        onClose={() => setIsHiddenPathsOpen(false)}
-        language={language}
-        onSelectGame={(gameId) => {
-          const game = ALL_36_GAMES.find((g) => g.id === gameId);
-          if (game) recordLastPlayedGame(game);
-          setCurrentMode(gameId);
-        }}
-      />
+      {isHiddenPathsOpen && (
+        <HiddenPathModal
+          isOpen={isHiddenPathsOpen}
+          onClose={() => setIsHiddenPathsOpen(false)}
+          language={language}
+          onSelectGame={(gameId) => {
+            const game = ALL_36_GAMES.find((g) => g.id === gameId);
+            if (game) recordLastPlayedGame(game);
+            setCurrentMode(gameId);
+          }}
+        />
+      )}
 
       {/* Experience Mixer Modal */}
-      <ExperienceMixerModal
-        isOpen={isExperienceMixerOpen}
-        onClose={() => setIsExperienceMixerOpen(false)}
+      {isExperienceMixerOpen && (
+        <ExperienceMixerModal
+          isOpen={isExperienceMixerOpen}
+          onClose={() => setIsExperienceMixerOpen(false)}
+          language={language}
+          onSelectGame={(gameId, levelId) => {
+            const game = ALL_36_GAMES.find((g) => g.id === gameId && (!levelId || g.levelId === levelId)) ||
+                         ALL_36_GAMES.find((g) => g.id === gameId);
+            if (game) recordLastPlayedGame(game);
+            if (levelId) {
+              setSelectedLevelId(levelId);
+              setCurrentMode('journey');
+            } else {
+              setCurrentMode(gameId);
+            }
+          }}
+        />
+      )}
+
+      {/* Crisis Safety & Emergency Hotlines Modal (بروتوكول الأمان ورصد الطوارئ) */}
+      <CrisisSafetyModal
         language={language}
-        onSelectGame={(gameId, levelId) => {
-          const game = ALL_36_GAMES.find((g) => g.id === gameId && (!levelId || g.levelId === levelId)) ||
-                       ALL_36_GAMES.find((g) => g.id === gameId);
-          if (game) recordLastPlayedGame(game);
-          if (levelId) {
-            setSelectedLevelId(levelId);
-            setCurrentMode('journey');
-          } else {
-            setCurrentMode(gameId);
-          }
-        }}
+        onOpenBreathing={() => setIsBreathingOpen(true)}
+      />
+
+      {/* Real-time Technical Audit & Code Verification Modal (لوحة التدقيق التقني المباشر) */}
+      <TechnicalAuditModal
+        isOpen={isAuditModalOpen}
+        onClose={() => setIsAuditModalOpen(false)}
+        language={language}
       />
     </div>
   );

@@ -35,13 +35,13 @@ export const GamesLibrary: React.FC<GamesLibraryProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const categories: { id: LibraryCategoryTab; labelAr: string; labelEn: string; icon: string; count: number }[] = [
-    { id: 'nesma9', labelAr: 'نسمة حياة (٩)', labelEn: 'Nesma Hayat (9)', icon: '🌿', count: 9 },
-    { id: 'advanced_psych', labelAr: 'عيادة التفكير والتحرر (٤)', labelEn: 'Deep Mind & Release (4)', icon: '⚖️', count: 4 },
-    { id: 'visceral', labelAr: 'تفريغ وصدمة (٦)', labelEn: 'Visceral & Tactile (6)', icon: '🪞', count: 6 },
-    { id: 'projective', labelAr: 'استكشاف باطني (٣)', labelEn: 'Projective (3)', icon: '🔮', count: 3 },
-    { id: 'quests', labelAr: 'تحديات وكروت (٣)', labelEn: 'Quests (3)', icon: '⚡', count: 3 },
-    { id: 'somatic', labelAr: 'نفسية حركية (٦)', labelEn: 'Psychomotor (6)', icon: '🫨', count: 6 },
-    { id: 'cognitive', labelAr: 'مواقف وتفكير (٩)', labelEn: 'Cognitive (9)', icon: '🧠', count: 9 },
+    { id: 'nesma9', labelAr: 'نسمة حياة (٩)', labelEn: 'Nesma Hayat (9)', icon: '🌿', count: ALL_36_GAMES.filter(g => g.categoryKey === 'nesma9').length },
+    { id: 'advanced_psych', labelAr: `عيادة التفكير والتحرر (${ALL_36_GAMES.filter(g => g.categoryKey === 'advanced_psych').length})`, labelEn: `Deep Mind & Release (${ALL_36_GAMES.filter(g => g.categoryKey === 'advanced_psych').length})`, icon: '⚖️', count: ALL_36_GAMES.filter(g => g.categoryKey === 'advanced_psych').length },
+    { id: 'visceral', labelAr: 'تفريغ وصدمة (٦)', labelEn: 'Visceral & Tactile (6)', icon: '🪞', count: ALL_36_GAMES.filter(g => g.categoryKey === 'visceral').length },
+    { id: 'projective', labelAr: 'استكشاف باطني (٣)', labelEn: 'Projective (3)', icon: '🔮', count: ALL_36_GAMES.filter(g => g.categoryKey === 'projective').length },
+    { id: 'quests', labelAr: 'تحديات وكروت (٣)', labelEn: 'Quests (3)', icon: '⚡', count: ALL_36_GAMES.filter(g => g.categoryKey === 'quests').length },
+    { id: 'somatic', labelAr: 'نفسية حركية (٦)', labelEn: 'Psychomotor (6)', icon: '🫨', count: ALL_36_GAMES.filter(g => g.categoryKey === 'somatic').length },
+    { id: 'cognitive', labelAr: 'مواقف وتفكير (٩)', labelEn: 'Cognitive (9)', icon: '🧠', count: ALL_36_GAMES.filter(g => g.categoryKey === 'cognitive').length },
     { id: 'all', labelAr: `كل الألعاب (${ALL_36_GAMES.length})`, labelEn: `All Games (${ALL_36_GAMES.length})`, icon: '🎮', count: ALL_36_GAMES.length },
   ];
 
@@ -54,7 +54,9 @@ export const GamesLibrary: React.FC<GamesLibraryProps> = ({
         game.nameEn.toLowerCase().includes(q) ||
         game.descAr.toLowerCase().includes(q) ||
         game.descEn.toLowerCase().includes(q) ||
-        game.badgeAr.toLowerCase().includes(q);
+        game.badgeAr.toLowerCase().includes(q) ||
+        game.interactionTypeAr.toLowerCase().includes(q) ||
+        game.howToPlayAr.toLowerCase().includes(q);
       if (!match) return false;
     } else {
       // 2. Category Tab (when not searching)
@@ -102,7 +104,7 @@ export const GamesLibrary: React.FC<GamesLibraryProps> = ({
             {isAr ? 'مكتبة ألعاب فكّر فيها 🎮' : 'Think About It Games Library 🎮'}
           </h1>
           <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-            {isAr ? '٤٠ لعبة وتطبيقاً تفاعلياً مصممة لمرافقة عقلك ومشاعرك وجسدك' : '40 interactive experiences crafted for thoughts, emotions, and somatic safety'}
+            {isAr ? `${ALL_36_GAMES.length} لعبة وتطبيقاً تفاعلياً مصممة لمرافقة عقلك ومشاعرك وجسدك` : `${ALL_36_GAMES.length} interactive experiences crafted for thoughts, emotions, and somatic safety`}
           </p>
         </div>
 
@@ -129,8 +131,8 @@ export const GamesLibrary: React.FC<GamesLibraryProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={
               isAr
-                ? 'ابحث في ٤٠ لعبة بالاسم، الوصف، أو الفكرة (مثال: مرآة، غضب، تنفس، جبل)...'
-                : 'Search any of 40 games by name, topic, or keyword...'
+                ? `ابحث في جميع الألعاب (${ALL_36_GAMES.length}) بالاسم، الوصف، أو الفكرة (مثال: بازل، متاهة، مرآة، روابط، تنفس)...`
+                : `Search all ${ALL_36_GAMES.length} games by name, topic, or keyword...`
             }
             className="w-full ps-10 pe-9 py-2.5 bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 rounded-2xl text-xs font-medium text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all shadow-2xs"
           />

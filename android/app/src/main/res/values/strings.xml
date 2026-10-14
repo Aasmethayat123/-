@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">نسمة حياة: فكّر فيها</string>
+    <string name="title_activity_main">نسمة حياة: فكّر فيها</string>
+    <string name="package_name">com.nesmahayat.fakkerfeha</string>
+    <string name="custom_url_scheme">com.nesmahayat.fakkerfeha</string>
+</resources>

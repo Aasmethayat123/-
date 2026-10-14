@@ -15,6 +15,7 @@ import {
 import { soundManager } from '../utils/audio';
 import { getSavedMoments } from '../utils/moments';
 import { getCurrentAwarenessLevel } from '../data/gamificationData';
+import { useStreak } from '../utils/streakManager';
 import { 
   Sparkles, 
   Gamepad2, 
@@ -44,6 +45,7 @@ interface AdventureHomeProps {
   onOpenHiddenPaths: () => void;
   onOpenExperienceMixer: () => void;
   onOpenBreathing: () => void;
+  onNavigateToWorkshop?: () => void;
   playerStats: {
     xp: number;
     avatarId: string;
@@ -56,6 +58,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
   onNavigateToGame,
   onNavigateToLibrary,
   onNavigateToJourney,
+  onNavigateToWorkshop,
   onOpenMinuteReflection,
   onOpenHiddenPaths,
   onOpenExperienceMixer,
@@ -68,6 +71,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
   const todayChallenge = getTodayChallenge();
   const savedCount = getSavedMoments().length;
   const currentLevel = getCurrentAwarenessLevel(playerStats.xp, language);
+  const { streakData } = useStreak();
 
   // Selected Category State from the 4 primary gateways
   const [activeCategory, setActiveCategory] = useState<ExperienceState | null>(null);
@@ -209,6 +213,19 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
 
         {/* Quick Stats Pill */}
         <div className="flex items-center gap-2 self-end sm:self-center">
+          {/* Daily Streak Flame Pill */}
+          <div 
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all shadow-2xs ${
+              streakData.todayCompleted
+                ? 'bg-gradient-to-r from-amber-500/15 via-orange-500/20 to-rose-500/15 dark:from-amber-950/40 dark:via-orange-950/40 dark:to-rose-950/40 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200'
+                : 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300'
+            }`}
+            title={isAr ? `شعلة الاستمرارية: ${streakData.currentStreak} يوم` : `Daily Streak: ${streakData.currentStreak} days`}
+          >
+            <Flame className={`w-3.5 h-3.5 ${streakData.todayCompleted ? 'text-orange-500 fill-orange-500 animate-pulse' : 'text-amber-500 fill-amber-500/50'}`} />
+            <span className="font-mono">{streakData.currentStreak} {isAr ? (streakData.currentStreak === 1 ? 'يوم' : 'أيام') : (streakData.currentStreak === 1 ? 'day' : 'days')}</span>
+          </div>
+
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800/80 border border-stone-200/80 dark:border-stone-700/60 text-xs font-bold text-stone-700 dark:text-stone-200">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>{playerStats.xp} XP</span>
@@ -253,6 +270,39 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
           </button>
         </div>
       )}
+
+      {/* Weekly Psychological Session Invitation Card */}
+      <div className="bg-gradient-to-r from-stone-900 to-emerald-950 text-white rounded-3xl p-5 sm:p-6 shadow-md border border-emerald-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center justify-center text-2xl shrink-0">
+            🛋️
+          </div>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-700/50">
+                {isAr ? 'جلسة الأسبوع المخصصة' : 'Weekly Session'}
+              </span>
+              <span className="text-[10px] text-amber-300 font-bold">+150 XP</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-extrabold text-white">
+              {isAr ? 'جلستك النفسية الأسبوعية: مراجعة وتفريغ مع الرفيق 🌿' : 'Weekly Psychological Session: Guided Reflection'}
+            </h3>
+            <p className="text-xs text-stone-300">
+              {isAr
+                ? 'فحص المشاعر والجسد، تفريغ الأفكار، وتفكيك العبء الذهني بحوار معرفي سلوكي محمي بالكامل.'
+                : 'Mood and body pulse check, thought release, and guided CBT dialogue.'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => handleStartGame('weekly-session')}
+          className="px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs sm:text-sm font-extrabold whitespace-nowrap cursor-pointer transition-transform hover:scale-104 shadow-sm flex items-center justify-center gap-2 shrink-0"
+        >
+          <span>{isAr ? 'ابدأ الجلسة الآن' : 'Start Session'}</span>
+          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+        </button>
+      </div>
 
       {/* 3. Daily Featured Micro-Adventure (البطاقة الرئيسية اليومية) */}
       <div className="bg-gradient-to-br from-emerald-50/90 via-white to-stone-50 dark:from-stone-900/95 dark:via-stone-900 dark:to-stone-950 border-2 border-emerald-300/80 dark:border-emerald-800/60 rounded-3xl p-5 sm:p-7 shadow-xs relative overflow-hidden transition-all group">
@@ -461,8 +511,8 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
         )}
       </div>
 
-      {/* 5. Complete Catalog Access & My Journey Gateway (الحفاظ على كافة الألعاب والروابط) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+      {/* 5. Complete Catalog Access, Workshops & My Journey Gateway */}
+      <div className={`grid grid-cols-1 ${onNavigateToWorkshop ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-3.5 pt-2`}>
         {/* Full Library Button */}
         <button
           onClick={() => {
@@ -481,7 +531,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
                   {isAr ? 'مكتبة الألعاب الكاملة' : 'Full Games Catalog'}
                 </h3>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-extrabold">
-                  {isAr ? '٤٠ لعبة' : '40 Games'}
+                  {isAr ? `${ALL_36_GAMES.length} لعبة` : `${ALL_36_GAMES.length} Games`}
                 </span>
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
@@ -491,6 +541,37 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
           </div>
           <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 rtl:rotate-180 transition-colors shrink-0" />
         </button>
+
+        {/* Workshops Hub Button */}
+        {onNavigateToWorkshop && (
+          <button
+            onClick={() => {
+              soundManager.playSoftTap();
+              onNavigateToWorkshop();
+            }}
+            className="p-5 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 hover:border-emerald-500/60 shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center justify-between group text-start"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-800 text-white flex items-center justify-center text-xl shadow-2xs group-hover:scale-105 transition-transform">
+                👥
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                    {isAr ? 'دليل ورش العمل' : 'Workshops Hub'}
+                  </h3>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-extrabold">
+                    {isAr ? '٦ ورش' : '6 Workshops'}
+                  </span>
+                </div>
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                  {isAr ? 'جلسات تفاعلية، مؤقت، واستمارات للمجموعات' : 'Facilitator guides, timer, and group worksheets'}
+                </p>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 rtl:rotate-180 transition-colors shrink-0" />
+          </button>
+        )}
 
         {/* My Journey & Diary Button */}
         <button
@@ -629,7 +710,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
                   : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
               }`}>
                 {doorIsAllCompleted 
-                  ? (isAr ? '🎉 بطل الوعي: استكشفت جميع ألعاب المكتبة! (اقتراح مميز)' : '🎉 Library Champion: All 40 Explored!')
+                  ? (isAr ? '🎉 بطل الوعي: استكشفت جميع ألعاب المكتبة! (اقتراح مميز)' : '🎉 Library Champion: All Explored!')
                   : (isAr ? 'باب الاكتشاف المفتوح (لعبة جديدة لم تخضها بعد)' : 'Open Door Discovery (Unplayed)')}
               </span>
               <h3 className="font-extrabold text-lg text-stone-900 dark:text-stone-100 mt-1">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Language } from '../../types';
 import { soundManager } from '../../utils/audio';
 import { saveMoment } from '../../utils/moments';
@@ -8,10 +8,9 @@ import {
   Sparkles, 
   Bookmark, 
   ShieldCheck, 
-  ShieldAlert, 
   Heart, 
-  ArrowRight,
-  Shield
+  Shield,
+  Move
 } from 'lucide-react';
 
 interface BoundariesCircleGameProps {
@@ -38,13 +37,48 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
   const [userReflection, setUserReflection] = useState('');
   const [isSaved, setIsSaved] = useState(false);
 
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const startPosRef = useRef({ x: 0, y: 0 });
+
   const currentItem = BOUNDARY_ITEMS[currentIndex];
 
   const handleDecide = (allowIn: boolean) => {
     soundManager.playSoftTap();
     setUserChoice(allowIn);
+    setDragOffset({ x: 0, y: 0 });
     if (allowIn === currentItem.shouldAllow) {
       soundManager.playHarmonicAffirmation();
+    }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (userChoice !== null) return;
+    setIsDragging(true);
+    startPosRef.current = { x: e.clientX, y: e.clientY };
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging || userChoice !== null) return;
+    const dx = e.clientX - startPosRef.current.x;
+    const dy = e.clientY - startPosRef.current.y;
+    setDragOffset({ x: dx, y: dy });
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    // If dragged upwards into sanctuary circle (negative y)
+    if (dragOffset.y < -60) {
+      handleDecide(true);
+    } else if (dragOffset.y > 60 || Math.abs(dragOffset.x) > 75) {
+      // Dragged away or outside
+      handleDecide(false);
+    } else {
+      setDragOffset({ x: 0, y: 0 });
     }
   };
 
@@ -53,6 +87,7 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
     if (currentIndex + 1 < BOUNDARY_ITEMS.length) {
       setCurrentIndex(prev => prev + 1);
       setUserChoice(null);
+      setDragOffset({ x: 0, y: 0 });
     } else {
       setCompleted(true);
       soundManager.playHarmonicAffirmation();
@@ -65,7 +100,7 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
       gameId: 'boundaries-circle',
       gameTitle: isAr ? 'حدودك حواليك' : 'Your Boundaries',
       quote: isAr ? 'وضع الحدود ليس أنانية ولا قسوة، بل صيانة لمساحتك الآمنة.' : 'Boundaries are not walls, but safe doors with doorknobs on the inside.',
-      reflection: userReflection || (isAr ? 'تعلمت أن أقول لا بلطف ودون شعور بالذنب.' : 'Practiced saying a kind, firm no.'),
+      reflection: userReflection || (isAr ? 'تعلمت أن أقول لا بلطف ودون شعور بالذنب عبر فرز الحدود الحركي.' : 'Practiced saying a kind, firm no.'),
       tag: isAr ? 'الحدود النفسية' : 'Boundaries'
     });
     soundManager.playHarmonicAffirmation();
@@ -76,13 +111,17 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
     soundManager.playSoftTap();
     setCurrentIndex(0);
     setUserChoice(null);
+    setDragOffset({ x: 0, y: 0 });
     setCompleted(false);
     setIsSaved(false);
     setUserReflection('');
   };
 
+  const isDraggingIntoSanctuary = dragOffset.y < -40;
+  const isDraggingOutside = dragOffset.y > 40 || Math.abs(dragOffset.x) > 50;
+
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in select-none">
       {/* Top Header */}
       <div className="bg-stone-900 text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-stone-800 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -94,8 +133,9 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
               {isAr ? '← كل الألعاب' : '← All Games'}
             </button>
           )}
-          <span className="text-xs font-bold text-violet-400 uppercase tracking-wider">
-            {isAr ? '٥. حدودك حواليك 🛡️' : '5. Your Boundaries 🛡️'}
+          <span className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5" />
+            <span>{isAr ? '٥. حدودك حواليك (سحب مداري) 🛡️' : '5. Your Boundaries 🛡️'}</span>
           </span>
         </div>
 
@@ -114,27 +154,60 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
               {isAr ? 'هل تسمحين لهذا الشيء بالدخول لدائرتك؟' : 'Do you let this inside your safe circle?'}
             </h2>
             <p className="text-xs text-stone-500">
-              {isAr ? 'أنت حارسة بابك الداخلي؛ اختاري ما يدخل وما يقف بالخارج' : 'You hold the keys to your inner sanctuary.'}
+              {isAr ? 'اسحبي الموقف للأعلى نحو دائرتك الآمنة، أو للخارج لتثبيت الحد، أو اختاري بالأزرار' : 'Drag card into the Sanctuary or outside, or tap below'}
             </p>
           </div>
 
-          {/* Central Sanctuary Circle Graphic */}
-          <div className="relative py-4 flex items-center justify-center">
-            <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-dashed border-violet-300 bg-violet-50/50 flex flex-col items-center justify-center p-6 text-center space-y-2 relative shadow-inner">
-              <span className="text-3xl">🌿</span>
-              <span className="text-xs font-bold text-violet-900">{isAr ? 'مساحتك الآمنة' : 'Safe Sanctuary'}</span>
-              <span className="text-[10px] text-stone-400">{isAr ? 'طاقتك وسلامك' : 'Your Energy'}</span>
+          {/* Central Sanctuary Circle Graphic (Drop Target) */}
+          <div className="relative py-2 flex items-center justify-center">
+            <div className={`w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 transition-all duration-300 flex flex-col items-center justify-center p-6 text-center space-y-2 relative shadow-inner ${
+              isDraggingIntoSanctuary || userChoice === true
+                ? 'border-emerald-400 bg-emerald-100/70 scale-105 ring-8 ring-emerald-200/50'
+                : isDraggingOutside || userChoice === false
+                ? 'border-violet-400 bg-violet-100/60 ring-8 ring-violet-200/50'
+                : 'border-dashed border-violet-300 bg-violet-50/50'
+            }`}>
+              <span className="text-3xl animate-bounce-slow">
+                {userChoice === true ? '💚' : userChoice === false ? '🛡️' : '🌿'}
+              </span>
+              <span className="text-xs font-bold text-violet-900">
+                {userChoice === true
+                  ? (isAr ? 'مرحب به في سلامك' : 'Welcomed In')
+                  : userChoice === false
+                  ? (isAr ? 'محمي ومحفوظ بالخارج' : 'Kept Outside')
+                  : (isAr ? 'مساحتك الآمنة' : 'Safe Sanctuary')}
+              </span>
+              <span className="text-[10px] text-stone-400">
+                {isAr ? 'طاقتك وسلامك الداخلي' : 'Your Inner Energy'}
+              </span>
             </div>
           </div>
 
-          {/* Incoming Demand Card */}
-          <div className="p-6 bg-stone-50 rounded-3xl border border-stone-200 shadow-sm max-w-md mx-auto space-y-1">
-            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
-              {isAr ? 'الطلب أو الكلمة الواقفة عند الباب:' : 'At Your Doorstep:'}
-            </span>
-            <p className="text-base sm:text-lg font-bold text-stone-900 font-serif leading-snug">
-              «{currentItem.text}»
-            </p>
+          {/* Incoming Draggable Card */}
+          <div className="relative flex items-center justify-center min-h-[110px]">
+            <div
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              style={{
+                transform: `translate3d(${dragOffset.x}px, ${dragOffset.y}px, 0)`,
+                transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+              }}
+              className={`w-full max-w-md p-5 rounded-3xl border-2 select-none touch-none cursor-grab active:cursor-grabbing transition-shadow ${
+                isDragging
+                  ? 'shadow-2xl ring-4 ring-violet-300 scale-102 bg-white border-violet-400'
+                  : 'shadow-sm bg-stone-50 border-stone-200'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-1.5 text-stone-400 text-[10px] font-bold mb-1">
+                <Move className="w-3 h-3" />
+                <span>{isAr ? 'اسحبي الموقف للأعلى أو للخارج 🖐️' : 'Drag card up or out 🖐️'}</span>
+              </div>
+              <p className="text-base sm:text-lg font-bold text-stone-900 font-serif leading-snug">
+                «{currentItem.text}»
+              </p>
+            </div>
           </div>
 
           {/* Choice Buttons */}
@@ -143,7 +216,7 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
               onClick={() => handleDecide(true)}
               className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center space-y-1 ${
                 userChoice === true
-                  ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold ring-2 ring-emerald-500'
+                  ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold ring-2 ring-emerald-500 scale-102'
                   : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-800'
               }`}
             >
@@ -156,7 +229,7 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
               onClick={() => handleDecide(false)}
               className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center space-y-1 ${
                 userChoice === false
-                  ? 'border-violet-600 bg-violet-50 text-violet-950 font-bold ring-2 ring-violet-500'
+                  ? 'border-violet-600 bg-violet-50 text-violet-950 font-bold ring-2 ring-violet-500 scale-102'
                   : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-800'
               }`}
             >
@@ -169,8 +242,9 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
           {/* Feedback */}
           {userChoice !== null && (
             <div className="p-4 bg-violet-50 border border-violet-200 rounded-2xl text-xs text-violet-950 space-y-2 animate-fade-in max-w-md mx-auto text-start">
-              <span className="font-bold block">
-                {isAr ? '💡 حكمة نسمة حياة في الحدود:' : '💡 Boundary Wisdom:'}
+              <span className="font-bold block flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-violet-600" />
+                <span>{isAr ? '💡 حكمة نسمة حياة في الحدود:' : '💡 Boundary Wisdom:'}</span>
               </span>
               <p className="leading-relaxed text-stone-700">{currentItem.reason}</p>
 
@@ -197,7 +271,7 @@ export const BoundariesCircleGame: React.FC<BoundariesCircleGameProps> = ({
             </h2>
             <p className="text-stone-600 text-xs sm:text-sm mt-1 max-w-md mx-auto leading-relaxed">
               {isAr
-                ? '«الحدود ليست جدراناً للقطيعة، بل أبواباً بمقابض داخلية أنت وحدك تملكين مفتاحها. لا أحد يدخل إلا بما يحفظ كرامتك».'
+                ? '«الحدود ليست جدراناً للقطيعة، بل أبواباً بمقابض داخلية أنت وحدك تملكين مفتاحها. لا أحد يدخل إلا بما يحفظ كرامتك وسلامك».'
                 : 'Boundaries are not walls of isolation, but doors with knobs on the inside.'}
             </p>
           </div>
