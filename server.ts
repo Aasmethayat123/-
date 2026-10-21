@@ -1,10 +1,12 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import type { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
+process.env.DISABLE_HMR = 'true';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -189,12 +191,15 @@ async function startServer() {
   if (!isProduction) {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { 
+        middlewareMode: true,
+        hmr: false
+      },
       appType: 'spa'
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.resolve(__dirname, 'dist');
+    const distPath = path.resolve(process.cwd(), 'dist');
     if (fs.existsSync(distPath)) {
       app.use(express.static(distPath));
       app.get('*', (req: Request, res: Response) => {

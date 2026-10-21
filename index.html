@@ -1,6 +1,167 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
   <head>
+    <script>
+      (function() {
+        // In AI Studio iFrame preview, WebSocket HMR is disabled per environment constraints:
+        // "HMR: Disabled. Ignore WebSocket errors."
+        if (typeof window !== 'undefined') {
+          function MockWS(url, protocols) {
+            var self = this;
+            this.url = String(url || '');
+            this.protocols = protocols;
+            this.readyState = 1; // WebSocket.OPEN
+            this.bufferedAmount = 0;
+            this.extensions = '';
+            this.protocol = Array.isArray(protocols) ? (protocols[0] || '') : (protocols || '');
+            this.binaryType = 'blob';
+            var _listeners = {};
+            var _onopen = null;
+            var _onclose = null;
+            var _onerror = null;
+            var _onmessage = null;
+
+            Object.defineProperty(this, 'onopen', {
+              get: function() { return _onopen; },
+              set: function(fn) {
+                _onopen = fn;
+                if (typeof fn === 'function') {
+                  setTimeout(function() {
+                    if (self.readyState === 1 && typeof _onopen === 'function') {
+                      try { _onopen.call(self, { type: 'open', target: self, currentTarget: self }); } catch(e) {}
+                    }
+                  }, 0);
+                }
+              }
+            });
+
+            Object.defineProperty(this, 'onclose', {
+              get: function() { return _onclose; },
+              set: function(fn) { _onclose = fn; }
+            });
+
+            Object.defineProperty(this, 'onerror', {
+              get: function() { return _onerror; },
+              set: function(fn) { _onerror = fn; }
+            });
+
+            Object.defineProperty(this, 'onmessage', {
+              get: function() { return _onmessage; },
+              set: function(fn) { _onmessage = fn; }
+            });
+
+            this.addEventListener = function(type, handler) {
+              if (typeof handler !== 'function') return;
+              _listeners[type] = _listeners[type] || [];
+              _listeners[type].push(handler);
+              if (type === 'open') {
+                setTimeout(function() {
+                  if (self.readyState === 1) {
+                    try { handler.call(self, { type: 'open', target: self, currentTarget: self }); } catch(e) {}
+                  }
+                }, 0);
+              }
+            };
+
+            this.removeEventListener = function(type, handler) {
+              if (_listeners[type]) {
+                _listeners[type] = _listeners[type].filter(function(h) { return h !== handler; });
+              }
+            };
+
+            this.dispatchEvent = function(event) {
+              var handlers = _listeners[event && event.type] || [];
+              for (var i = 0; i < handlers.length; i++) {
+                try { handlers[i].call(self, event); } catch(e) {}
+              }
+              return true;
+            };
+
+            this.send = function() {};
+            this.close = function(code, reason) {
+              self.readyState = 3;
+              var evt = { type: 'close', wasClean: true, code: code || 1000, reason: reason || 'Normal Closure', target: self };
+              setTimeout(function() {
+                if (typeof _onclose === 'function') {
+                  try { _onclose.call(self, evt); } catch(e) {}
+                }
+                self.dispatchEvent(evt);
+              }, 0);
+            };
+
+            setTimeout(function() {
+              if (self.readyState === 1) {
+                var evt = { type: 'open', target: self, currentTarget: self };
+                if (typeof _onopen === 'function') {
+                  try { _onopen.call(self, evt); } catch(e) {}
+                }
+                self.dispatchEvent(evt);
+              }
+            }, 0);
+          }
+
+          MockWS.CONNECTING = 0;
+          MockWS.OPEN = 1;
+          MockWS.CLOSING = 2;
+          MockWS.CLOSED = 3;
+          MockWS.prototype = {
+            CONNECTING: 0,
+            OPEN: 1,
+            CLOSING: 2,
+            CLOSED: 3,
+            send: function() {},
+            close: function() {},
+            addEventListener: function() {},
+            removeEventListener: function() {},
+            dispatchEvent: function() { return true; }
+          };
+
+          window.WebSocket = MockWS;
+
+          // Suppress any websocket error logs or rejections per environment constraints
+          var origErr = console.error;
+          console.error = function() {
+            var msg = Array.prototype.slice.call(arguments).map(function(a) {
+              return String((a && a.message) || (a && a.stack) || a);
+            }).join(' ');
+            if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('closed without opened') !== -1 || msg.indexOf('@vite/client') !== -1 || msg.indexOf('vite-ping') !== -1 || msg.indexOf('vite-hmr') !== -1) {
+              return;
+            }
+            return origErr.apply(console, arguments);
+          };
+
+          window.addEventListener('error', function(e) {
+            var m = (e && (e.message || (e.error && (e.error.message || e.error.stack)))) || '';
+            if (m.indexOf('WebSocket') !== -1 || m.indexOf('closed without opened') !== -1 || m.indexOf('@vite/client') !== -1) {
+              if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+              if (e.preventDefault) e.preventDefault();
+              return true;
+            }
+          }, true);
+
+          window.addEventListener('unhandledrejection', function(e) {
+            var r = (e && e.reason && (e.reason.message || e.reason.stack || String(e.reason))) || '';
+            if (r.indexOf('WebSocket') !== -1 || r.indexOf('closed without opened') !== -1 || r.indexOf('@vite/client') !== -1) {
+              if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+              if (e.preventDefault) e.preventDefault();
+              return true;
+            }
+          }, true);
+
+          try {
+            var saved = localStorage.getItem('fakkerfeha_theme_mode');
+            var isDark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) {
+              document.documentElement.classList.add('dark');
+              document.documentElement.style.colorScheme = 'dark';
+            } else {
+              document.documentElement.classList.remove('dark');
+              document.documentElement.style.colorScheme = 'light';
+            }
+          } catch(e) {}
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="theme-color" content="#064e3b" />
@@ -23,21 +184,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-    <script>
-      (function() {
-        try {
-          var saved = localStorage.getItem('fakkerfeha_theme_mode');
-          var isDark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (isDark) {
-            document.documentElement.classList.add('dark');
-            document.documentElement.style.colorScheme = 'dark';
-          } else {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.style.colorScheme = 'light';
-          }
-        } catch(e) {}
-      })();
-    </script>
   </head>
   <body class="bg-stone-50 text-stone-800 antialiased selection:bg-emerald-100 selection:text-emerald-900">
     <div id="root"></div>

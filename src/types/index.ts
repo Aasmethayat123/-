@@ -58,6 +58,8 @@ export type GameMode =
   | 'mental-loom'                // نول الحياكة الذهنية: شبكة الأمان النفسي
   | 'worry-sandbox'              // ساعة الرمل العكسية: فن تأجيل القلق
   | 'blooming-gratitude'         // شجرة الامتنان ذات البراعم المتفتحة
+  // شفرة نسمة: ألغاز نفسية ومقولات حكيمة
+  | 'nesma-cipher'
   // Real Tactical, Organizing & Satisfying Puzzle Games:
   | 'mindful-organizer'          // ترتيب الفوضى والرفوف والسكينة
   | 'zen-puzzle'                 // بازل وتوازن أحجار الزن والماندالا
@@ -106,6 +108,29 @@ export interface AvatarProfile {
   color: string;
 }
 
+export interface UserRank {
+  level: number;
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  minXP: number;
+  nextXP: number;
+  icon: string;
+  badgeBg: string;
+  badgeText: string;
+  badgeBorder: string;
+  descriptionAr: string;
+  descriptionEn: string;
+}
+
+export interface RankProgress {
+  currentRank: UserRank;
+  nextRank: UserRank | null;
+  progressPercent: number;
+  xpInLevel: number;
+  xpToNext: number;
+}
+
 export interface PlayerStats {
   xp: number;
   gems: number;
@@ -113,6 +138,7 @@ export interface PlayerStats {
   streak: number;
   badges: string[];
   avatarId: string;
+  rankId?: string;
 }
 
 export interface ThoughtOption {

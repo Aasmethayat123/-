@@ -23,12 +23,14 @@ import {
   Sun,
   Moon,
   Terminal,
-  HeartHandshake
+  HeartHandshake,
+  KeyRound
 } from 'lucide-react';
-import { GameMode, Language } from '../types';
+import { GameMode, Language, UserRank, RankProgress } from '../types';
 import { soundManager } from '../utils/audio';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { StreakHeaderBadge } from './StreakHeaderBadge';
+import { RankHeaderBadge } from './RankHeaderBadge';
 
 interface HeaderProps {
   currentMode: GameMode;
@@ -39,6 +41,8 @@ interface HeaderProps {
   soundEnabled: boolean;
   onToggleSound: () => void;
   playerXP: number;
+  userRank?: UserRank;
+  rankProgress?: RankProgress;
   theme?: 'light' | 'dark';
   onToggleTheme?: () => void;
   onAddXP?: (amount: number) => void;
@@ -54,6 +58,8 @@ export const Header: React.FC<HeaderProps> = ({
   soundEnabled,
   onToggleSound,
   playerXP,
+  userRank,
+  rankProgress,
   theme = 'light',
   onToggleTheme,
   onAddXP,
@@ -65,6 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems = [
     { mode: 'map' as GameMode, label: isAr ? 'الرئيسية 🌿' : 'Home 🌿', icon: Compass },
+    { mode: 'nesma-cipher' as GameMode, label: isAr ? 'شفرة نسمة 🗝️' : 'Nesma Cipher 🗝️', icon: KeyRound },
     { mode: 'library' as GameMode, label: isAr ? 'مكتبة الألعاب 🎮' : 'Library 🎮', icon: Gamepad2 },
     { mode: 'weekly-session' as GameMode, label: isAr ? 'الجلسة الأسبوعية 🛋️' : 'Weekly Session 🛋️', icon: HeartHandshake },
     { mode: 'projects' as GameMode, label: isAr ? 'المشروعات' : 'Projects', icon: FolderKanban },
@@ -104,6 +111,14 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Global Controls & Actions */}
         <div className="flex items-center gap-2">
+          {/* Awareness Rank Badge (XP-Based Progression) */}
+          <RankHeaderBadge 
+            language={language} 
+            playerXP={playerXP} 
+            userRank={userRank} 
+            rankProgress={rankProgress} 
+          />
+
           {/* Daily Streak Fire Tracking */}
           <StreakHeaderBadge language={language} onAddXP={onAddXP} />
 

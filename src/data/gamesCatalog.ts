@@ -35,7 +35,8 @@ import {
   Radio,
   Hourglass,
   Flower2,
-  FlaskConical
+  FlaskConical,
+  KeyRound
 } from 'lucide-react';
 import { GameMode } from '../types';
 
@@ -1607,6 +1608,35 @@ export const ALL_36_GAMES: GameCatalogItem[] = [
     color: 'from-purple-600 via-indigo-600 to-sky-600',
     badgeAr: 'فرز سوائل المشاعر',
     badgeEn: 'Emotion Water Sort'
+  },
+  {
+    id: 'nesma-cipher',
+    nameAr: 'شفرة نسمة — حلّ اللغز واكتشف اللي جواك',
+    nameEn: 'Nesma Cipher — Psychological Puzzle Adventure',
+    descAr: 'رحلة ألغاز وتحديات نفسية تفاعلية عبر 3 عوالم و30 مرحلة حقيقية؛ اجمع أجزاء المقولات والحروف، واكتشف المعاني النفسية العميقة مع حديقة السكينة.',
+    descEn: 'Interactive psychological puzzle adventure across 3 realms and 30 rich levels. Decrypt ancient mind ciphers and unlock deep mindful wisdom.',
+    categoryKey: 'advanced_psych',
+    categoryAr: 'عيادة التفكير والتحرر',
+    categoryEn: 'Deep Mind & Release',
+    ideaAndGoalAr: 'فك الارتباط المعرفي (Cognitive Defusion)، تنظيم المشاعر، وفهم الحدود النفسية عبر ألعاب وتحديات بازل تفاعلية ممتعة ومجزية.',
+    ideaAndGoalEn: 'Promote self-compassion, emotional agility, boundary setting, and cognitive defusion through engaging multi-genre puzzle gameplay.',
+    howToPlayAr: 'اختر العالم، اجتز ألغاز الصور والحروف والمتاهات والشفرات، واجمع أجزاء المقولة النفسية الخمس لتتويج رحلتك.',
+    howToPlayEn: 'Select a world, solve tile puzzles, anagrams, mazes, and ciphers, assemble 5 profound psychological quotes, and bloom your garden.',
+    approxDuration: 'مفتوح (٣٠ مرحلة)',
+    interactionTypeAr: 'مغامرة ألغاز متعددة الأنواع (بازل صور، حروف، ترتيب، متاهات، شفرات)',
+    interactionTypeEn: 'Multi-genre puzzle adventure with interactive 3D audio & garden progression',
+    experienceType: 'mental_challenge',
+    suitableForAr: 'الاجترار، حب الألغاز والتفكير المنطقي، الرغبة في رحلة نمو نفسي دافئة ومجزية',
+    suitableForEn: 'Overthinking, puzzle lovers, seeking meaningful and warm psychological growth',
+    worksOffline: true,
+    savesData: true,
+    overlapNoteAr: 'وحدة مستقلة متكاملة: لعبة شفرة نسمة للألغاز النفسية التفاعلية.',
+    overlapNoteEn: 'Standalone comprehensive psychological puzzle adventure.',
+    states: ['understand_self', 'mental_challenge', 'focus', 'calm'],
+    icon: KeyRound,
+    color: 'from-emerald-700 via-teal-800 to-stone-900',
+    badgeAr: 'ألغاز ومقولات الشفرة',
+    badgeEn: 'Mind Cipher Adventure'
   }
 ];
 

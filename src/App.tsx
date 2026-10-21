@@ -75,6 +75,9 @@ import { MindfulOrganizerGame } from './components/interactiveGames/MindfulOrgan
 import { ZenStonePuzzleGame } from './components/interactiveGames/ZenStonePuzzleGame';
 import { EmotionSortPuzzleGame } from './components/interactiveGames/EmotionSortPuzzleGame';
 
+// شفرة نسمة — لعبة الألغاز النفسية التفاعلية الحقيقية
+import { NesmaCipherMain } from './components/nesmaCipher/NesmaCipherMain';
+
 // Choose Your Adventure & Creative Discovery Modals
 import { AdventureHome } from './components/AdventureHome';
 import { MinuteReflectionModal } from './components/creative/MinuteReflectionModal';
@@ -114,7 +117,7 @@ export default function App() {
     }
   });
 
-  const { stats, addXP, recordLevelCompletion, setAvatar } = useGameState();
+  const { stats, addXP, recordLevelCompletion, setAvatar, currentRank, rankProgress } = useGameState();
 
   useEffect(() => {
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
@@ -177,6 +180,8 @@ export default function App() {
         soundEnabled={soundEnabled}
         onToggleSound={toggleSound}
         playerXP={stats.xp}
+        userRank={currentRank}
+        rankProgress={rankProgress}
         theme={theme}
         onToggleTheme={toggleTheme}
         onAddXP={addXP}
@@ -236,6 +241,7 @@ export default function App() {
           <HandsControlGame
             language={language}
             onBackToMap={() => setCurrentMode('map')}
+            onAddXP={addXP}
           />
         )}
 
@@ -250,6 +256,7 @@ export default function App() {
           <BreakTheMountainGame
             language={language}
             onBackToMap={() => setCurrentMode('map')}
+            onAddXP={addXP}
           />
         )}
 
@@ -635,6 +642,14 @@ export default function App() {
             language={language}
             onAddXP={addXP}
             onBackToMap={() => setCurrentMode('map')}
+          />
+        )}
+
+        {/* شفرة نسمة — لعبة الألغاز النفسية التفاعلية */}
+        {currentMode === 'nesma-cipher' && (
+          <NesmaCipherMain
+            onExit={() => setCurrentMode('map')}
+            onAddXP={addXP}
           />
         )}
 

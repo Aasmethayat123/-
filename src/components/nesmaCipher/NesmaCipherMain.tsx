@@ -1,0 +1,161 @@
+import React, { useState, useEffect } from 'react';
+import { CipherProgress, CipherLevel, CipherQuote } from '../../types/nesmaCipher';
+import { CIPHER_LEVELS } from '../../data/nesmaCipherData';
+import { 
+  loadCipherProgress, 
+  completeCipherLevel, 
+  resetCipherProgress 
+} from '../../utils/nesmaCipherStorage';
+import { CipherMap } from './CipherMap';
+import { CipherLevelPlay } from './CipherLevelPlay';
+import { CipherVictoryModal } from './CipherVictoryModal';
+import { CipherQuoteRevealModal } from './CipherQuoteRevealModal';
+import { CipherQuotesVault } from './CipherQuotesVault';
+import { CipherGarden } from './CipherGarden';
+import { soundManager } from '../../utils/audio';
+
+interface NesmaCipherMainProps {
+  onExit: () => void;
+  onAddXP?: (amount: number) => void;
+}
+
+type CipherView = 'map' | 'level' | 'vault' | 'garden';
+
+export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddXP }) => {
+  const [progress, setProgress] = useState<CipherProgress>(() => loadCipherProgress());
+  const [view, setView] = useState<CipherView>('map');
+  const [selectedLevelId, setSelectedLevelId] = useState<number>(1);
+
+  // Victory modal state
+  const [victoryData, setVictoryData] = useState<{
+    level: CipherLevel;
+    stars: number;
+    scoreEarned: number;
+  } | null>(null);
+
+  // Milestone quote reveal modal state
+  const [revealedQuote, setRevealedQuote] = useState<CipherQuote | null>(null);
+
+  const selectedLevel = CIPHER_LEVELS.find(l => l.id === selectedLevelId) || CIPHER_LEVELS[0];
+
+  const handleSelectLevel = (levelId: number) => {
+    setSelectedLevelId(levelId);
+    setView('level');
+  };
+
+  const handleSolveLevel = (hintsUsed: number) => {
+    // Determine stars
+    let stars = 3;
+    if (hintsUsed === 1) stars = 2;
+    if (hintsUsed >= 2) stars = 1;
+
+    const result = completeCipherLevel(selectedLevel.id, stars, hintsUsed);
+    setProgress(result.updatedProgress);
+
+    // Reward XP to main app gamification
+    if (result.scoreEarned > 0 && onAddXP) {
+      onAddXP(result.scoreEarned);
+    }
+
+    // Set victory modal data
+    setVictoryData({
+      level: selectedLevel,
+      stars,
+      scoreEarned: result.scoreEarned
+    });
+
+    // Check if full quote was completed
+    if (result.newlyDiscoveredQuote) {
+      // Delay quote reveal until victory modal is acknowledged or show immediately after
+      setTimeout(() => {
+        setRevealedQuote(result.newlyDiscoveredQuote || null);
+      }, 500);
+    }
+  };
+
+  const handleNextLevel = () => {
+    setVictoryData(null);
+    const nextId = selectedLevel.id + 1;
+    if (nextId <= 30) {
+      setSelectedLevelId(nextId);
+      setView('level');
+    } else {
+      setView('map');
+    }
+  };
+
+  const handleReturnToMapFromVictory = () => {
+    setVictoryData(null);
+    setView('map');
+  };
+
+  const handleReset = () => {
+    const fresh = resetCipherProgress();
+    setProgress(fresh);
+    setView('map');
+    setSelectedLevelId(1);
+    soundManager.playClick();
+  };
+
+  return (
+    <div className="w-full min-h-screen bg-stone-50 dark:bg-stone-950 font-sans" dir="rtl">
+      {/* 1. Map View */}
+      {view === 'map' && (
+        <CipherMap
+          progress={progress}
+          onSelectLevel={handleSelectLevel}
+          onOpenQuotesVault={() => setView('vault')}
+          onOpenGarden={() => setView('garden')}
+          onResetProgress={handleReset}
+          onExitToMainApp={onExit}
+        />
+      )}
+
+      {/* 2. Level Play View */}
+      {view === 'level' && (
+        <CipherLevelPlay
+          level={selectedLevel}
+          progress={progress}
+          onSolveLevel={handleSolveLevel}
+          onReturnToMap={() => setView('map')}
+        />
+      )}
+
+      {/* 3. Discovered Quotes Vault View */}
+      {view === 'vault' && (
+        <CipherQuotesVault
+          progress={progress}
+          onBack={() => setView('map')}
+        />
+      )}
+
+      {/* 4. Secret Garden View */}
+      {view === 'garden' && (
+        <CipherGarden
+          progress={progress}
+          onBack={() => setView('map')}
+        />
+      )}
+
+      {/* Victory Celebration Modal */}
+      {victoryData && (
+        <CipherVictoryModal
+          level={victoryData.level}
+          stars={victoryData.stars}
+          scoreEarned={victoryData.scoreEarned}
+          hasNextLevel={victoryData.level.id < 30}
+          onNextLevel={handleNextLevel}
+          onReturnToMap={handleReturnToMapFromVictory}
+        />
+      )}
+
+      {/* Grand Quote Reveal Milestone Modal */}
+      {revealedQuote && (
+        <CipherQuoteRevealModal
+          quote={revealedQuote}
+          onClose={() => setRevealedQuote(null)}
+        />
+      )}
+    </div>
+  );
+};

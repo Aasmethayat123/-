@@ -12,8 +12,11 @@ import {
   Filter, 
   Home, 
   Sparkles,
-  BookOpen
+  BookOpen,
+  Trophy,
+  Star
 } from 'lucide-react';
+import { GAME_STAGES_CONFIG, getGameLevelProgress } from '../utils/gameLevelsManager';
 
 interface GamesLibraryProps {
   language: Language;
@@ -244,7 +247,17 @@ export const GamesLibrary: React.FC<GamesLibraryProps> = ({
                       <Icon className="w-4 h-4" />
                     </div>
 
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      {GAME_STAGES_CONFIG[game.id] && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center gap-1 shadow-2xs">
+                          <Trophy className="w-2.5 h-2.5 text-amber-500" />
+                          <span>
+                            {isAr 
+                              ? `المرحلة ${getGameLevelProgress(game.id).currentStage} من ${GAME_STAGES_CONFIG[game.id].length}` 
+                              : `Stage ${getGameLevelProgress(game.id).currentStage}/${GAME_STAGES_CONFIG[game.id].length}`}
+                          </span>
+                        </span>
+                      )}
                       <span className="text-[10px] text-stone-400 dark:text-stone-500 font-medium flex items-center gap-0.5">
                         <Clock className="w-3 h-3" />
                         <span>{game.approxDuration}</span>
