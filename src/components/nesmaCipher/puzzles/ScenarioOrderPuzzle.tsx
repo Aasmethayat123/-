@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ScenarioOrderData } from '../../types/nesmaCipher';
+import { ScenarioOrderData } from "../../../types/nesmaCipher";
 import { CheckCircle2, RotateCcw, ArrowUp, ArrowDown, Check } from 'lucide-react';
-import { soundManager } from '@/src/utils/audio';
+import { soundManager } from "../../../utils/audio";
 
 interface ScenarioOrderPuzzleProps {
   data: ScenarioOrderData;

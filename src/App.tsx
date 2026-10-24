@@ -93,9 +93,93 @@ import { soundManager } from './utils/audio';
 import { getInitialTheme, applyTheme, ThemeMode } from './utils/theme';
 import { ALL_36_GAMES } from './data/gamesCatalog';
 import { recordLastPlayedGame } from './utils/adventures';
+const VALID_MODES: Set<string> = new Set<string>([
+  'map',
+  'library',
+  'journey',
+  'hands-control',
+  'reframe-sentence',
+  'break-mountain',
+  'gather-bubbles',
+  'boundaries-circle',
+  'gentle-break',
+  'first-sentence',
+  'distance-safe',
+  'small-light',
+  'game-butterfly-tap',
+  'game-somatic-shake',
+  'game-pmr-squeeze',
+  'game-sensory-grounding',
+  'game-infinity-flow',
+  'game-balloon-breath',
+  'discover',
+  'cards-insight',
+  'scenarios-quick',
+  'visual-projection',
+  'micro-challenge-30s',
+  'daily-quests',
+  'wisdom-vault',
+  'touch-and-break',
+  'body-motion-challenge',
+  'emotion-roulette',
+  'scratch-to-reveal',
+  'multi-sensory-quest',
+  'speed-lie-detector',
+  'challenge-separate',
+  'challenge-feeling',
+  'challenge-perspective',
+  'challenge-react',
+  'decisional-balance',
+  'thought-shredder',
+  'core-needs-compass',
+  'inner-mirror',
+  'cognitive-reframing-puzzle',
+  'inner-labyrinth',
+  'digital-release-ritual',
+  'relational-energy-matrix',
+  'resonance-chamber',
+  'mental-loom',
+  'worry-sandbox',
+  'blooming-gratitude',
+  'nesma-cipher',
+  'mindful-organizer',
+  'zen-puzzle',
+  'emotion-sort-puzzle',
+  'workshop',
+  'my-journey',
+  'weekly-session',
+  'profile',
+  'projects',
+  'cms',
+]);
+
+function getModeFromUrl(): GameMode | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    // 1. Search params: ?mode=... or ?game=...
+    const params = new URLSearchParams(window.location.search);
+    const modeParam = params.get('mode') || params.get('game') || params.get('view');
+    if (modeParam) {
+      if (modeParam === 'cipher' || modeParam === 'nesma_cipher') return 'nesma-cipher';
+      if (VALID_MODES.has(modeParam)) return modeParam as GameMode;
+    }
+
+    // 2. Hash params: #nesma-cipher or #cipher
+    const hash = window.location.hash.replace(/^#\/?/, '').split('?')[0].trim().toLowerCase();
+    if (hash) {
+      if (hash === 'cipher' || hash === 'nesma_cipher') return 'nesma-cipher';
+      if (VALID_MODES.has(hash)) return hash as GameMode;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
 
 export default function App() {
-  const [currentMode, setCurrentMode] = useState<GameMode>('map');
+  const [currentMode, setCurrentMode] = useState<GameMode>(() => {
+    return getModeFromUrl() || 'map';
+  });
   const [selectedLevelId, setSelectedLevelId] = useState<string>('unread-message');
   const [language, setLanguage] = useState<Language>('ar');
   const [theme, setTheme] = useState<ThemeMode>(() => getInitialTheme());
@@ -136,6 +220,45 @@ export default function App() {
       // ignore
     }
   }, [soundEnabled]);
+
+  // Synchronize URL hash with currentMode & ensure top of screen is visible
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+
+    try {
+      const targetHash = currentMode === 'map' ? '' : `#${currentMode}`;
+      if (window.location.hash !== targetHash) {
+        window.history.replaceState(
+          { mode: currentMode }, 
+          '', 
+          targetHash || window.location.pathname + window.location.search
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }, [currentMode]);
+
+  // Handle browser back/forward buttons (especially on mobile navigation)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleLocationChange = () => {
+      const detected = getModeFromUrl() || 'map';
+      setCurrentMode(detected);
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
+  }, []);
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === 'ar' ? 'en' : 'ar'));

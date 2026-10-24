@@ -201,9 +201,40 @@ async function startServer() {
   } else {
     const distPath = path.resolve(process.cwd(), 'dist');
     if (fs.existsSync(distPath)) {
-      app.use(express.static(distPath));
+      app.use(
+        express.static(distPath, {
+          setHeaders: (res: Response, filePath: string) => {
+            const baseName = path.basename(filePath);
+            if (
+              baseName === 'index.html' ||
+              baseName === 'sw.js' ||
+              baseName === 'registerSW.js' ||
+              baseName === 'manifest.webmanifest' ||
+              baseName === 'manifest.json' ||
+              baseName === 'fakkerfeha-dist.zip'
+            ) {
+              res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+              res.setHeader('Pragma', 'no-cache');
+              res.setHeader('Expires', '0');
+            } else if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+              res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            }
+          },
+        })
+      );
+
       app.get('*', (req: Request, res: Response) => {
-        res.sendFile(path.resolve(distPath, 'index.html'));
+        // Never mangle missing static assets (images, CSS, JS, manifests) into HTML
+        if (
+          req.path.startsWith('/api/') ||
+          req.path.startsWith('/assets/') ||
+          req.path.startsWith('/images/') ||
+          /\.[a-zA-Z0-9]+$/.test(req.path)
+        ) {
+          return res.status(404).end();
+        }
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        return res.sendFile(path.resolve(distPath, 'index.html'));
       });
     }
   }

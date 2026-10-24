@@ -2,8 +2,28 @@
 
 class SoundManager {
   private ctx: AudioContext | null = null;
-  public enabled: boolean = true;
+  public enabled: boolean = (() => {
+    if (typeof window === 'undefined') return true;
+    try {
+      const stored = localStorage.getItem('nesma_cipher_sound_enabled');
+      return stored !== null ? stored === 'true' : true;
+    } catch {
+      return true;
+    }
+  })();
   private pendingTimeouts: number[] = [];
+
+  public toggleSound(): boolean {
+    this.enabled = !this.enabled;
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('nesma_cipher_sound_enabled', String(this.enabled));
+      } catch {
+        // ignore
+      }
+    }
+    return this.enabled;
+  }
 
   private clearPendingTimeouts() {
     this.pendingTimeouts.forEach(id => clearTimeout(id));
@@ -744,6 +764,22 @@ class SoundManager {
     } catch {
       // ignore
     }
+  }
+
+  playCorrect() {
+    this.playSuccess();
+  }
+
+  playIncorrect() {
+    this.playRewindSound();
+  }
+
+  playClick() {
+    this.playSoftTap();
+  }
+
+  playHint() {
+    this.playCompassTick();
   }
 }
 

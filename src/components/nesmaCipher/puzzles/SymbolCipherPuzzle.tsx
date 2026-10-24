@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { SymbolCipherData } from '../../types/nesmaCipher';
+import { SymbolCipherData } from "../../../types/nesmaCipher";
 import { CheckCircle2, RotateCcw, KeyRound } from 'lucide-react';
-import { soundManager } from '@/src/utils/audio';
+import { soundManager } from "../../../utils/audio";
 
 interface SymbolCipherPuzzleProps {
   data: SymbolCipherData;

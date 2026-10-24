@@ -183,9 +183,26 @@ async function startServer() {
   } else {
     const distPath = import_path.default.resolve(process.cwd(), "dist");
     if (import_fs.default.existsSync(distPath)) {
-      app.use(import_express.default.static(distPath));
+      app.use(
+        import_express.default.static(distPath, {
+          setHeaders: (res, filePath) => {
+            const baseName = import_path.default.basename(filePath);
+            if (baseName === "index.html" || baseName === "sw.js" || baseName === "registerSW.js" || baseName === "manifest.webmanifest" || baseName === "manifest.json" || baseName === "fakkerfeha-dist.zip") {
+              res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+              res.setHeader("Pragma", "no-cache");
+              res.setHeader("Expires", "0");
+            } else if (filePath.includes(`${import_path.default.sep}assets${import_path.default.sep}`)) {
+              res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+            }
+          }
+        })
+      );
       app.get("*", (req, res) => {
-        res.sendFile(import_path.default.resolve(distPath, "index.html"));
+        if (req.path.startsWith("/api/") || req.path.startsWith("/assets/") || req.path.startsWith("/images/") || /\.[a-zA-Z0-9]+$/.test(req.path)) {
+          return res.status(404).end();
+        }
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+        return res.sendFile(import_path.default.resolve(distPath, "index.html"));
       });
     }
   }

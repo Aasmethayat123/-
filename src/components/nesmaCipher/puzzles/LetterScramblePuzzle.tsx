@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { LetterScrambleData } from '../../types/nesmaCipher';
+import { LetterScrambleData } from "../../../types/nesmaCipher";
 import { CheckCircle2, RotateCcw, HelpCircle } from 'lucide-react';
-import { soundManager } from '@/src/utils/audio';
+import { soundManager } from "../../../utils/audio";
 
 interface LetterScramblePuzzleProps {
   data: LetterScrambleData;

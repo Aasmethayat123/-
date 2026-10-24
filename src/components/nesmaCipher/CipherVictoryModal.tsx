@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CipherLevel } from '../../types/nesmaCipher';
-import { CheckCircle2, Star, Sparkles, ArrowLeft, Compass, BookOpen } from 'lucide-react';
+import { CheckCircle2, Star, Sparkles, ArrowLeft, Compass, KeyRound } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
+import { loadCipherProgress, unlockSecretDoor } from '../../utils/nesmaCipherStorage';
+import { CipherGrandSecretModal } from './CipherGrandSecretModal';
 
 interface CipherVictoryModalProps {
   level: CipherLevel;
@@ -20,8 +22,17 @@ export const CipherVictoryModal: React.FC<CipherVictoryModalProps> = ({
   onNextLevel,
   onReturnToMap
 }) => {
+  const [showGrandModal, setShowGrandModal] = useState<boolean>(false);
+  const progress = loadCipherProgress();
+
+  const isLevel30 = level.id === 30;
+  const allSecretsDiscovered = ['garden_dawn_secret', 'library_manuscript_secret', 'cave_crystal_secret'].every(
+    sId => progress.secretDoorsUnlocked.includes(sId)
+  );
+  const isGrandSecretSolved = progress.secretDoorsUnlocked.includes('grand_secret_solved');
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200" dir="rtl">
       <div className="bg-white dark:bg-stone-900 w-full max-w-md rounded-3xl border border-stone-200 dark:border-stone-800 shadow-2xl p-6 sm:p-7 space-y-5 animate-in zoom-in-95 duration-200 text-center">
         {/* Top Trophy Icon & Star Rating */}
         <div className="flex flex-col items-center gap-2">
@@ -29,7 +40,7 @@ export const CipherVictoryModal: React.FC<CipherVictoryModalProps> = ({
             <CheckCircle2 className="w-9 h-9" />
           </div>
           <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">
-            أحسنت! فككت الشفرة بنجاح 🌿
+            {isLevel30 ? 'تهانينا! أتممت شفرة نسمة الكبرى 🌟' : 'أحسنت! فككت الشفرة بنجاح 🌿'}
           </h2>
           <div className="flex items-center gap-1.5 text-amber-500">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -53,6 +64,42 @@ export const CipherVictoryModal: React.FC<CipherVictoryModalProps> = ({
             {level.rewardToken.explanationAr}
           </p>
         </div>
+
+        {/* Grand Secret Challenge Section for Level 30 */}
+        {isLevel30 && (
+          <div className={`p-4 rounded-2xl border transition-all space-y-2 ${
+            allSecretsDiscovered
+              ? 'bg-gradient-to-r from-amber-50 to-amber-100/60 dark:from-amber-950/60 dark:to-stone-900 border-amber-400 dark:border-amber-600 shadow-sm'
+              : 'bg-stone-100 dark:bg-stone-800/60 border-stone-200 dark:border-stone-700'
+          }`}>
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-900 dark:text-amber-200">
+              <KeyRound className="w-4 h-4 text-amber-500 shrink-0" />
+              <span>السر الأعظم — ربط الخيوط الثلاثة</span>
+            </div>
+            {allSecretsDiscovered ? (
+              <div className="space-y-2">
+                <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+                  {isGrandSecretSolved ? 'لقد ربطت خيوط الرحلة الكبرى بنجاح ✓' : 'اكتشفت الأسرار الثلاثة كلها! انقر هنا لكشف الرسالة الكبرى.'}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    setShowGrandModal(true);
+                  }}
+                  className="w-full py-2 px-4 bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl text-xs font-extrabold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer animate-pulse"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>{isGrandSecretSolved ? 'عرض خلاصة السر الأعظم' : 'تفعيل تحدي السر الأعظم ✨'}</span>
+                </button>
+              </div>
+            ) : (
+              <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                🔒 السر الأعظم مغلق؛ اكتشف الأسرار الثلاثة الخفية في العوالم الثلاثة لفتح هذا التحدي الختامي.
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Insight Note */}
         <div className="p-3.5 bg-stone-100 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700/60 text-start space-y-1">
@@ -113,6 +160,17 @@ export const CipherVictoryModal: React.FC<CipherVictoryModalProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Grand Secret Modal */}
+      {showGrandModal && (
+        <CipherGrandSecretModal
+          onClose={() => setShowGrandModal(false)}
+          onSolveGrandSecret={() => {
+            unlockSecretDoor('grand_secret_solved');
+          }}
+          isAlreadySolved={progress.secretDoorsUnlocked.includes('grand_secret_solved')}
+        />
+      )}
     </div>
   );
 };

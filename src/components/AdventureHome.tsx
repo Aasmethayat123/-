@@ -304,6 +304,42 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
         </button>
       </div>
 
+      {/* Grand Feature Game: شفرة نسمة */}
+      <div className="bg-gradient-to-r from-amber-950 via-stone-900 to-emerald-950 text-white rounded-3xl p-5 sm:p-6 shadow-md border-2 border-amber-500/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-300 flex items-center justify-center text-2xl shrink-0 shadow-inner">
+            🗝️
+          </div>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-700/50">
+                {isAr ? 'اللعبة الكبرى الجديدة ⭐' : 'Grand Feature Game ⭐'}
+              </span>
+              <span className="text-[10px] text-emerald-300 font-bold">{isAr ? '٣٠ مرحلة · ٣ عوالم' : '30 Levels · 3 Worlds'}</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-extrabold text-white">
+              {isAr ? 'شفرة نسمة — حلّ اللغز واكتشف اللي جواك 🗝️' : 'Nesma Cipher — Solve & Discover 🗝️'}
+            </h3>
+            <p className="text-xs text-stone-300">
+              {isAr
+                ? 'رحلة ألغاز واستكشاف نفسي عميق عبر حديقة البدايات، مكتبة الأسرار، وكهف التفكير.'
+                : 'A deep psychological puzzle adventure across 3 distinct worlds.'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            soundManager.playClick();
+            onNavigateToGame('nesma-cipher');
+          }}
+          className="px-5 py-3 bg-gradient-to-r from-amber-500 to-emerald-600 hover:from-amber-400 hover:to-emerald-500 text-stone-950 font-black rounded-2xl text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-transform hover:scale-104 shadow-sm flex items-center justify-center gap-2 shrink-0"
+        >
+          <span>{isAr ? 'دخول شفرة نسمة' : 'Enter Nesma Cipher'}</span>
+          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+        </button>
+      </div>
+
       {/* 3. Daily Featured Micro-Adventure (البطاقة الرئيسية اليومية) */}
       <div className="bg-gradient-to-br from-emerald-50/90 via-white to-stone-50 dark:from-stone-900/95 dark:via-stone-900 dark:to-stone-950 border-2 border-emerald-300/80 dark:border-emerald-800/60 rounded-3xl p-5 sm:p-7 shadow-xs relative overflow-hidden transition-all group">
         <div className="absolute top-0 end-0 w-44 h-44 bg-emerald-400/10 dark:bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />

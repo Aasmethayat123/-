@@ -120,6 +120,25 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
 
       {/* Main Play Area */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-5 space-y-6">
+        {/* Companion Guidance Banner (بوصلة نسمة) */}
+        {level.narrativeContext && (
+          <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-amber-950/30 p-4 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/60 shadow-xs flex items-start gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs text-lg">
+              🧭
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                  بوصلة نسمة — {level.narrativeContext.storyChapterAr}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-medium">
+                {level.narrativeContext.companionIntroAr}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Quote Chain Progress Strip */}
         {associatedQuote && (
           <div className="bg-white dark:bg-stone-900 p-3.5 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-xs space-y-2">

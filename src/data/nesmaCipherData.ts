@@ -5,12 +5,14 @@ import {
   GardenCollectible 
 } from '../types/nesmaCipher';
 
-// Image assets generated for Nesma Cipher
+import { toAbsoluteAssetPath } from '../utils/assetPaths';
+
+// Forced root-absolute static asset paths (/images/...) for Web, PWA, and Capacitor (https://localhost)
 export const CIPHER_IMAGES = {
-  heroMap: '/src/assets/images/nesma_cipher_hero_map_1792598958892.jpg',
-  gardenDawn: '/src/assets/images/puzzle_garden_dawn_1792598959302.jpg',
-  librarySecrets: '/src/assets/images/puzzle_library_secrets_1792598959558.jpg',
-  caveReflection: '/src/assets/images/puzzle_cave_reflection_1792598961556.jpg',
+  heroMap: toAbsoluteAssetPath('/images/nesma_cipher_hero_map_1792598958892.jpg'),
+  gardenDawn: toAbsoluteAssetPath('/images/puzzle_garden_dawn_1792598959302.jpg'),
+  librarySecrets: toAbsoluteAssetPath('/images/puzzle_library_secrets_1792598959558.jpg'),
+  caveReflection: toAbsoluteAssetPath('/images/puzzle_cave_reflection_1792598961556.jpg'),
 };
 
 // 1. العوالم الثلاثة
@@ -178,6 +180,11 @@ export const CIPHER_LEVELS: CipherLevel[] = [
       'انقر على أي قطعتين لتبديل مكانهما حتى تكتمل لوحة البداية.'
     ],
     insightNote: 'الهدوء يبدأ عندما نتوقف عن الركض وراء كل التفاصيل دفعة واحدة.',
+    narrativeContext: {
+      storyChapterAr: 'الفصل الأول: البداية وسط الضباب',
+      companionIntroAr: 'أهلاً بكِ في حديقة البدايات. أرى هنا ضباباً كثيفاً وحقيبة أفكار ثقيلة تعيق خطواتك. لستِ مجبرة على حمل كل شيء دفعة واحدة؛ دعينا نبدأ بترتيب لوحة الصباح لنرى النور.',
+      companionOutroAr: 'أحسنتِ! لقد تراجع جزء من الضباب وحصلتِ على مفتاح السر الأول: "مش لازم".'
+    },
     puzzleData: {
       instructionsAr: 'انقر على قطعتين لتبديل مكانهما حتى تكتمل صورة الحديقة الصباحية في 9 مربعات.',
       previewTitle: 'لوحة فجر السكينة بالحديقة',
@@ -207,6 +214,11 @@ export const CIPHER_LEVELS: CipherLevel[] = [
       'الكلمة هي "أمان"؛ اضغط على الحروف بترتيبها الصحيح.'
     ],
     insightNote: 'الشعور بالأمان هو التربة التي تنمو فيها كل الأفكار الطيبة والقرارات المتزنة.',
+    narrativeContext: {
+      storyChapterAr: 'الفصل الأول: جذور السكينة',
+      companionIntroAr: 'أمامنا الآن جذع يتشابك فيه كثير من الأصوات والمشتتات. لا تقلق، لست بحاجة لحل الكون اليوم، فقط رتب هذه الحروف لاكتشاف أين يكمن الأمان.',
+      companionOutroAr: 'تفتحت زهرة لوتس صغيرة بجوارك. لقد أدركت أن الأمان يبدأ عندما تعيد ترتيب أولوياتك خطوة بخطوة.'
+    },
     puzzleData: {
       instructionsAr: 'اضغط على الحروف بالترتيب الصحيح لتكوين الكلمة التي تمثل جوهر السكينة النفسية.',
       targetWord: 'أمان',
@@ -236,6 +248,11 @@ export const CIPHER_LEVELS: CipherLevel[] = [
       'الترتيب الصحيح هو: "أتنفس" ثم "بهدوء" ثم "الآن".'
     ],
     insightNote: 'التنفس الواعي هو الجسر الفوري الذي يعيد التوازن لجهازك العصبي في ثوانٍ.',
+    narrativeContext: {
+      storyChapterAr: 'الفصل الأول: مفترق النوايا',
+      companionIntroAr: 'ها قد وصلنا إلى مفترق الطرق الأول في الحديقة. العبارات هنا تتقاطع، لكن تنفساً عميقاً كافٍ ليعيد ترتيب الكلمات في مكانها الصحيح.',
+      companionOutroAr: 'لقد اكتملت السلسلة الأولى! خذ نفساً عميقاً واحتفِ بهذه الخطوة؛ لقد صنعت سكينة حقيقية اليوم.'
+    },
     puzzleData: {
       instructionsAr: 'رتّب البطاقات بالترتيب المنطقي الذي يساعدك على استعادة التركيز والهدوء.',
       correctSentence: ['أتنفس', 'بهدوء', 'الآن'],

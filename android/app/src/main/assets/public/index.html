@@ -1,6 +1,167 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
   <head>
+    <script>
+      (function() {
+        // In AI Studio iFrame preview, WebSocket HMR is disabled per environment constraints:
+        // "HMR: Disabled. Ignore WebSocket errors."
+        if (typeof window !== 'undefined') {
+          function MockWS(url, protocols) {
+            var self = this;
+            this.url = String(url || '');
+            this.protocols = protocols;
+            this.readyState = 1; // WebSocket.OPEN
+            this.bufferedAmount = 0;
+            this.extensions = '';
+            this.protocol = Array.isArray(protocols) ? (protocols[0] || '') : (protocols || '');
+            this.binaryType = 'blob';
+            var _listeners = {};
+            var _onopen = null;
+            var _onclose = null;
+            var _onerror = null;
+            var _onmessage = null;
+
+            Object.defineProperty(this, 'onopen', {
+              get: function() { return _onopen; },
+              set: function(fn) {
+                _onopen = fn;
+                if (typeof fn === 'function') {
+                  setTimeout(function() {
+                    if (self.readyState === 1 && typeof _onopen === 'function') {
+                      try { _onopen.call(self, { type: 'open', target: self, currentTarget: self }); } catch(e) {}
+                    }
+                  }, 0);
+                }
+              }
+            });
+
+            Object.defineProperty(this, 'onclose', {
+              get: function() { return _onclose; },
+              set: function(fn) { _onclose = fn; }
+            });
+
+            Object.defineProperty(this, 'onerror', {
+              get: function() { return _onerror; },
+              set: function(fn) { _onerror = fn; }
+            });
+
+            Object.defineProperty(this, 'onmessage', {
+              get: function() { return _onmessage; },
+              set: function(fn) { _onmessage = fn; }
+            });
+
+            this.addEventListener = function(type, handler) {
+              if (typeof handler !== 'function') return;
+              _listeners[type] = _listeners[type] || [];
+              _listeners[type].push(handler);
+              if (type === 'open') {
+                setTimeout(function() {
+                  if (self.readyState === 1) {
+                    try { handler.call(self, { type: 'open', target: self, currentTarget: self }); } catch(e) {}
+                  }
+                }, 0);
+              }
+            };
+
+            this.removeEventListener = function(type, handler) {
+              if (_listeners[type]) {
+                _listeners[type] = _listeners[type].filter(function(h) { return h !== handler; });
+              }
+            };
+
+            this.dispatchEvent = function(event) {
+              var handlers = _listeners[event && event.type] || [];
+              for (var i = 0; i < handlers.length; i++) {
+                try { handlers[i].call(self, event); } catch(e) {}
+              }
+              return true;
+            };
+
+            this.send = function() {};
+            this.close = function(code, reason) {
+              self.readyState = 3;
+              var evt = { type: 'close', wasClean: true, code: code || 1000, reason: reason || 'Normal Closure', target: self };
+              setTimeout(function() {
+                if (typeof _onclose === 'function') {
+                  try { _onclose.call(self, evt); } catch(e) {}
+                }
+                self.dispatchEvent(evt);
+              }, 0);
+            };
+
+            setTimeout(function() {
+              if (self.readyState === 1) {
+                var evt = { type: 'open', target: self, currentTarget: self };
+                if (typeof _onopen === 'function') {
+                  try { _onopen.call(self, evt); } catch(e) {}
+                }
+                self.dispatchEvent(evt);
+              }
+            }, 0);
+          }
+
+          MockWS.CONNECTING = 0;
+          MockWS.OPEN = 1;
+          MockWS.CLOSING = 2;
+          MockWS.CLOSED = 3;
+          MockWS.prototype = {
+            CONNECTING: 0,
+            OPEN: 1,
+            CLOSING: 2,
+            CLOSED: 3,
+            send: function() {},
+            close: function() {},
+            addEventListener: function() {},
+            removeEventListener: function() {},
+            dispatchEvent: function() { return true; }
+          };
+
+          window.WebSocket = MockWS;
+
+          // Suppress any websocket error logs or rejections per environment constraints
+          var origErr = console.error;
+          console.error = function() {
+            var msg = Array.prototype.slice.call(arguments).map(function(a) {
+              return String((a && a.message) || (a && a.stack) || a);
+            }).join(' ');
+            if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('closed without opened') !== -1 || msg.indexOf('@vite/client') !== -1 || msg.indexOf('vite-ping') !== -1 || msg.indexOf('vite-hmr') !== -1) {
+              return;
+            }
+            return origErr.apply(console, arguments);
+          };
+
+          window.addEventListener('error', function(e) {
+            var m = (e && (e.message || (e.error && (e.error.message || e.error.stack)))) || '';
+            if (m.indexOf('WebSocket') !== -1 || m.indexOf('closed without opened') !== -1 || m.indexOf('@vite/client') !== -1) {
+              if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+              if (e.preventDefault) e.preventDefault();
+              return true;
+            }
+          }, true);
+
+          window.addEventListener('unhandledrejection', function(e) {
+            var r = (e && e.reason && (e.reason.message || e.reason.stack || String(e.reason))) || '';
+            if (r.indexOf('WebSocket') !== -1 || r.indexOf('closed without opened') !== -1 || r.indexOf('@vite/client') !== -1) {
+              if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+              if (e.preventDefault) e.preventDefault();
+              return true;
+            }
+          }, true);
+
+          try {
+            var saved = localStorage.getItem('fakkerfeha_theme_mode');
+            var isDark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) {
+              document.documentElement.classList.add('dark');
+              document.documentElement.style.colorScheme = 'dark';
+            } else {
+              document.documentElement.classList.remove('dark');
+              document.documentElement.style.colorScheme = 'light';
+            }
+          } catch(e) {}
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="theme-color" content="#064e3b" />
@@ -8,9 +169,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="نسمة حياة" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./pwa-192x192.png" />
     <title>فكر فيها — جزء من نسمة حياة</title>
     <meta name="description" content="مشروع «فكر فيها» للألعاب النفسية التفاعلية — كجزء من مبادرة نسمة حياة؛ استكشاف الذات، دائرة السيطرة، تحويل الصوت الداخلي، وتنظيم الجهاز العصبي حركياً." />
     <meta property="og:title" content="فكر فيها — جزء من نسمة حياة" />
@@ -19,28 +180,12 @@
     <meta property="og:type" content="website" />
     <link rel="canonical" href="https://fakkerfeha.com/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-    <script>
-      (function() {
-        try {
-          var saved = localStorage.getItem('fakkerfeha_theme_mode');
-          var isDark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (isDark) {
-            document.documentElement.classList.add('dark');
-            document.documentElement.style.colorScheme = 'dark';
-          } else {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.style.colorScheme = 'light';
-          }
-        } catch(e) {}
-      })();
-    </script>
-    <script type="module" crossorigin src="/assets/index-BkNrgNtn.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BvrwT-83.css">
-  <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+    <script type="module" crossorigin src="./assets/index-DN-Cvpe_.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DCxviNjt.css">
+  <link rel="manifest" href="./manifest.webmanifest"></head>
   <body class="bg-stone-50 text-stone-800 antialiased selection:bg-emerald-100 selection:text-emerald-900">
     <div id="root"></div>
   </body>

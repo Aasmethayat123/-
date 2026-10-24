@@ -1,9 +1,12 @@
+import { resolveRuntimeAssetUrl } from './assetPaths';
+
 /**
  * Utility to trigger immediate in-browser download of the production zip package
  */
 export async function downloadDistZip(): Promise<boolean> {
+  const zipUrl = resolveRuntimeAssetUrl('/fakkerfeha-dist.zip');
   try {
-    const res = await fetch('/fakkerfeha-dist.zip');
+    const res = await fetch(zipUrl, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to load zip');
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
@@ -19,7 +22,7 @@ export async function downloadDistZip(): Promise<boolean> {
     console.error('Direct blob download error:', err);
     // Fallback: direct window download trigger
     const a = document.createElement('a');
-    a.href = '/fakkerfeha-dist.zip';
+    a.href = zipUrl;
     a.download = 'fakkerfeha-dist.zip';
     document.body.appendChild(a);
     a.click();

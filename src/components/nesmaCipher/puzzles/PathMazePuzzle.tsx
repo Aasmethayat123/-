@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { PathMazeData } from '../../types/nesmaCipher';
+import { PathMazeData } from "../../../types/nesmaCipher";
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Key, DoorClosed, RotateCcw, CheckCircle2 } from 'lucide-react';
-import { soundManager } from '@/src/utils/audio';
+import { soundManager } from "../../../utils/audio";
 
 interface PathMazePuzzleProps {
   data: PathMazeData;
@@ -125,6 +125,8 @@ export const PathMazePuzzle: React.FC<PathMazePuzzleProps> = ({ data, onSolve })
               const keyItem = data.keyPositions.find(([kr, kc]) => kr === r && kc === c);
               const isKeyHere = keyItem && !collectedKeys.includes(`${r}-${c}`);
 
+              const isAdjacent = Math.abs(r - currentPos[0]) + Math.abs(c - currentPos[1]) === 1;
+
               let cellBg = 'bg-stone-700/40';
               if (isObstacle) cellBg = 'bg-stone-900 border border-stone-700/60';
               if (isEnd) cellBg = allKeysCollected ? 'bg-emerald-950 border border-emerald-500' : 'bg-stone-800 border border-stone-600';
@@ -132,7 +134,12 @@ export const PathMazePuzzle: React.FC<PathMazePuzzleProps> = ({ data, onSolve })
               return (
                 <div
                   key={`${r}-${c}`}
-                  className={`relative rounded-lg flex items-center justify-center text-lg select-none transition-all ${cellBg}`}
+                  onClick={() => {
+                    if (isAdjacent && !isObstacle) {
+                      movePlayer(r - currentPos[0], c - currentPos[1]);
+                    }
+                  }}
+                  className={`relative rounded-lg flex items-center justify-center text-lg select-none transition-all touch-manipulation ${cellBg} ${isAdjacent && !isObstacle ? 'cursor-pointer hover:ring-2 hover:ring-emerald-400/60 active:scale-95' : ''}`}
                 >
                   {isObstacle && <span className="text-xs text-stone-600">⛔</span>}
                   {isKeyHere && !isPlayer && (
@@ -153,47 +160,47 @@ export const PathMazePuzzle: React.FC<PathMazePuzzleProps> = ({ data, onSolve })
         </div>
       </div>
 
-      {/* D-Pad Controls for Mobile & Touch */}
+      {/* D-Pad Controls for Mobile & Touch (Fixed LTR layout so physical arrows match movement) */}
       {!isSolved && (
-        <div className="flex flex-col items-center gap-1.5 pt-1">
+        <div className="flex flex-col items-center gap-1.5 pt-1 touch-manipulation select-none" dir="ltr">
           <button
             type="button"
             onClick={() => movePlayer(-1, 0)}
-            className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-800 dark:text-stone-100 active:scale-95 transition-all shadow-xs cursor-pointer"
+            className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-800 dark:text-stone-100 active:scale-95 transition-all shadow-xs cursor-pointer touch-manipulation"
             aria-label="تحرك للأعلى"
           >
             <ArrowUp className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" dir="ltr">
             <button
               type="button"
-              onClick={() => movePlayer(0, 1)}
-              className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-800 dark:text-stone-100 active:scale-95 transition-all shadow-xs cursor-pointer"
-              aria-label="تحرك لليمين"
+              onClick={() => movePlayer(0, -1)}
+              className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-800 dark:text-stone-100 active:scale-95 transition-all shadow-xs cursor-pointer touch-manipulation"
+              aria-label="تحرك لليسار"
             >
-              <ArrowRight className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800/60 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer"
+              className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800/60 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer touch-manipulation"
               title="إعادة المحاولة"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
             <button
               type="button"
-              onClick={() => movePlayer(0, -1)}
-              className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-800 dark:text-stone-100 active:scale-95 transition-all shadow-xs cursor-pointer"
-              aria-label="تحرك لليسار"
+              onClick={() => movePlayer(0, 1)}
+              className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-800 dark:text-stone-100 active:scale-95 transition-all shadow-xs cursor-pointer touch-manipulation"
+              aria-label="تحرك لليمين"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowRight className="w-5 h-5" />
             </button>
           </div>
           <button
             type="button"
             onClick={() => movePlayer(1, 0)}
-            className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-800 dark:text-stone-100 active:scale-95 transition-all shadow-xs cursor-pointer"
+            className="w-12 h-12 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-800 dark:text-stone-100 active:scale-95 transition-all shadow-xs cursor-pointer touch-manipulation"
             aria-label="تحرك للأسفل"
           >
             <ArrowDown className="w-5 h-5" />

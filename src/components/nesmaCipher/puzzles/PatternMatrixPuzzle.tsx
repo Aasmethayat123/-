@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { PatternMatrixData } from '../../types/nesmaCipher';
+import { PatternMatrixData } from "../../../types/nesmaCipher";
 import { CheckCircle2, HelpCircle } from 'lucide-react';
-import { soundManager } from '@/src/utils/audio';
+import { soundManager } from "../../../utils/audio";
 
 interface PatternMatrixPuzzleProps {
   data: PatternMatrixData;

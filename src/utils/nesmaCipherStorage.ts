@@ -23,21 +23,74 @@ export function loadCipherProgress(): CipherProgress {
     const raw = localStorage.getItem(CIPHER_STORAGE_KEY);
     if (!raw) return INITIAL_CIPHER_PROGRESS;
     const parsed = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null) {
+      return INITIAL_CIPHER_PROGRESS;
+    }
+
+    // Validate arrays and numbers strictly
+    const completedLevels = Array.isArray(parsed.completedLevels)
+      ? parsed.completedLevels.filter((id: unknown): id is number => typeof id === 'number' && id >= 1 && id <= 30)
+      : [];
+
+    const unlockedLevels = Array.isArray(parsed.unlockedLevels) && parsed.unlockedLevels.length > 0
+      ? parsed.unlockedLevels.filter((id: unknown): id is number => typeof id === 'number' && id >= 1 && id <= 30)
+      : [1];
+
+    if (!unlockedLevels.includes(1)) unlockedLevels.push(1);
+
+    const levelStars: Record<number, number> = {};
+    if (typeof parsed.levelStars === 'object' && parsed.levelStars !== null) {
+      Object.entries(parsed.levelStars).forEach(([k, v]) => {
+        const lvlId = parseInt(k, 10);
+        const stars = typeof v === 'number' ? Math.max(0, Math.min(3, Math.round(v))) : 0;
+        if (!isNaN(lvlId) && lvlId >= 1 && lvlId <= 30 && stars > 0) {
+          levelStars[lvlId] = stars;
+        }
+      });
+    }
+
+    const discoveredQuotes = Array.isArray(parsed.discoveredQuotes)
+      ? parsed.discoveredQuotes.filter((id: unknown): id is string => typeof id === 'string')
+      : [];
+
+    const score = typeof parsed.score === 'number' && !isNaN(parsed.score) ? Math.max(0, parsed.score) : 0;
+
+    const gardenItems = Array.isArray(parsed.gardenItems)
+      ? parsed.gardenItems.filter((id: unknown): id is string => typeof id === 'string')
+      : [];
+
+    const hintsUsedCount: Record<number, number> = {};
+    if (typeof parsed.hintsUsedCount === 'object' && parsed.hintsUsedCount !== null) {
+      Object.entries(parsed.hintsUsedCount).forEach(([k, v]) => {
+        const lvlId = parseInt(k, 10);
+        const hints = typeof v === 'number' ? Math.max(0, Math.min(3, Math.round(v))) : 0;
+        if (!isNaN(lvlId) && lvlId >= 1 && lvlId <= 30) {
+          hintsUsedCount[lvlId] = hints;
+        }
+      });
+    }
+
+    const secretDoorsUnlocked = Array.isArray(parsed.secretDoorsUnlocked)
+      ? parsed.secretDoorsUnlocked.filter((id: unknown): id is string => typeof id === 'string')
+      : [];
+
+    const lastPlayedLevel = typeof parsed.lastPlayedLevel === 'number' && parsed.lastPlayedLevel >= 1 && parsed.lastPlayedLevel <= 30
+      ? parsed.lastPlayedLevel
+      : 1;
+
     return {
-      completedLevels: Array.isArray(parsed.completedLevels) ? parsed.completedLevels : [],
-      levelStars: typeof parsed.levelStars === 'object' && parsed.levelStars !== null ? parsed.levelStars : {},
-      unlockedLevels: Array.isArray(parsed.unlockedLevels) && parsed.unlockedLevels.length > 0 
-        ? parsed.unlockedLevels 
-        : [1],
-      discoveredQuotes: Array.isArray(parsed.discoveredQuotes) ? parsed.discoveredQuotes : [],
-      score: typeof parsed.score === 'number' ? parsed.score : 0,
-      gardenItems: Array.isArray(parsed.gardenItems) ? parsed.gardenItems : [],
-      hintsUsedCount: typeof parsed.hintsUsedCount === 'object' && parsed.hintsUsedCount !== null ? parsed.hintsUsedCount : {},
-      secretDoorsUnlocked: Array.isArray(parsed.secretDoorsUnlocked) ? parsed.secretDoorsUnlocked : [],
-      lastPlayedLevel: typeof parsed.lastPlayedLevel === 'number' ? parsed.lastPlayedLevel : 1
+      completedLevels,
+      levelStars,
+      unlockedLevels,
+      discoveredQuotes,
+      score,
+      gardenItems,
+      hintsUsedCount,
+      secretDoorsUnlocked,
+      lastPlayedLevel
     };
   } catch (err) {
-    console.error('Error loading Nesma Cipher progress:', err);
+    console.error('Error loading Nesma Cipher progress (corrupted data or storage error):', err);
     return INITIAL_CIPHER_PROGRESS;
   }
 }
@@ -47,7 +100,7 @@ export function saveCipherProgress(progress: CipherProgress): void {
   try {
     localStorage.setItem(CIPHER_STORAGE_KEY, JSON.stringify(progress));
   } catch (err) {
-    console.error('Error saving Nesma Cipher progress:', err);
+    console.error('Error saving Nesma Cipher progress (quota exceeded or write blocked):', err);
   }
 }
 
@@ -157,3 +210,17 @@ export function resetCipherProgress(): CipherProgress {
   }
   return INITIAL_CIPHER_PROGRESS;
 }
+
+export function unlockSecretDoor(secretId: string): CipherProgress {
+  const current = loadCipherProgress();
+  if (current.secretDoorsUnlocked.includes(secretId)) {
+    return current;
+  }
+  const updatedProgress: CipherProgress = {
+    ...current,
+    secretDoorsUnlocked: [...current.secretDoorsUnlocked, secretId]
+  };
+  saveCipherProgress(updatedProgress);
+  return updatedProgress;
+}
+

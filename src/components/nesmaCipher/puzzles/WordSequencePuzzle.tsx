@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { WordSequenceData } from '../../types/nesmaCipher';
+import { WordSequenceData } from "../../../types/nesmaCipher";
 import { CheckCircle2, RotateCcw, ArrowRight, ArrowLeft, Check } from 'lucide-react';
-import { soundManager } from '@/src/utils/audio';
+import { soundManager } from "../../../utils/audio";
 
 interface WordSequencePuzzleProps {
   data: WordSequenceData;

@@ -156,6 +156,11 @@ export interface CipherLevel {
   xpReward: number;
   hints: [string, string, string]; // 3 progressive hints
   insightNote: string; // psychological insight shown after solving
+  narrativeContext?: {
+    companionIntroAr: string;
+    companionOutroAr: string;
+    storyChapterAr: string;
+  };
 }
 
 export interface CipherQuote {

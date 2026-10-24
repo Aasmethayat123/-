@@ -39,7 +39,8 @@ import {
   FolderKanban,
   Settings,
   Search,
-  X
+  X,
+  KeyRound
 } from 'lucide-react';
 
 interface GameMapProps {
@@ -538,6 +539,49 @@ export const GameMap: React.FC<GameMapProps> = ({
           >
             <Settings className="w-3 h-3" />
             <span>{isAr ? 'إدارة المحتوى' : 'CMS'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Featured Premier Game: شفرة نسمة (في أول الشاشة) */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-950 via-stone-900 to-amber-950 text-white p-5 sm:p-6 border-2 border-emerald-500/60 shadow-xl transition-all hover:border-emerald-400">
+        <div className="absolute top-0 end-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-start sm:items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-emerald-600 text-white flex items-center justify-center text-3xl shrink-0 shadow-lg shadow-emerald-900/40">
+              🗝️
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500 text-stone-950 uppercase tracking-wider">
+                  {isAr ? 'اللعبة الكبرى المميزة ⭐' : 'Premier Feature Game ⭐'}
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-900/80 text-emerald-300 border border-emerald-700/60">
+                  {isAr ? '٣٠ مرحلة · ٣ عوالم أصلية' : '30 Levels · 3 Worlds'}
+                </span>
+              </div>
+              <h2 className="text-base sm:text-xl font-extrabold text-white tracking-tight">
+                {isAr ? 'شفرة نسمة — حلّ اللغز واكتشف اللي جواك' : 'Nesma Cipher — Solve & Discover'}
+              </h2>
+              <p className="text-xs text-stone-300 leading-relaxed max-w-xl">
+                {isAr
+                  ? 'مغامرة نفسية قصصية متكاملة تجمع بين فك الشفرات، البحث عن الأدلة، والمتاهات لاستكشاف الرفق بالذات، وصون الحدود، والمراقب الصامت.'
+                  : 'A story-driven psychological puzzle adventure uncovering self-compassion, boundaries, and the observing self.'}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              onNavigateMode('nesma-cipher');
+            }}
+            className="w-full md:w-auto px-6 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs sm:text-sm font-extrabold transition-transform hover:scale-104 shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2 cursor-pointer shrink-0"
+          >
+            <KeyRound className="w-4 h-4" />
+            <span>{isAr ? 'العب شفرة نسمة الآن 🗝️' : 'Play Nesma Cipher 🗝️'}</span>
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </button>
         </div>
       </div>

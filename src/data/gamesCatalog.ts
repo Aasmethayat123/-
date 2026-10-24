@@ -84,6 +84,39 @@ export interface GameCatalogItem {
 
 export const ALL_36_GAMES: GameCatalogItem[] = [
   // =========================================================================
+  // اللعبة الكبرى: شفرة نسمة (المغامرة النفسية القصصية)
+  // =========================================================================
+  {
+    id: 'nesma-cipher',
+    number: '⭐',
+    nameAr: 'شفرة نسمة — حلّ اللغز واكتشف اللي جواك',
+    nameEn: 'Nesma Cipher — Solve & Discover',
+    descAr: 'مغامرة نفسية قصصية متكاملة عبر ٣٠ مرحلة و٣ عوالم لفك الشفرات واكتشاف الذات.',
+    descEn: 'A 30-level story-driven psychological cipher adventure across 3 immersive worlds.',
+    categoryKey: 'nesma9',
+    categoryAr: 'نسمة حياة — اللعبة الكبرى',
+    categoryEn: 'Nesma Hayat — Premier Game',
+    ideaAndGoalAr: 'دمج الألغاز الحقيقية والبحث عن الأدلة والمتاهات مع الرفق بالذات واليقظة الذهنية.',
+    ideaAndGoalEn: 'Unify real puzzles, clue search, and mazes with self-compassion and mindfulness.',
+    howToPlayAr: 'حل الألغاز التفاعلية لجمع المقولات الخمس، فتح المقتنيات، واكتشاف الأسرار الخفية.',
+    howToPlayEn: 'Solve interactive puzzles to collect the 5 wisdom quotes, collectibles, and secrets.',
+    approxDuration: 'مغامرة ٣٠ مرحلة',
+    interactionTypeAr: 'مغامرة ألغاز تفاعلية متكاملة',
+    interactionTypeEn: 'Interactive puzzle adventure',
+    experienceType: 'understand_self',
+    suitableForAr: 'التعافي من التشتت، تنظيم المشاعر، وفهم الذات بهدوء',
+    suitableForEn: 'Overcoming distraction, emotional regulation, and deep self-discovery',
+    worksOffline: true,
+    savesData: true,
+    overlapNoteAr: 'اللعبة الرئيسية الكبرى المستقلة بالكامل.',
+    overlapNoteEn: 'The primary standalone psychological adventure game.',
+    states: ['understand_self', 'calm', 'focus', 'mental_challenge'],
+    icon: KeyRound,
+    color: 'from-emerald-700 via-teal-700 to-amber-600',
+    badgeAr: 'شفرة نسمة ⭐',
+    badgeEn: 'Nesma Cipher ⭐'
+  },
+  // =========================================================================
   // 1. ألعاب نسمة حياة الأساسية (9 ألعاب)
   // =========================================================================
   {
@@ -1625,7 +1658,7 @@ export const ALL_36_GAMES: GameCatalogItem[] = [
     approxDuration: 'مفتوح (٣٠ مرحلة)',
     interactionTypeAr: 'مغامرة ألغاز متعددة الأنواع (بازل صور، حروف، ترتيب، متاهات، شفرات)',
     interactionTypeEn: 'Multi-genre puzzle adventure with interactive 3D audio & garden progression',
-    experienceType: 'mental_challenge',
+    experienceType: 'cognitive',
     suitableForAr: 'الاجترار، حب الألغاز والتفكير المنطقي، الرغبة في رحلة نمو نفسي دافئة ومجزية',
     suitableForEn: 'Overthinking, puzzle lovers, seeking meaningful and warm psychological growth',
     worksOffline: true,

@@ -3,6 +3,7 @@ import { CipherProgress } from '../../types/nesmaCipher';
 import { CIPHER_GARDEN_COLLECTIBLES, CIPHER_IMAGES } from '../../data/nesmaCipherData';
 import { Flower2, ArrowRight, Lock, Sparkles, CheckCircle2 } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
+import { SafeCipherImage } from './SafeCipherImage';
 
 interface CipherGardenProps {
   progress: CipherProgress;
@@ -43,14 +44,13 @@ export const CipherGarden: React.FC<CipherGardenProps> = ({ progress, onBack }) 
       {/* Main Garden View */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6 space-y-6">
         {/* Garden Hero Visual */}
-        <div className="relative rounded-3xl overflow-hidden shadow-lg border border-stone-200 dark:border-stone-800 aspect-16/9 max-h-[260px]">
-          <img
+        <div className="relative w-full h-56 sm:h-72 rounded-3xl overflow-hidden shadow-lg border border-stone-200 dark:border-stone-800 bg-emerald-950">
+          <SafeCipherImage
             src={CIPHER_IMAGES.gardenDawn}
             alt="حديقة السكينة"
-            className="w-full h-full object-cover brightness-80"
-            referrerPolicy="no-referrer"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent p-6 flex flex-col justify-end text-white">
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent p-6 flex flex-col justify-end text-white">
             <span className="text-xs font-bold text-emerald-300 mb-1 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               <span>ملاذ التعافي والامتنان</span>

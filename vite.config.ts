@@ -6,14 +6,24 @@ import {VitePWA} from 'vite-plugin-pwa';
 
 export default defineConfig(() => {
   return {
+    base: './',
+    publicDir: 'public',
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+      assetsInlineLimit: 4096,
+      emptyOutDir: true,
+    },
     plugins: [
       react(),
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg', '_redirects'],
+        injectRegister: null,
+        includeAssets: [],
+        includeManifestIcons: false,
         manifest: {
-          id: '/',
+          id: './',
           name: 'نسمة حياة: فكّر فيها',
           short_name: 'نسمة حياة',
           description: 'منصة تفاعلية للوعي النفسي والألعاب السلوكية والجسدية — مبادرة نسمة حياة',
@@ -21,25 +31,25 @@ export default defineConfig(() => {
           background_color: '#fafaf9',
           display: 'standalone',
           orientation: 'portrait-primary',
-          start_url: '/',
-          scope: '/',
+          start_url: './',
+          scope: './',
           dir: 'rtl',
           lang: 'ar',
           icons: [
             {
-              src: '/pwa-192x192.png',
+              src: './pwa-192x192.png',
               sizes: '192x192',
               type: 'image/png',
               purpose: 'any',
             },
             {
-              src: '/pwa-512x512.png',
+              src: './pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any',
             },
             {
-              src: '/pwa-maskable-512x512.png',
+              src: './pwa-maskable-512x512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'maskable',
@@ -47,8 +57,40 @@ export default defineConfig(() => {
           ],
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,json}'],
+          cleanupOutdatedCaches: true,
+          clientsClaim: true,
+          skipWaiting: true,
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+          globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,webp,svg,woff,woff2}'],
+          globIgnores: [
+            '**/fakkerfeha-dist.zip',
+            '**/manifest.json',
+            '**/_redirects',
+            '**/sw.js',
+            '**/workbox-*.js',
+          ],
+          navigateFallback: 'index.html',
+          navigateFallbackDenylist: [
+            /^\/api\//,
+            /\/assets\//,
+            /\/images\//,
+            /\.[a-zA-Z0-9]+$/,
+          ],
           runtimeCaching: [
+            {
+              urlPattern: /\/images\/.*\.(?:png|jpg|jpeg|webp|svg)$/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'static-game-images-cache',
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
               handler: 'CacheFirst',
@@ -80,8 +122,7 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: true,
-          type: 'module',
+          enabled: false,
         },
       }),
     ],

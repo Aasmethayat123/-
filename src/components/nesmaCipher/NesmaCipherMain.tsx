@@ -24,7 +24,35 @@ type CipherView = 'map' | 'level' | 'vault' | 'garden';
 export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddXP }) => {
   const [progress, setProgress] = useState<CipherProgress>(() => loadCipherProgress());
   const [view, setView] = useState<CipherView>('map');
-  const [selectedLevelId, setSelectedLevelId] = useState<number>(1);
+  const [selectedLevelId, setSelectedLevelId] = useState<number>(() => {
+    const p = loadCipherProgress();
+    return (p.lastPlayedLevel && p.lastPlayedLevel >= 1 && p.lastPlayedLevel <= 30) ? p.lastPlayedLevel : 1;
+  });
+
+  // Scroll to top immediately on mobile whenever screen or level changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    }
+  }, [view, selectedLevelId]);
+
+  // Optional direct level jump if provided in query string (e.g. ?cipherLevel=5)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const lvl = params.get('cipherLevel') || params.get('level');
+      if (lvl) {
+        const num = parseInt(lvl, 10);
+        if (!isNaN(num) && num >= 1 && num <= 30 && progress.unlockedLevels.includes(num)) {
+          setSelectedLevelId(num);
+          setView('level');
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   // Victory modal state
   const [victoryData, setVictoryData] = useState<{
@@ -98,7 +126,7 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
   };
 
   return (
-    <div className="w-full min-h-screen bg-stone-50 dark:bg-stone-950 font-sans" dir="rtl">
+    <div className="w-full min-h-screen bg-stone-50 dark:bg-stone-950 font-sans touch-manipulation overflow-x-hidden" dir="rtl">
       {/* 1. Map View */}
       {view === 'map' && (
         <CipherMap

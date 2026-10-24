@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { HybridChallengeData } from '../../types/nesmaCipher';
+import { HybridChallengeData } from "../../../types/nesmaCipher";
 import { CheckCircle2, RotateCcw, ArrowRight, ArrowLeft, KeyRound, Check } from 'lucide-react';
-import { soundManager } from '@/src/utils/audio';
+import { soundManager } from "../../../utils/audio";
 
 interface HybridChallengePuzzleProps {
   data: HybridChallengeData;

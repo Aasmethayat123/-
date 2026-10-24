@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { MissingPieceData } from '../../types/nesmaCipher';
+import { MissingPieceData } from "../../../types/nesmaCipher";
 import { CheckCircle2, HelpCircle } from 'lucide-react';
-import { soundManager } from '@/src/utils/audio';
+import { soundManager } from "../../../utils/audio";
 
 interface MissingPiecePuzzleProps {
   data: MissingPieceData;
