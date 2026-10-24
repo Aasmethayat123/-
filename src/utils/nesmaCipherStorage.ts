@@ -224,3 +224,25 @@ export function unlockSecretDoor(secretId: string): CipherProgress {
   return updatedProgress;
 }
 
+export function unlockAllCipherLevels(): CipherProgress {
+  const current = loadCipherProgress();
+  const allLevels = Array.from({ length: 30 }, (_, i) => i + 1);
+  const updatedProgress: CipherProgress = {
+    ...current,
+    unlockedLevels: allLevels
+  };
+  saveCipherProgress(updatedProgress);
+  return updatedProgress;
+}
+
+export function spendCipherXP(amount: number): CipherProgress | null {
+  const current = loadCipherProgress();
+  if (current.score < amount) return null;
+  const updatedProgress: CipherProgress = {
+    ...current,
+    score: current.score - amount
+  };
+  saveCipherProgress(updatedProgress);
+  return updatedProgress;
+}
+

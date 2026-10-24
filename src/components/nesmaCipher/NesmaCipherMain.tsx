@@ -24,6 +24,7 @@ type CipherView = 'map' | 'level' | 'vault' | 'garden';
 export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddXP }) => {
   const [progress, setProgress] = useState<CipherProgress>(() => loadCipherProgress());
   const [view, setView] = useState<CipherView>('map');
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [selectedLevelId, setSelectedLevelId] = useState<number>(() => {
     const p = loadCipherProgress();
     return (p.lastPlayedLevel && p.lastPlayedLevel >= 1 && p.lastPlayedLevel <= 30) ? p.lastPlayedLevel : 1;
@@ -71,25 +72,29 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
     setView('level');
   };
 
-  const handleSolveLevel = (hintsUsed: number) => {
+  const handleSolveLevel = (hintsUsed: number, isDeepChallenge: boolean = false) => {
     // Determine stars
     let stars = 3;
     if (hintsUsed === 1) stars = 2;
     if (hintsUsed >= 2) stars = 1;
 
     const result = completeCipherLevel(selectedLevel.id, stars, hintsUsed);
+    let finalScore = result.scoreEarned;
+    if (isDeepChallenge || difficulty === 'hard') {
+      finalScore *= 2; // Double XP bonus for Deep Challenge or Hard Mode!
+    }
     setProgress(result.updatedProgress);
 
     // Reward XP to main app gamification
-    if (result.scoreEarned > 0 && onAddXP) {
-      onAddXP(result.scoreEarned);
+    if (finalScore > 0 && onAddXP) {
+      onAddXP(finalScore);
     }
 
     // Set victory modal data
     setVictoryData({
       level: selectedLevel,
       stars,
-      scoreEarned: result.scoreEarned
+      scoreEarned: finalScore
     });
 
     // Check if full quote was completed
@@ -131,6 +136,8 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
       {view === 'map' && (
         <CipherMap
           progress={progress}
+          difficulty={difficulty}
+          onDifficultyChange={setDifficulty}
           onSelectLevel={handleSelectLevel}
           onOpenQuotesVault={() => setView('vault')}
           onOpenGarden={() => setView('garden')}
@@ -144,6 +151,8 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
         <CipherLevelPlay
           level={selectedLevel}
           progress={progress}
+          difficulty={difficulty}
+          onDifficultyChange={setDifficulty}
           onSolveLevel={handleSolveLevel}
           onReturnToMap={() => setView('map')}
         />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CipherProgress, CipherWorldId } from '../../types/nesmaCipher';
 import { CIPHER_WORLDS, CIPHER_LEVELS } from '../../data/nesmaCipherData';
-import { unlockSecretDoor } from '../../utils/nesmaCipherStorage';
+import { unlockSecretDoor, unlockAllCipherLevels } from '../../utils/nesmaCipherStorage';
 import { CipherSecretModal, WORLD_SECRETS } from './CipherSecretModal';
 import { SafeCipherImage } from './SafeCipherImage';
 import { 
@@ -26,6 +26,8 @@ import { soundManager } from '../../utils/audio';
 
 interface CipherMapProps {
   progress: CipherProgress;
+  difficulty: 'easy' | 'medium' | 'hard';
+  onDifficultyChange: (diff: 'easy' | 'medium' | 'hard') => void;
   onSelectLevel: (levelId: number) => void;
   onOpenQuotesVault: () => void;
   onOpenGarden: () => void;
@@ -35,6 +37,8 @@ interface CipherMapProps {
 
 export const CipherMap: React.FC<CipherMapProps> = ({
   progress,
+  difficulty,
+  onDifficultyChange,
   onSelectLevel,
   onOpenQuotesVault,
   onOpenGarden,
@@ -157,6 +161,44 @@ export const CipherMap: React.FC<CipherMapProps> = ({
               <Flower2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>حديقة الشفرة ({progress.gardenItems.length}/7)</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playCorrect();
+                const updated = unlockAllCipherLevels();
+                setCurrentProgress(updated);
+              }}
+              className="px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200 text-xs font-bold flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-all cursor-pointer shadow-2xs"
+              title="فتح جميع المراحل الثلاثين فوراً للعب الحر"
+            >
+              <span>🔓 فتح الكل</span>
+            </button>
+
+            {/* Difficulty Selector */}
+            <div className="flex items-center gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-xl border border-stone-200 dark:border-stone-700 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => { soundManager.playClick(); onDifficultyChange('easy'); }}
+                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${difficulty === 'easy' ? 'bg-emerald-600 text-white shadow-xs' : 'text-stone-600 dark:text-stone-300'}`}
+              >
+                سهل
+              </button>
+              <button
+                type="button"
+                onClick={() => { soundManager.playClick(); onDifficultyChange('medium'); }}
+                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${difficulty === 'medium' ? 'bg-emerald-600 text-white shadow-xs' : 'text-stone-600 dark:text-stone-300'}`}
+              >
+                متوسط
+              </button>
+              <button
+                type="button"
+                onClick={() => { soundManager.playClick(); onDifficultyChange('hard'); }}
+                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${difficulty === 'hard' ? 'bg-amber-600 text-white shadow-xs' : 'text-stone-600 dark:text-stone-300'}`}
+              >
+                صعب 2x
+              </button>
+            </div>
 
             <button
               type="button"

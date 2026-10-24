@@ -13,6 +13,8 @@ import {
   Lock
 } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
+import { spendCipherXP } from '../../utils/nesmaCipherStorage';
+import { CipherVisualAmbiance } from './CipherVisualAmbiance';
 
 // Puzzle Components
 import { TilePuzzle } from './puzzles/TilePuzzle';
@@ -29,29 +31,72 @@ import { HybridChallengePuzzle } from './puzzles/HybridChallengePuzzle';
 interface CipherLevelPlayProps {
   level: CipherLevel;
   progress: CipherProgress;
-  onSolveLevel: (hintsUsed: number) => void;
+  difficulty: 'easy' | 'medium' | 'hard';
+  onDifficultyChange: (diff: 'easy' | 'medium' | 'hard') => void;
+  onSolveLevel: (hintsUsed: number, isDeepChallenge: boolean) => void;
   onReturnToMap: () => void;
 }
 
 export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
   level,
   progress,
+  difficulty,
+  onDifficultyChange,
   onSolveLevel,
   onReturnToMap
 }) => {
   const [hintsUnlockedCount, setHintsUnlockedCount] = useState<number>(0);
+  const [isDeepChallengeMode, setIsDeepChallengeMode] = useState<boolean>(false);
   const [showHintModal, setShowHintModal] = useState<boolean>(false);
   const [puzzleKey, setPuzzleKey] = useState<number>(0); // for instant reset
+
+  const [userScore, setUserScore] = useState<number>(progress.score);
+  const [revealedLetter, setRevealedLetter] = useState<string | null>(null);
+  const [revealedConceptClue, setRevealedConceptClue] = useState<boolean>(false);
 
   const currentWorld = CIPHER_WORLDS.find(w => w.id === level.worldId) || CIPHER_WORLDS[0];
   const associatedQuote = CIPHER_QUOTES.find(q => q.id === level.quoteId);
 
+  const maxHintsAllowed = difficulty === 'hard' ? 1 : difficulty === 'medium' ? 2 : 3;
+
   const handleUnlockNextHint = () => {
-    if (hintsUnlockedCount < 3) {
+    if (hintsUnlockedCount < maxHintsAllowed) {
       soundManager.playClick();
       setHintsUnlockedCount(prev => prev + 1);
     }
   };
+
+  const handleSpendForLetter = () => {
+    const cost = 25;
+    if (userScore < cost) {
+      soundManager.playIncorrect();
+      return;
+    }
+    const updated = spendCipherXP(cost);
+    if (updated) {
+      soundManager.playCorrect();
+      setUserScore(updated.score);
+      const targetStr = level.rewardToken?.value || level.titleAr;
+      const randomChar = targetStr.charAt(Math.floor(Math.random() * targetStr.length));
+      setRevealedLetter(randomChar);
+    }
+  };
+
+  const handleSpendForConcept = () => {
+    const cost = 30;
+    if (userScore < cost || revealedConceptClue) {
+      soundManager.playIncorrect();
+      return;
+    }
+    const updated = spendCipherXP(cost);
+    if (updated) {
+      soundManager.playCorrect();
+      setUserScore(updated.score);
+      setRevealedConceptClue(true);
+    }
+  };
+
+  const [isSolved, setIsSolved] = useState<boolean>(false);
 
   const handleRestartPuzzle = () => {
     soundManager.playClick();
@@ -59,7 +104,8 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
   };
 
   const handlePuzzleSolved = () => {
-    onSolveLevel(hintsUnlockedCount);
+    setIsSolved(true);
+    onSolveLevel(hintsUnlockedCount, isDeepChallengeMode);
   };
 
   return (
@@ -92,8 +138,24 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
             </div>
           </div>
 
-          {/* Action buttons: Hint & Reset */}
+          {/* Action buttons: Deep Challenge Mode, Hint & Reset */}
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setIsDeepChallengeMode(!isDeepChallengeMode);
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                isDeepChallengeMode
+                  ? 'bg-amber-500 text-stone-950 border-amber-600 shadow-md animate-pulse'
+                  : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:bg-stone-200 dark:hover:bg-stone-700'
+              }`}
+              title="تفعيل وضع التحدي العميق لمضاعفة النقاط وبناء خفة الحركة الذهنية"
+            >
+              <span>⚡ تحدي عميق {isDeepChallengeMode ? '(مفعل 2x)' : ''}</span>
+            </button>
+
             <button
               type="button"
               onClick={() => {
@@ -105,6 +167,31 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
               <Lightbulb className="w-4 h-4 text-amber-500" />
               <span>التلميحات {hintsUnlockedCount > 0 ? `(${hintsUnlockedCount}/3)` : ''}</span>
             </button>
+
+            {/* Difficulty Selector */}
+            <div className="flex items-center gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-xl border border-stone-200 dark:border-stone-700 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => { soundManager.playClick(); onDifficultyChange('easy'); }}
+                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${difficulty === 'easy' ? 'bg-emerald-600 text-white shadow-xs' : 'text-stone-600 dark:text-stone-300'}`}
+              >
+                سهل
+              </button>
+              <button
+                type="button"
+                onClick={() => { soundManager.playClick(); onDifficultyChange('medium'); }}
+                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${difficulty === 'medium' ? 'bg-emerald-600 text-white shadow-xs' : 'text-stone-600 dark:text-stone-300'}`}
+              >
+                متوسط
+              </button>
+              <button
+                type="button"
+                onClick={() => { soundManager.playClick(); onDifficultyChange('hard'); }}
+                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${difficulty === 'hard' ? 'bg-amber-600 text-white shadow-xs' : 'text-stone-600 dark:text-stone-300'}`}
+              >
+                صعب 2x
+              </button>
+            </div>
 
             <button
               type="button"
@@ -120,6 +207,9 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
 
       {/* Main Play Area */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-5 space-y-6">
+        {/* Animated SVG Ambiance Widget: Locks, Gears & Keys */}
+        <CipherVisualAmbiance progressCount={hintsUnlockedCount} isSolved={isSolved} />
+
         {/* Companion Guidance Banner (بوصلة نسمة) */}
         {level.narrativeContext && (
           <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-amber-950/30 p-4 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/60 shadow-xs flex items-start gap-3">
@@ -270,6 +360,48 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
             <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
               التلميحات مصممة تدريجياً لتعينك دون حرق متعة الاكتشاف. استخدام التلميحات يقلل قليلاً من نقاط المكافأة لكنه يساعدك على الاستمرار بسلام.
             </p>
+
+            {/* XP Store for Advanced Hints & Concept Clues */}
+            <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-800 space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-bold text-amber-900 dark:text-amber-200">
+                <span>🪙 متجر إنفاق الـ XP للمساعدة:</span>
+                <span className="bg-amber-200/80 dark:bg-amber-900 px-2 py-0.5 rounded-md tabular-nums">رصيدك: {userScore} XP</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={handleSpendForLetter}
+                  disabled={userScore < 25}
+                  className="py-2 px-3 bg-white dark:bg-stone-800 border border-amber-300 dark:border-amber-700 rounded-xl text-xs font-bold text-amber-900 dark:text-amber-200 hover:bg-amber-100 disabled:opacity-40 transition-all flex items-center justify-between cursor-pointer"
+                >
+                  <span>كشف حرف من الشفرة</span>
+                  <span className="text-[10px] bg-amber-100 dark:bg-amber-900/60 px-1.5 py-0.5 rounded font-mono">25 XP</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSpendForConcept}
+                  disabled={userScore < 30 || revealedConceptClue}
+                  className="py-2 px-3 bg-white dark:bg-stone-800 border border-amber-300 dark:border-amber-700 rounded-xl text-xs font-bold text-amber-900 dark:text-amber-200 hover:bg-amber-100 disabled:opacity-40 transition-all flex items-center justify-between cursor-pointer"
+                >
+                  <span>إضاءة المفهوم النفسي</span>
+                  <span className="text-[10px] bg-amber-100 dark:bg-amber-900/60 px-1.5 py-0.5 rounded font-mono">30 XP</span>
+                </button>
+              </div>
+
+              {revealedLetter && (
+                <div className="p-2 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 rounded-xl text-xs text-emerald-900 dark:text-emerald-200 text-center font-bold animate-in fade-in">
+                  🔑 حرف مكشوف من مفتاح الشفرة: «{revealedLetter}»
+                </div>
+              )}
+
+              {revealedConceptClue && (
+                <div className="p-2 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 rounded-xl text-xs text-emerald-900 dark:text-emerald-200 text-center font-medium animate-in fade-in leading-relaxed">
+                  🧠 <strong>الإضاءة النفسية العميقة:</strong> {level.insightNote}
+                </div>
+              )}
+            </div>
 
             {/* Hint Levels 1, 2, 3 */}
             <div className="space-y-3">
