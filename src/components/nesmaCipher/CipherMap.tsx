@@ -86,19 +86,34 @@ export const CipherMap: React.FC<CipherMapProps> = ({
     const pct = Math.round((worldCompletedCount / 10) * 100);
     if (activeWorldId === 'garden') {
       if (worldCompletedCount === 0) return '🌿 ضباب الصباح الهادئ يلف أرجاء الحديقة؛ ابدأ الخطوة الأولى ليبدأ الضباب بالتراجع.';
-      if (worldCompletedCount < 5) return `🌿 انقشع الضباب بنسبة ${pct}؛ ظهرت براعم زهور السكينة الأولى على جوانب الممر.`;
-      if (worldCompletedCount < 10) return `🌸 تفتحت أزهار الوعي بنسبة ${pct}؛ أوشكت على الوصول لشرفة الإشراق الكبرى.`;
+      if (worldCompletedCount < 5) return `🌿 انقشع الضباب بنسبة ${pct}%؛ ظهرت براعم زهور السكينة الأولى على جوانب الممر.`;
+      if (worldCompletedCount < 10) return `🌸 تفتحت أزهار الوعي بنسبة ${pct}%؛ أوشكت على الوصول لشرفة الإشراق الكبرى.`;
       return '☀️ أشرقت حديقة البدايات بالكامل وتلاشى الضباب تمامًا؛ لقد أتقنت عادات الرفق بالنفس!';
     } else if (activeWorldId === 'library') {
       if (worldCompletedCount === 0) return '📜 أروقة المكتبة شبه مظلمة؛ ابدأ حل مراحل الحدود الشخصية لإضاءة الرفوف.';
-      if (worldCompletedCount < 5) return `🕯️ بدت المصابيح تتوهج تدريجيًا (${pct}% من مسارات المكتبة أُضيئت).`;
+      if (worldCompletedCount < 5) return `🕯️ بدأت المصابيح تتوهج تدريجيًا (${pct}% من مسارات المكتبة أُضيئت).`;
       if (worldCompletedCount < 10) return `📜 أروقة الفكر تتضح معالمها بنسبة ${pct}%؛ أنت قريب جدًا من قاعة النور.`;
       return '✨ قاعة النور مضاءة بالكامل؛ لقد استعدت وضوح رؤيتك وحدودك السليمة.';
-    } else {
+    } else if (activeWorldId === 'cave') {
       if (worldCompletedCount === 0) return '💎 كهف العمق الصامت؛ المسارات متباينة وتتطلب مراقبة واعية.';
       if (worldCompletedCount < 5) return `💎 بدأت بلورات الكهف تعكس الضوء (${pct}% من مسار الوعي متجاوز).`;
       if (worldCompletedCount < 10) return `💎 صدى الإدراك يعلو في الكهف (${pct}%); أنت على عتبة قمة التحرر.`;
       return '🌟 قمة الذات المراقبة متألقة بالكامل وتفتحت حديقة البصيرة الكبرى للوعي والسكينة!';
+    } else if (activeWorldId === 'symbol_maze') {
+      if (worldCompletedCount === 0) return '🌀 متاهة الرموز غامضة وشافية؛ ابدأ فك شفرات التمييز بين السراب والواقع.';
+      if (worldCompletedCount < 5) return `🌀 تم تفكيك ${pct}% من شفرات المتاهة؛ تزايد وضوح المعاني.`;
+      if (worldCompletedCount < 10) return `🌀 اقتربت من اختراق المتاهة بنسبة ${pct}%؛ استمر في التمييز.`;
+      return '✨ اخترقت متاهة الرموز بالكامل وتميزت بوعي الحقيقة واليقين!';
+    } else if (activeWorldId === 'image_secrets') {
+      if (worldCompletedCount === 0) return '🖼️ أسرار الصور تتطلب رؤية بصرية دقيقة لتجميع المعنى الكامل.';
+      if (worldCompletedCount < 5) return `🖼️ اكتملت ${pct}% من التفاصيل البصرية للوحات الوعي.`;
+      if (worldCompletedCount < 10) return `🖼️ الصورة الشاملة اتضحت بنسبة ${pct}%؛ اقتربت من اكتشاف السر الأعظم.`;
+      return '🌟 اكتملت جميع أسرار الصور وتجلت الرؤية الصريحة الصافية!';
+    } else {
+      if (worldCompletedCount === 0) return '🧪 مختبر التفكير والحلول؛ أهلاً بك في العتبة الأخيرة نحو السيادة والوعي الحر.';
+      if (worldCompletedCount < 5) return `🧪 أثمرت التجارب المعرفية بنسبة ${pct}%؛ أصبحت خبيراً في إعادة التأطير.`;
+      if (worldCompletedCount < 10) return `🧪 العرش النهائي على بُعد خطوة بنسبة ${pct}%؛ استعد للتتويج الشامل.`;
+      return '👑 تهانينا العظيمة! أتممت كافة التجارب وحققت السيادة والوعي الحر الأسمى!';
     }
   };
 
@@ -147,7 +162,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
               className="px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-amber-900 dark:text-amber-200 text-xs font-bold flex items-center gap-1.5 hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-all cursor-pointer shadow-2xs"
             >
               <BookOpen className="w-3.5 h-3.5 text-amber-600" />
-              <span>دفتر المقولات ({quotesDiscoveredCount}/5)</span>
+              <span>دفتر المقولات ({quotesDiscoveredCount}/10)</span>
             </button>
 
             <button
@@ -159,7 +174,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
               className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-900 dark:text-emerald-200 text-xs font-bold flex items-center gap-1.5 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-all cursor-pointer shadow-2xs"
             >
               <Flower2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>حديقة الشفرة ({progress.gardenItems.length}/7)</span>
+              <span>حديقة الشفرة ({progress.gardenItems.length}/12)</span>
             </button>
 
             <button
@@ -170,9 +185,9 @@ export const CipherMap: React.FC<CipherMapProps> = ({
                 setCurrentProgress(updated);
               }}
               className="px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200 text-xs font-bold flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-all cursor-pointer shadow-2xs"
-              title="فتح جميع المراحل الثلاثين فوراً للعب الحر"
+              title="فتح جميع المراحل الستين فوراً للعب الحر"
             >
-              <span>🔓 فتح الكل</span>
+              <span>🔓 فتح الكل (60)</span>
             </button>
 
             {/* Difficulty Selector */}
@@ -227,7 +242,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
             <div>
               <span className="text-[11px] text-stone-500 dark:text-stone-400 block">المراحل المنجزة</span>
               <span className="text-base font-bold text-stone-900 dark:text-stone-100 tabular-nums">
-                {totalCompleted} / 30
+                {totalCompleted} / 60
               </span>
             </div>
           </div>
@@ -251,7 +266,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
             <div>
               <span className="text-[11px] text-stone-500 dark:text-stone-400 block">المقولات المكتشفة</span>
               <span className="text-base font-bold text-stone-900 dark:text-stone-100 tabular-nums">
-                {quotesDiscoveredCount} / 5
+                {quotesDiscoveredCount} / 10
               </span>
             </div>
           </div>
@@ -269,14 +284,14 @@ export const CipherMap: React.FC<CipherMapProps> = ({
           </div>
         </div>
 
-        {/* 3 Worlds Navigation Tabs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* 6 Worlds Navigation Tabs */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
           {CIPHER_WORLDS.map((w) => {
             const isSelected = w.id === activeWorldId;
             const [wStart, wEnd] = w.levelsRange;
             const wCompleted = progress.completedLevels.filter(id => id >= wStart && id <= wEnd).length;
             const isUnlocked = progress.unlockedLevels.some(id => id >= wStart);
-            const isWorldDone = (w.id === 'garden' && isGardenComplete) || (w.id === 'library' && isLibraryComplete) || (w.id === 'cave' && isCaveComplete);
+            const isWorldDone = wCompleted === (wEnd - wStart + 1);
 
             return (
               <button

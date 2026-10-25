@@ -1,7 +1,7 @@
 // Lightweight Confetti & Sparkles Particle Generator
 
 export function triggerConfetti(originX = 0.5, originY = 0.5) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
   const canvas = document.createElement('canvas');
   canvas.style.position = 'fixed';

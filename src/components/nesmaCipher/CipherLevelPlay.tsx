@@ -33,7 +33,7 @@ interface CipherLevelPlayProps {
   progress: CipherProgress;
   difficulty: 'easy' | 'medium' | 'hard';
   onDifficultyChange: (diff: 'easy' | 'medium' | 'hard') => void;
-  onSolveLevel: (hintsUsed: number, isDeepChallenge: boolean) => void;
+  onSolveLevel: (solvedLevelId: number, hintsUsed: number, isDeepChallenge: boolean) => void;
   onReturnToMap: () => void;
 }
 
@@ -97,16 +97,29 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
   };
 
   const [isSolved, setIsSolved] = useState<boolean>(false);
+  const isMountedRef = React.useRef<boolean>(true);
+  const hasSolvedRef = React.useRef<boolean>(false);
+
+  React.useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const handleRestartPuzzle = () => {
     soundManager.playClick();
+    hasSolvedRef.current = false;
+    setIsSolved(false);
     setPuzzleKey(prev => prev + 1);
   };
 
-  const handlePuzzleSolved = () => {
+  const handlePuzzleSolved = React.useCallback(() => {
+    if (!isMountedRef.current || hasSolvedRef.current) return;
+    hasSolvedRef.current = true;
     setIsSolved(true);
-    onSolveLevel(hintsUnlockedCount, isDeepChallengeMode);
-  };
+    onSolveLevel(level.id, hintsUnlockedCount, isDeepChallengeMode);
+  }, [level.id, hintsUnlockedCount, isDeepChallengeMode, onSolveLevel]);
 
   return (
     <div className="flex flex-col min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100">

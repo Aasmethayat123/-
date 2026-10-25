@@ -52,6 +52,42 @@ export const CIPHER_WORLDS: CipherWorld[] = [
     icon: '💎',
     levelsRange: [21, 30],
     heroImage: CIPHER_IMAGES.caveReflection
+  },
+  {
+    id: 'symbol_maze',
+    nameAr: 'متاهة الرموز والشفرات الإدراكية',
+    nameEn: 'Maze of Symbols',
+    descAr: 'أغوار الملاحظة والاستنتاج؛ تفكيك الشفرات الإدراكية، تتبع ترتيب الأدلة، واكتشاف الأنماط غير المرئية لتغذية الوعي الذاتي.',
+    themeColor: 'indigo',
+    accentColor: '#6366f1',
+    bgGradient: 'from-indigo-950/80 via-stone-900 to-stone-950',
+    icon: '🌀',
+    levelsRange: [31, 40],
+    heroImage: CIPHER_IMAGES.caveReflection
+  },
+  {
+    id: 'image_secrets',
+    nameAr: 'أسرار الصور والرؤية البصرية',
+    nameEn: 'Secrets of Imagery',
+    descAr: 'رؤية بصرية عميقة لمشاهد ومكونات الوعي؛ استكشاف التفاصيل الدقيقة، تركيب بازل الأفكار، وتجميع الصورة الكاملة للصحة النفسية.',
+    themeColor: 'purple',
+    accentColor: '#a855f7',
+    bgGradient: 'from-purple-950/80 via-stone-900 to-stone-950',
+    icon: '🖼️',
+    levelsRange: [41, 50],
+    heroImage: CIPHER_IMAGES.librarySecrets
+  },
+  {
+    id: 'mind_lab',
+    nameAr: 'مختبر التفكير والحلول التناغمية',
+    nameEn: 'Mind Laboratory',
+    descAr: 'مختبر التناغم والمعرفة المركبة؛ تجارب معرفية لدمج الحلول، ترتيب سيناريوهات المواقف، وتجاوز المغالطات الفكرية بصيرة وسيادة.',
+    themeColor: 'cyan',
+    accentColor: '#06b6d4',
+    bgGradient: 'from-cyan-950/80 via-stone-900 to-stone-950',
+    icon: '🧪',
+    levelsRange: [51, 60],
+    heroImage: CIPHER_IMAGES.gardenDawn
   }
 ];
 
@@ -151,6 +187,101 @@ export const CIPHER_QUOTES: CipherQuote[] = [
     psychologicalMeaning: 'الأفكار تمر في الرأس مثل غيوم في سماء زرقاء أو سيارات في طريق سريع. لست مضطراً للركوب في كل فكرة قلقة، فأنت السماء الصامتة التي تشهد العابرين دون أن تفقد صفاءها.',
     practicalApplication: 'عندما تهاجمك فكرة سلبية متسلطة، قل بصوت داخلي هادئ: «أنا أرى فكرة تقول كذا... وأسمح لها بالمرور مثل ورقة شجر على سطح ماء جارٍ».',
     foundation: 'فك الارتباط المعرفي (Cognitive Defusion) في علاج القبول والالتزام والتأمل القائم على اليقظة.'
+  },
+  {
+    id: 'quote-6',
+    fullText: 'مش كل فكرة تسحرني معناها حقيقة؛ عيني بتتعلم تميّز السراب من الميه.',
+    topic: 'التفريق بين الفكرة والحقيقة الواقعية',
+    categoryAr: 'التفكير الناقد والتأمل المعرفي',
+    worldId: 'symbol_maze',
+    levelIds: [31, 32, 33, 34, 35, 36],
+    tokens: [
+      { levelId: 31, token: 'مش كل فكرة', order: 1 },
+      { levelId: 32, token: 'تسحرني', order: 2 },
+      { levelId: 33, token: 'معناها حقيقة؛', order: 3 },
+      { levelId: 34, token: 'عيني بتتعلم', order: 4 },
+      { levelId: 35, token: 'تميّز السراب', order: 5 },
+      { levelId: 36, token: 'من الميه.', order: 6 }
+    ],
+    psychologicalMeaning: 'العقل يميل لصناعة استنتاجات سريعة وهواجس مقنعة تبدو واقعية تماماً. تطوير حاسة التمييز الملاحظ يمنحك المسافة الكافية لاختبار الفكرة قبل تحويلها إلى قلق حقيقي.',
+    practicalApplication: 'عند التوتر من سيناريو سيء، اسأل نفسك: «هل هذا دليل ملموس يحدث الآن أم مجرد فكرة مقنعة نسجها عقلي؟».',
+    foundation: 'العلاج المعرفي القائم على الأدلة (Reality Testing & Cognitive Reframing).'
+  },
+  {
+    id: 'quote-7',
+    fullText: 'الصورة الكاملة مش بتظهر من أول لقطة؛ الصبر بيجمّع أجزاء المعنى.',
+    topic: 'الصبر ورؤية المشهد الكلي',
+    categoryAr: 'المرونة النفسية والاتزان',
+    worldId: 'symbol_maze',
+    levelIds: [37, 38, 39, 40, 41, 42],
+    tokens: [
+      { levelId: 37, token: 'الصورة الكاملة', order: 1 },
+      { levelId: 38, token: 'مش بتظهر', order: 2 },
+      { levelId: 39, token: 'من أول لقطة؛', order: 3 },
+      { levelId: 40, token: 'الصبر بيجمّع', order: 4 },
+      { levelId: 41, token: 'أجزاء', order: 5 },
+      { levelId: 42, token: 'المعنى.', order: 6 }
+    ],
+    psychologicalMeaning: 'الاندفاع واستعجال النتائج يقطع التسلسل المنطقي للأحداث. الصبر الإيجابي ليس انتصاراً سلبياً بل هو إعادة تجميع هادئة للقطع المبعثرة للحصول على الصورة الكاملة الصحيحة.',
+    practicalApplication: 'لا تحكم على نية أو حدث قبل اكتمال شواهده، وامنح المواقف المعقدة مهلة ٢٤ ساعة لتتضح صورتها.',
+    foundation: 'نظرية التجهيز الإدراكي وحل المشكلات التدرجي.'
+  },
+  {
+    id: 'quote-8',
+    fullText: 'تسمية الأشياء بمسمياتها الصريحة بتشيل نص الخوف والغموض.',
+    topic: 'تسمية المشاعر والوضوح المعرفي',
+    categoryAr: 'التنظيم العاطفي الفعال',
+    worldId: 'image_secrets',
+    levelIds: [43, 44, 45, 46, 47, 48],
+    tokens: [
+      { levelId: 43, token: 'تسمية الأشياء', order: 1 },
+      { levelId: 44, token: 'بمسمياتها', order: 2 },
+      { levelId: 45, token: 'الصريحة', order: 3 },
+      { levelId: 46, token: 'بتشيل', order: 4 },
+      { levelId: 47, token: 'نص الخوف', order: 5 },
+      { levelId: 48, token: 'والغموض.', order: 6 }
+    ],
+    psychologicalMeaning: 'الخوف المبهم يتغذى على الغموض والتعميم. بمجرد إعطاء الشعور المزعج أو العائق اسمه الدقيق (مثلاً: «خوف من التقييم» بدلاً من «أنا ضائع»)، ينخفض نشاط اللوزة الدماغية وتستعيد السيطرة.',
+    practicalApplication: 'استبدل الكلمات المبهمة مثل «أنا حاسس بضيق» بعبارات محددة: «أنا أشعر بالارتباك بسبب كثرة الالتزامات».',
+    foundation: 'تقنية التسمية الانفعالية في علم الأعصاب الإدراكي (Affect Labeling by Matthew Lieberman).'
+  },
+  {
+    id: 'quote-9',
+    fullText: 'لما أغيّر زاوية الرؤية، المشكلة المعقدة بتتحول للغز ممتع.',
+    topic: 'إعادة التأطير المعرفي وطلب زوايا جديدة',
+    categoryAr: 'حل المشكلات الإبداعي',
+    worldId: 'mind_lab',
+    levelIds: [49, 50, 51, 52, 53, 54],
+    tokens: [
+      { levelId: 49, token: 'لما أغيّر', order: 1 },
+      { levelId: 50, token: 'زاوية الرؤية،', order: 2 },
+      { levelId: 51, token: 'المشكلة المعقدة', order: 3 },
+      { levelId: 52, token: 'بتتحول', order: 4 },
+      { levelId: 53, token: 'للغز', order: 5 },
+      { levelId: 54, token: 'ممتع.', order: 6 }
+    ],
+    psychologicalMeaning: 'التثبيت المعرفي يربط عقلك بنفس الزاوية المغلقة للحل. تغيير الزاوية أو النظر للحدث من منظور صديق محب يحول الضغط إلى شغف استكشاف وتحدٍ مرح.',
+    practicalApplication: 'عند الاستغلاق أمام معضلة، انظر إليها من وجهة نظر شخص تحترمه واسأل: «كيف كان سينظر لهذا الموقف بابتسامة وثقة؟».',
+    foundation: 'مفهوم الإطار المعرفي المتعدد والمرونة النفسية.'
+  },
+  {
+    id: 'quote-10',
+    fullText: 'الحكم الذاتي والوعي الحر هما بوصلتي لما الضباب يكتر حواليا.',
+    topic: 'السيادة الداخلية والوعي الحر',
+    categoryAr: 'النضج النفسي والاستقلال الذاتي',
+    worldId: 'mind_lab',
+    levelIds: [55, 56, 57, 58, 59, 60],
+    tokens: [
+      { levelId: 55, token: 'الحكم الذاتي', order: 1 },
+      { levelId: 56, token: 'والوعي الحر', order: 2 },
+      { levelId: 57, token: 'هما بوصلتي', order: 3 },
+      { levelId: 58, token: 'لما الضباب', order: 4 },
+      { levelId: 59, token: 'يكتر', order: 5 },
+      { levelId: 60, token: 'حواليا.', order: 6 }
+    ],
+    psychologicalMeaning: 'التأثر الدائم بضوضاء الآراء والتشويش الخارجي يربك البوصلة الداخلية. الاعتماد على وعيك الخالص وتأطيرك الحكيم يضمن لك الاستقرار مهما اشتدت العواصف.',
+    practicalApplication: 'خصص ٥ دقائق يومياً للصمت التام بعيداً عن الشاشات والآراء لاستعادة النغمة الخاصة بوعيك الحقيقي.',
+    foundation: 'أدبيات الاستقلال الذاتي والسيادة الداخلية في النظرية الإنسانية وعلاج المعنى.'
   }
 ];
 
@@ -1223,6 +1354,1025 @@ export const CIPHER_LEVELS: CipherLevel[] = [
       ],
       logicExplanationAr: 'مسار التطور الإنساني: رفق بالنفس، ثم فهم للمشاعر، ثم صون للحدود، ثم تسامح مع الخطأ، ليتوج بالوعي بالذات المراقبة الحرة.'
     }
+  },
+
+  // ==========================================
+  // العالم الرابع: متاهة الرموز (المستويات 31 - 40)
+  // ==========================================
+  {
+    id: 31,
+    worldId: 'symbol_maze',
+    titleAr: 'فك شفرة السراب واليقين',
+    subtitleAr: 'استخدم جدول الرموز الإدراكية لفك شفرة الفكرة وتفنيد السراب',
+    quoteId: 'quote-6',
+    rewardToken: {
+      type: 'word',
+      value: 'مش كل فكرة',
+      display: 'مش كل فكرة',
+      explanationAr: 'بداية الوعي التحرري: الأفكار ليست حتمية ولا تمثل واقعك بأسره.'
+    },
+    puzzleType: 'symbol_cipher',
+    difficulty: 'medium',
+    xpReward: 120,
+    hints: [
+      'تأمل جدول الرموز: 🌀 تعني "ف"، 🔮 تعني "ك"، 🌟 تعني "ر"، 🌿 تعني "ة".',
+      'اجمع الحروف الأربعة المترجمة بالترتيب لتشكل الكلمة المستهدفة.',
+      'الكلمة هي "فكرة" وهي الوحدة البنائية للتفكير الإنساني.'
+    ],
+    insightNote: 'فهم طبيعة الأفكار كرموز عابرة يمنحك الطاقة لاختيار ما يستحق اهتمامك.',
+    narrativeContext: {
+      storyChapterAr: 'الفصل الرابع: الدخول إلى متاهة الرموز',
+      companionIntroAr: 'مرحباً بك في متاهة الرموز! هنا تختبر قدرتك على التمييز بين حقيقة المشهد وهواجس العقل. دعنا نفك الشفرة الأولى.',
+      companionOutroAr: 'رائع! لقد فككت الشفرة الأولى واكتسبت الرمز: "مش كل فكرة".'
+    },
+    puzzleData: {
+      instructionsAr: 'ترجم الرموز الآتية باستخدام جدول الشفرات لاكتشاف كلمة السر الإدراكية.',
+      cipherTable: { '🌀': 'ف', '🔮': 'ك', '🌟': 'ر', '🌿': 'ة' },
+      encryptedMessage: ['🌀', '🔮', '🌟', '🌿'],
+      targetWord: 'فكرة',
+      hintsLetters: { '🌀': 'ف', '🌿': 'ة' }
+    }
+  },
+  {
+    id: 32,
+    worldId: 'symbol_maze',
+    titleAr: 'نمط التمييز الإدراكي',
+    subtitleAr: 'اكتشف الرمز الناقص في تسلسل التمييز المعرفي للوصول للحقيقة',
+    quoteId: 'quote-6',
+    rewardToken: {
+      type: 'word',
+      value: 'تسحرني',
+      display: 'تسحرني',
+      explanationAr: 'الانبهار بالأفكار القلقة قد يسحر الانتباه، لكن الوعي يفنّد السحر.'
+    },
+    puzzleType: 'pattern_matrix',
+    difficulty: 'medium',
+    xpReward: 130,
+    hints: [
+      'التسلسل يتدرج من: فكرة غامضة 🌫️ -> ملاحظة هادئة 👁️ -> اختبار دليل 🔍 -> ؟',
+      'ما هي النتيجة الطبيعية لإجراء اختبار الدليل الحقيقي؟',
+      'اختر "حقيقة جلية 💡" لإكمال مصفوفة التمييز.'
+    ],
+    insightNote: 'التمييز الإدراكي يحول الغموض الساحر إلى حقيقة ملموسة وواضحة.',
+    puzzleData: {
+      instructionsAr: 'حدد النمط السليم الذي يكمل تسلسل التمييز بين الأوهام والحقائق.',
+      patternSequence: [
+        { id: 'p1', label: 'فكرة طارئة', icon: '🌫️', explanation: 'فكرة مفاجئة تؤثر على الانتباه.' },
+        { id: 'p2', label: 'ملاحظة هادئة', icon: '👁️', explanation: 'التوقف والنظر للفكرة دون اندفاع.' },
+        { id: 'p3', label: 'اختبار الدليل', icon: '🔍', explanation: 'البحث عن دليل ملموس بالواقع.' },
+        { id: 'p4', label: '؟', icon: '❓', explanation: 'المحطة النهائية للتفكير الناقد.' }
+      ],
+      missingIndex: 3,
+      options: [
+        { id: 'opt_truth', label: 'حقيقة جلية', icon: '💡', explanation: 'الوصول لليقين الملموس والتمييز الصريح.', isCorrect: true },
+        { id: 'opt_panic', label: 'ذعر وتوتر مضاعف', icon: '⚡', explanation: 'الانقياد الأعمى للوهن.', isCorrect: false },
+        { id: 'opt_ignore', label: 'هروب وتجاهل تام', icon: '🙈', explanation: 'تجنب المواجهة المعرفية.', isCorrect: false }
+      ],
+      logicExplanationAr: 'مسار التفكير الناقد يبدأ بالانتباه ثم التمحيص للوصول للنور والحقيقة.'
+    }
+  },
+  {
+    id: 33,
+    worldId: 'symbol_maze',
+    titleAr: 'استنتاج شواهد الواقع',
+    subtitleAr: 'ابحث عن أدلة اليقين الثلاثة المخفية في مشهد متاهة الرموز',
+    quoteId: 'quote-6',
+    rewardToken: {
+      type: 'word',
+      value: 'معناها حقيقة؛',
+      display: 'معناها حقيقة؛',
+      explanationAr: 'عدم الارتهان للظنون: ليس كل ما يدور بالرأس حقيقة واقعة.'
+    },
+    puzzleType: 'clue_search',
+    difficulty: 'medium',
+    xpReward: 140,
+    hints: [
+      'ابحث عن "عدسة الفحص 🔍" في الجانب الأيمن العلوي من المشهد.',
+      'ابحث عن "بوصلة الشواهد 🧭" بالقرب من المركز.',
+      'انقر على "مصباح اليقين 💡" في الأسفل لإكمال البحث.'
+    ],
+    insightNote: 'البحث عن شواهد الواقع يزرع الطمأنينة ويطرد الأوهام التلقائية.',
+    puzzleData: {
+      instructionsAr: 'انقر على العناصر الثلاثة المخفية للتحقق من شواهد الواقع.',
+      sceneBackground: CIPHER_IMAGES.caveReflection,
+      hiddenItems: [
+        { id: 'lens', nameAr: 'عدسة الفحص', descriptionAr: 'أداة تمحيص الفكرة قبل تصديقها.', x: 25, y: 30, icon: '🔍' },
+        { id: 'compass', nameAr: 'بوصلة الشواهد', descriptionAr: 'تحدد اتجاه الحقائق الملموسة.', x: 50, y: 55, icon: '🧭' },
+        { id: 'lamp', nameAr: 'مصباح اليقين', descriptionAr: 'ينير ظلمات الشك بالدليل.', x: 75, y: 40, icon: '💡' }
+      ]
+    }
+  },
+  {
+    id: 34,
+    worldId: 'symbol_maze',
+    titleAr: 'متاهة الرموز المضللة',
+    subtitleAr: 'تخطَّ حواجز التشويش واجمع مفاتيح الحقيقة للوصول لمخرج المتاهة',
+    quoteId: 'quote-6',
+    rewardToken: {
+      type: 'word',
+      value: 'عيني بتتعلم',
+      display: 'عيني بتتعلم',
+      explanationAr: 'التدريب المستمر للبصر والوعي يجعلك الخبير الأول في تنظيم ذاتك.'
+    },
+    puzzleType: 'path_maze',
+    difficulty: 'challenging',
+    xpReward: 150,
+    hints: [
+      'حرّك زر الشاشات للوصول إلى مفاتيح الوعي 🔑 قبل التوجه إلى البوابة 🚪.',
+      'تجنب الحواجز الحمراء 🛑 التي تمثل الأفكار التلقائية المضللة.',
+      'اجمع المفتاح الأول في [1,2] ثم المفتاح الثاني في [3,3] ثم اخرج بسلام.'
+    ],
+    insightNote: 'التدرب على تجاوز التشويش يجعل عين الوعي ثاقبة ومدركة.',
+    puzzleData: {
+      instructionsAr: 'حرّك النقطة المضيئة لجمع مفاتيح الوعي ثم اخرج من بوابة المتاهة.',
+      gridRows: 5,
+      gridCols: 5,
+      startPos: [0, 0],
+      endPos: [4, 4],
+      obstacles: [[1, 1], [2, 3], [3, 1]],
+      keyPositions: [[1, 2], [3, 3]],
+      pathTheme: 'courage'
+    }
+  },
+  {
+    id: 35,
+    worldId: 'symbol_maze',
+    titleAr: 'تسلسل تفكيك الهاجس',
+    subtitleAr: 'رتّب خطوات التعامل المعرفي السليم عند ظهور هاجس قلق',
+    quoteId: 'quote-6',
+    rewardToken: {
+      type: 'word',
+      value: 'تميّز السراب',
+      display: 'تميّز السراب',
+      explanationAr: 'قدرتك الفائقة على معرفة السراب والوهم وتوفير جُهدك للواقع.'
+    },
+    puzzleType: 'scenario_order',
+    difficulty: 'medium',
+    xpReward: 160,
+    hints: [
+      'الخطوة الأولى هي ملاحظة الهاجس دون فزع ("أنا ألاحظ فكرة قلقة").',
+      'الخطوة الثانية: سؤال النفس عن الدليل الملموس ("هل يوجد دليل الآن؟").',
+      'الخطوة الأخيرة هي اختيار التصرف المبني على القيم والهدوء.'
+    ],
+    insightNote: 'الترتيب المنطقي للتعامل مع الهاجس يحوله من طوفان إلى مجرد خبر عابر.',
+    puzzleData: {
+      instructionsAr: 'اسحب البطاقات لترتيب خطوات تفكيك الهاجس المعرفي من البداية للنهاية.',
+      situationTitle: 'مواجهة هاجس فكري مفاجئ',
+      situationDesc: 'شعور طارئ بقلق غير مبرر يحاول سلب سكينتك.',
+      steps: [
+        { id: 's1', text: 'ملاحظة الهاجس وتسميته باسمه دون ذعر', correctOrder: 1, reflectionAr: 'الاعتراف بالشعور دون الاستسلام له.' },
+        { id: 's2', text: 'فحص الشواهد والأدلة الواقعية الملموسة', correctOrder: 2, reflectionAr: 'تمييز الحقيقة من نسيج الخيال.' },
+        { id: 's3', text: 'اختيار الاستجابة المعتدلة بناءً على القيم', correctOrder: 3, reflectionAr: 'السيادة والقيادة لوعيك الذاتي.' }
+      ]
+    }
+  },
+  {
+    id: 36,
+    worldId: 'symbol_maze',
+    titleAr: 'شفرة البصيرة الفلكية',
+    subtitleAr: 'فك الشفرة الختامية للمقولة السادسة وافتح بوابة التمييز',
+    quoteId: 'quote-6',
+    rewardToken: {
+      type: 'word',
+      value: 'من الميه.',
+      display: 'من الميه.',
+      explanationAr: 'الوصول لليقين والماء العذب الصافي الذي يروي صحة وعيك.'
+    },
+    puzzleType: 'symbol_cipher',
+    difficulty: 'challenging',
+    xpReward: 180,
+    hints: [
+      'الرمز 💎 يمثل حرف "ت"، 🌟 يمثل "م"، 🌿 يمثل "ي"، 🌊 يمثل "ز".',
+      'فَك شفرة كلمة "تمييز" لإكمال المقولة السادسة.',
+      'التمييز هو سلاحك الأقوى ضد شتات الأفكار.'
+    ],
+    insightNote: 'مبارك! لقد جمعت المقولة السادسة كاملة وأتقنت مهارة التمييز الإدراكي.',
+    puzzleData: {
+      instructionsAr: 'ترجم الشفرة الفلكية لاكتشاف كلمة التمييز الكبرى.',
+      cipherTable: { '💎': 'ت', '🌟': 'م', '🌿': 'ي', '🌊': 'ز' },
+      encryptedMessage: ['💎', '🌟', '🌿', '🌿', '🌊'],
+      targetWord: 'تمييز',
+      hintsLetters: { '💎': 'ت', '🌊': 'ز' }
+    }
+  },
+  {
+    id: 37,
+    worldId: 'symbol_maze',
+    titleAr: 'القطعة الناقصة للمشهد الكلي',
+    subtitleAr: 'اختر الرؤية الشاملة التي تكمل البناء النفسي للصبر والتريث',
+    quoteId: 'quote-7',
+    rewardToken: {
+      type: 'word',
+      value: 'الصورة الكاملة',
+      display: 'الصورة الكاملة',
+      explanationAr: 'رؤية الإطار الشامل تمنحك الاتزان والاستقرار الذهني.'
+    },
+    puzzleType: 'missing_piece',
+    difficulty: 'medium',
+    xpReward: 150,
+    hints: [
+      'المشهد يعرض: نظرة جزئية ضيقة -> اندفاع في الحكم -> تعثر مكرر -> ؟',
+      'ما هي القطعة الناقصة لإصلاح هذه السلسلة واستعادة التوازن؟',
+      'اختر "التريث وجمع أجزاء المشهد 🧩" لتصحيح النتيجة.'
+    ],
+    insightNote: 'القطعة الناقصة في معظم الصراعات هي إعطاء الوقت الكافي لاكتمال الصورة.',
+    puzzleData: {
+      instructionsAr: 'اختر القطعة المعرفية الصحيحة لتتميم لوحة الرؤية الشاملة.',
+      conceptTitle: 'بناء الصورة الكاملة للمواقف',
+      boardItems: [
+        { title: 'النظرة الجزئية', desc: 'الحكم السريع من أول لقطة.', icon: '🔍' },
+        { title: 'الاندفاع العاطفي', desc: 'رد الفعل المباشر دون تفكير.', icon: '⚡' },
+        { title: 'التريث الواعي', desc: 'انتظار اكتمال المعطيات والشواهد.', icon: '🧩' }
+      ],
+      missingSlotIndex: 2,
+      options: [
+        { id: 'opt_patience', title: 'التريث وجمع أجزاء المشهد', desc: 'الانتظار النشط لجمع الحقيقة كاملة.', icon: '🧩', isCorrect: true, feedbackAr: 'إجابة ممتازة! الصبر يجمع أجزاء المعنى.' },
+        { id: 'opt_hurry', title: 'إصدار أحكام قاطعة فوراً', desc: 'إغلاق الملف دون أدلة.', icon: '🔨', isCorrect: false, feedbackAr: 'الاستعجال قد يقتطع أجزاء جوهرية من الحقيقة.' }
+      ]
+    }
+  },
+  {
+    id: 38,
+    worldId: 'symbol_maze',
+    titleAr: 'مصفوفة الصبر التدرجي',
+    subtitleAr: 'استكمل تسلسل خطوات الصبر وتجميع المعنى',
+    quoteId: 'quote-7',
+    rewardToken: {
+      type: 'word',
+      value: 'مش بتظهر',
+      display: 'مش بتظهر',
+      explanationAr: 'تقبل غياب الصورة الكاملة في اللحظة الأولى يحميك من التوتر.'
+    },
+    puzzleType: 'pattern_matrix',
+    difficulty: 'medium',
+    xpReward: 160,
+    hints: [
+      'النمط: بذر الصبر 🌱 -> نمو الفهم 🌿 -> تجميع الأدلة 🧩 -> ؟',
+      'الخطوة النهائية في النمط هي نضج المعنى واكتماله.',
+      'اختر "نضج الحكمة والمعنى 🌸" للحل الصحيح.'
+    ],
+    insightNote: 'الصبر التدرجي هو المحرك السري لاكتشاف الإجابات المعقدة.',
+    puzzleData: {
+      instructionsAr: 'اختر الرمز والعبارة المكملة لمصفوفة نمو الصبر والمعنى.',
+      patternSequence: [
+        { id: 'm1', label: 'بذر الصبر', icon: '🌱', explanation: 'التمهل عند تلقي الصدمات والأنباء.' },
+        { id: 'm2', label: 'نمو الفهم', icon: '🌿', explanation: 'استيعاب الظروف والأسباب.' },
+        { id: 'm3', label: 'تجميع الأدلة', icon: '🧩', explanation: 'ربط النقاط ببعضها.' },
+        { id: 'm4', label: '؟', icon: '❓', explanation: 'الحصاد النهائي للوعي.' }
+      ],
+      missingIndex: 3,
+      options: [
+        { id: 'opt_harvest', label: 'نضج الحكمة والمعنى', icon: '🌸', explanation: 'رؤية المشهد الكبير بوضوح وسكينة.', isCorrect: true },
+        { id: 'opt_despair', label: 'اليأس والتراجع', icon: '🌧️', explanation: 'الاستسلام قبل اكتمال الصورة.', isCorrect: false }
+      ],
+      logicExplanationAr: 'الصبر يثمر دائماً عن حكمة ووضوح تام.'
+    }
+  },
+  {
+    id: 39,
+    worldId: 'symbol_maze',
+    titleAr: 'تحدي تجميع الأدلة والترتيب',
+    subtitleAr: 'تحدٍ مركب يجمع بين فك الشفرة وترتيب عبارة الصبر الكبرى',
+    quoteId: 'quote-7',
+    rewardToken: {
+      type: 'word',
+      value: 'من أول لقطة؛',
+      display: 'من أول لقطة؛',
+      explanationAr: 'البدايات قد تكون ضبابية، لكن الصبر يكشف الطريق.'
+    },
+    puzzleType: 'hybrid_challenge',
+    difficulty: 'challenging',
+    xpReward: 200,
+    hints: [
+      'المرحلة الأولى: فك رموز 🌸 و 🕊️ للحصول على كلمة "صبر".',
+      'المرحلة الثانية: رتّب الكلمات "الصبر", "يجمع", "المعنى".',
+      'أكمل المرحلتين للحصول على مكافأة الخبرة المزدوجة.'
+    ],
+    insightNote: 'الدمج بين فك الشفرة والترتيب ينمي مرونة معالجة البيانات في العقل.',
+    puzzleData: {
+      instructionsAr: 'أكمل التحدي المزدوج: فك الشفرة أولاً ثم رتب عبارة الصبر الجلي.',
+      phase1: {
+        type: 'cipher',
+        cipherKey: { '🌸': 'ص', '🕊️': 'ب', '🌿': 'ر' },
+        codeWords: ['🌸', '🕊️', '🌿'],
+        solution: 'صبر'
+      },
+      phase2: {
+        type: 'order',
+        prompt: 'رتّب الكلمات لتشكل المبدأ النفسي للصبر:',
+        words: ['المعنى', 'الصبر', 'يجمع'],
+        correctOrder: ['الصبر', 'يجمع', 'المعنى']
+      }
+    }
+  },
+  {
+    id: 40,
+    worldId: 'symbol_maze',
+    titleAr: 'متاهة قمة الرموز',
+    subtitleAr: 'اجتاز المتاهة المعقدة للرموز بجمع كافة مفاتيح البصيرة للوصول للعالم التالي',
+    quoteId: 'quote-7',
+    rewardToken: {
+      type: 'word',
+      value: 'الصبر بيجمّع',
+      display: 'الصبر بيجمّع',
+      explanationAr: 'الصبر قوة نشطة يجمع بها العقل أشتات الأفكار المبعثرة.'
+    },
+    puzzleType: 'path_maze',
+    difficulty: 'challenging',
+    xpReward: 220,
+    hints: [
+      'جمع المفاتيح في المتاهة يتطلب زيارة [0,4] و [4,0] قبل بوابات الخروج.',
+      'احذر من الفخاخ [2,2] و [1,3].',
+      'اخرج عند الخلية [4,4] لتتويج العالم الرابع.'
+    ],
+    insightNote: 'تهانينا! لقد أتممت متاهة الرموز ووصلت لقناعة أن الصبر يجمع أجزاء المعنى.',
+    puzzleData: {
+      instructionsAr: 'اعبر متاهة القمة، اجمع المفاتيح المضيئة، وافتح بوابة أسرار الصور.',
+      gridRows: 5,
+      gridCols: 5,
+      startPos: [0, 0],
+      endPos: [4, 4],
+      obstacles: [[1, 1], [2, 2], [3, 3], [1, 3]],
+      keyPositions: [[0, 4], [4, 0]],
+      pathTheme: 'focus'
+    }
+  },
+
+  // ==========================================
+  // العالم الخامس: أسرار الصور (المستويات 41 - 50)
+  // ==========================================
+  {
+    id: 41,
+    worldId: 'image_secrets',
+    titleAr: 'لوحة تجسيد الصبر والسكينة',
+    subtitleAr: 'رتّب قطع البازل التسع لإظهار مشهد كهف التأمل والوضوح',
+    quoteId: 'quote-7',
+    rewardToken: {
+      type: 'word',
+      value: 'أجزاء',
+      display: 'أجزاء',
+      explanationAr: 'كل جزء صغير من تجاربك يسهم في اكتمال نضجك الشخصي.'
+    },
+    puzzleType: 'tile_puzzle',
+    difficulty: 'medium',
+    xpReward: 180,
+    hints: [
+      'بدل بين القطع المبعثرة لإعادة ترتيب صورة الكهف والتأمل.',
+      'ابدأ بتركيب الإطار الخارجي والزوايا الأربع.',
+      'القطعة المركزية تحتوي على البلورة المضيئة.'
+    ],
+    insightNote: 'تجميع قطع البازل يعكس آلية العقل في تجميع التجارب لبناء الحكمة.',
+    narrativeContext: {
+      storyChapterAr: 'الفصل الخامس: الدخول إلى عالم أسرار الصور',
+      companionIntroAr: 'مرحباً بك في أسرار الصور! الصور هنا تحمل معاني ودلالات نفسية عميقة. لندمج البازل لنرى الصورة الكاملة.',
+      companionOutroAr: 'إنجاز ممتاز! اكتملت اللوحة وحصلت على الكلمة الخامس: "أجزاء".'
+    },
+    puzzleData: {
+      instructionsAr: 'انقر على أي قطعتين لتبديل مكانيهما واكتمال لوحة الكهف النوراني.',
+      previewTitle: 'مشهد كهف البصيرة والصبر',
+      gridSize: 3,
+      imageSrc: CIPHER_IMAGES.caveReflection,
+      targetOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    }
+  },
+  {
+    id: 42,
+    worldId: 'image_secrets',
+    titleAr: 'مخبأ أسرار الصور',
+    subtitleAr: 'اكتشف الرموز الأربعة المخبأة في صورة المكتبة لإتمام المقولة السابعة',
+    quoteId: 'quote-7',
+    rewardToken: {
+      type: 'word',
+      value: 'المعنى.',
+      display: 'المعنى.',
+      explanationAr: 'الوصول للمعنى الصريح يمنح حياتك الوضوح والهدف الأسمى.'
+    },
+    puzzleType: 'clue_search',
+    difficulty: 'medium',
+    xpReward: 190,
+    hints: [
+      'انقر على "ريشة المعنى 🪶" في أعلى الرفوف.',
+      'ابحث عن "كتاب الحكمة 📖" في منتصف المكتبة.',
+      'اعثر على "ساعة الصبر ⏳" و"مصباح النور 💡" لإتاحة الفوز.'
+    ],
+    insightNote: 'مبارك! لقد أكملت المقولة السابعة كاملة وجمع كل شطورها.',
+    puzzleData: {
+      instructionsAr: 'جد العناصر الأربعة المخبأة بين رفوف المكتبة واكتشف معنى الصبر.',
+      sceneBackground: CIPHER_IMAGES.librarySecrets,
+      hiddenItems: [
+        { id: 'feather', nameAr: 'ريشة المعنى', descriptionAr: 'تكتب المعاني الصافية.', x: 20, y: 25, icon: '🪶' },
+        { id: 'book', nameAr: 'كتاب الحكمة', descriptionAr: 'يحفظ خبرات السنين.', x: 50, y: 45, icon: '📖' },
+        { id: 'hourglass', nameAr: 'ساعة الصبر', descriptionAr: 'تذكرك ببركة الوقت.', x: 80, y: 30, icon: '⏳' },
+        { id: 'lamp', nameAr: 'مصباح النور', descriptionAr: 'ينير الفكر المظلم.', x: 35, y: 70, icon: '💡' }
+      ]
+    }
+  },
+  {
+    id: 43,
+    worldId: 'image_secrets',
+    titleAr: 'تسمية الشعور الصريح',
+    subtitleAr: 'فك الحروف المبعثرة لتسمية حالة السكينة والارتياح بدقة',
+    quoteId: 'quote-8',
+    rewardToken: {
+      type: 'word',
+      value: 'تسمية الأشياء',
+      display: 'تسمية الأشياء',
+      explanationAr: 'تسمية الأشياء بأسمائها المباشرة تنزع التوتر والمجهول.'
+    },
+    puzzleType: 'letter_scramble',
+    difficulty: 'medium',
+    xpReward: 170,
+    hints: [
+      'الحروف المبعثرة هي: [ا، ر، ت، ي، ا، ح].',
+      'تتشكل منها كلمة تعبر عن زوال العبء والتنفس بصفاء.',
+      'الكلمة هي "ارتياح".'
+    ],
+    insightNote: 'عندما تسمي الشعور المريح باسمه، يترسخ في جسدك وعقلك.',
+    puzzleData: {
+      instructionsAr: 'أعد ترتيب الحروف لتكوين الكلمة الدالة على الشعور الصريح بالسكينة.',
+      targetWord: 'ارتياح',
+      scrambledLetters: ['ح', 'ر', 'ت', 'ا', 'ي', 'ا'],
+      meaningAr: 'حالة زوال التوتر والاطمئنان الصافي.',
+      clueAr: 'شعور يغمر الجسد بالهدوء بعد انجلاء القلق.'
+    }
+  },
+  {
+    id: 44,
+    worldId: 'image_secrets',
+    titleAr: 'لوحة التسمية الدقيقة',
+    subtitleAr: 'اختر التسمية الصريحة والمباشرة للموقف لتفكيك الغموض والخوف',
+    quoteId: 'quote-8',
+    rewardToken: {
+      type: 'word',
+      value: 'بمسمياتها',
+      display: 'بمسمياتها',
+      explanationAr: 'استخدام المسمى الحقيقي يضع الحدود الواضحة للمشكلة.'
+    },
+    puzzleType: 'missing_piece',
+    difficulty: 'medium',
+    xpReward: 180,
+    hints: [
+      'الموقف: تسارع في نبضات القلب قبل إعطاء كلمة أمام الحضور.',
+      'التسمية التعميمية الخاطئة: "أنا سأموت من الخوف".',
+      'التسمية الدقيقة الصحيحة: "هذا حماس طبيعي وجسدي يستعد للتألق".'
+    ],
+    insightNote: 'التسمية الدقيقة تحول تحذير الخوف المبالغ فيه إلى طاقة إنجاز هادئة.',
+    puzzleData: {
+      instructionsAr: 'اختر البطاقة التي تمثل التسمية المعرفية الصريحة والدقيقة للشعور.',
+      conceptTitle: 'إعادة تسمية استجابة الجسد',
+      boardItems: [
+        { title: 'العرض الجسدي', desc: 'تسارع النبض وتعرق اليدين.', icon: '💓' },
+        { title: 'التفسير الكارثي الخاطئ', desc: 'أنا أفقد السيطرة تماماً.', icon: '⚡' },
+        { title: 'التسمية الدقيقة الشافية', desc: 'استجابة حماس طبيعية للموقف.', icon: '🎯' }
+      ],
+      missingSlotIndex: 2,
+      options: [
+        { id: 'opt_precise', title: 'حماس واهتمام طبيعي للموقف', desc: 'تسمية واعية تدعم ثقتك بنفسك.', icon: '🎯', isCorrect: true, feedbackAr: 'ممتاز! التسمية الصريحة تزيل نصف الخوف.' },
+        { id: 'opt_disaster', title: 'انهيار كامل وانهزام', desc: 'تضخيم الشعور دون داعٍ.', icon: '💥', isCorrect: false, feedbackAr: 'هذه التسمية تزيد الغموض والذعر.' }
+      ]
+    }
+  },
+  {
+    id: 45,
+    worldId: 'image_secrets',
+    titleAr: 'تركيب مشهد أمان الحديقة',
+    subtitleAr: 'أعد ترتيب لوحة الحديقة الصباحية للتعرف على أسرار صور الطمأنينة',
+    quoteId: 'quote-8',
+    rewardToken: {
+      type: 'word',
+      value: 'الصريحة',
+      display: 'الصريحة',
+      explanationAr: 'الصراحة مع الذات هي أقصر الطرق للتعافي والسكينة.'
+    },
+    puzzleType: 'tile_puzzle',
+    difficulty: 'medium',
+    xpReward: 200,
+    hints: [
+      'بدل بين المربعات لتشكل لوحة الحديقة النورانية.',
+      'تذكر أن النور والشمس في الصف العلوي.',
+      'مجرى الماء والزهور يقعان في الأسفل.'
+    ],
+    insightNote: 'إتقان تركيب الصور ينمي التنسيق البصري والتركيز الذهني العميق.',
+    puzzleData: {
+      instructionsAr: 'بدل مكان المربعات المبعثرة لإعادة بناء مشهد الحديقة النورانية.',
+      previewTitle: 'حديقة الطمأنينة والصراحة',
+      gridSize: 3,
+      imageSrc: CIPHER_IMAGES.gardenDawn,
+      targetOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    }
+  },
+  {
+    id: 46,
+    worldId: 'image_secrets',
+    titleAr: 'صياغة التسمية الشافية',
+    subtitleAr: 'رتّب الكلمات لتكوين العبارة المعرفية لتفكيك الغموض والخوف',
+    quoteId: 'quote-8',
+    rewardToken: {
+      type: 'word',
+      value: 'بتشيل',
+      display: 'بتشيل',
+      explanationAr: 'قوة التسمية ترفع وتزيل ثقل الغموض عن كاهلك.'
+    },
+    puzzleType: 'word_sequence',
+    difficulty: 'medium',
+    xpReward: 190,
+    hints: [
+      'الجملة تبدأ بكلمة "التسمية".',
+      'ثم كلمة "الدقيقة".',
+      'العبارة الكاملة: "التسمية الدقيقة تزيل الغموض".'
+    ],
+    insightNote: 'الكلمات الواضحة تعمل كمبضع جراح يزيل الأورام الخيالية للمشكلات.',
+    puzzleData: {
+      instructionsAr: 'اسحب الكلمات المبعثرة لترتيب العبارة الشافية للتسمية الدقيقة.',
+      correctSentence: ['التسمية', 'الدقيقة', 'تزيل', 'الغموض'],
+      scrambledWords: ['الغموض', 'تزيل', 'التسمية', 'الدقيقة'],
+      contextAr: 'مبدأ وضوح الرؤية والتغلب على الخوف المبهم.'
+    }
+  },
+  {
+    id: 47,
+    worldId: 'image_secrets',
+    titleAr: 'البحث عن صور الحقيقة',
+    subtitleAr: 'استخرج الرموز الأربعة البصرية المخفية لتجلية الخوف والغموض',
+    quoteId: 'quote-8',
+    rewardToken: {
+      type: 'word',
+      value: 'نص الخوف',
+      display: 'نص الخوف',
+      explanationAr: 'تسمية الخوف تبدد نصفه فوراً، والنصف الباقي يزول بالممارسة.'
+    },
+    puzzleType: 'clue_search',
+    difficulty: 'medium',
+    xpReward: 210,
+    hints: [
+      'انقر على "رمز الشجاعة 🛡️" في يسار الصورة.',
+      'ابحث عن "مفتاح الوضوح 🔑" في الأسفل.',
+      'اعثر على "مرآة الصدق 🪞" و"شعلة الوعي 🕯️".'
+    ],
+    insightNote: 'البحث البصري ينمي الدقة والانتباه للتفاصيل الإيجابية.',
+    puzzleData: {
+      instructionsAr: 'جد الأدلة الأربعة المخفية التي تبدد الغموض والخوف.',
+      sceneBackground: CIPHER_IMAGES.heroMap,
+      hiddenItems: [
+        { id: 'shield', nameAr: 'رمز الشجاعة', descriptionAr: 'يحمي مساحتك من المخاوف.', x: 15, y: 35, icon: '🛡️' },
+        { id: 'key', nameAr: 'مفتاح الوضوح', descriptionAr: 'يفتح المغاليق المبهمة.', x: 45, y: 75, icon: '🔑' },
+        { id: 'mirror', nameAr: 'مرآة الصدق', descriptionAr: 'تعكس المسمى الصريح.', x: 75, y: 25, icon: '🪞' },
+        { id: 'candle', nameAr: 'شعلة الوعي', descriptionAr: 'تضيء عتمة القلق.', x: 85, y: 65, icon: '🕯️' }
+      ]
+    }
+  },
+  {
+    id: 48,
+    worldId: 'image_secrets',
+    titleAr: 'شفرة مرآة الصور',
+    subtitleAr: 'تحدٍ مركب يفك شفرة كلمة "وضوح" ثم يرتّب شطر المقولة الثامنة',
+    quoteId: 'quote-8',
+    rewardToken: {
+      type: 'word',
+      value: 'والغموض.',
+      display: 'والغموض.',
+      explanationAr: 'زوال الغموض تماماً وإحلال النور والأمان مكان الخوف.'
+    },
+    puzzleType: 'hybrid_challenge',
+    difficulty: 'challenging',
+    xpReward: 250,
+    hints: [
+      'المرحلة الأولى: فك رموز 🪞، 🕯️، 🔑 للوصول لكلمة "وضوح".',
+      'المرحلة الثانية: رتّب "تسمية الخوف تزيله".',
+      'بإتمامك للمرحلتين تتوج بالمقولة الثامنة كاملة!'
+    ],
+    insightNote: 'تهانينا! أتقنت المقولة الثامنة واكتسبت أداة التسمية الصريحة لمواجهة القلق.',
+    puzzleData: {
+      instructionsAr: 'فك شفرة كلمة وضوح أولاً، ثم رتب عبارة التسمية الصريحة.',
+      phase1: {
+        type: 'cipher',
+        cipherKey: { '🪞': 'و', '🕯️': 'ض', '🔑': 'و', '✨': 'ح' },
+        codeWords: ['🪞', '🕯️', '🔑', '✨'],
+        solution: 'وضوح'
+      },
+      phase2: {
+        type: 'order',
+        prompt: 'رتّب أجزاء التسمية الشافية:',
+        words: ['تزيله', 'الخوف', 'تسمية'],
+        correctOrder: ['تسمية', 'الخوف', 'تزيله']
+      }
+    }
+  },
+  {
+    id: 49,
+    worldId: 'image_secrets',
+    titleAr: 'تغير زوايا الرؤية البصرية',
+    subtitleAr: 'استكمل النمط البصري لإعادة التأطير وتغيير زاوية النظر للمشكلة',
+    quoteId: 'quote-9',
+    rewardToken: {
+      type: 'word',
+      value: 'لما أغيّر',
+      display: 'لما أغيّر',
+      explanationAr: 'إرادتك في تغيير الزاوية هي أول خطوات الحل الإبداعي.'
+    },
+    puzzleType: 'pattern_matrix',
+    difficulty: 'medium',
+    xpReward: 200,
+    hints: [
+      'النمط: زاوية ضيقة 📐 -> رؤية جانبية 👁️ -> رؤية من الأعلى 🚁 -> ؟',
+      'ما هي النتيجة البصرية لرؤية المشكلة من زاوية شاملة وعلوية؟',
+      'اختر "أفق واسع ولغز ممتع 🌈" لإتمام النمط.'
+    ],
+    insightNote: 'تغيير زاوية النظر يغير كيمياء المشكلة في عقلك من تهديد إلى فرصة.',
+    puzzleData: {
+      instructionsAr: 'اختر الرمز والعبارة المكملة لمصفوفة تحول الزوايا البصرية.',
+      patternSequence: [
+        { id: 'v1', label: 'زاوية ضيقة', icon: '📐', explanation: 'الرؤية الملتصقة الجدارية.' },
+        { id: 'v2', label: 'رؤية جانبية', icon: '👁️', explanation: 'النظر من زاوية صديق.' },
+        { id: 'v3', label: 'منظور علوي', icon: '🚁', explanation: 'رؤية المشهد الكبير بأكمله.' },
+        { id: 'v4', label: '؟', icon: '❓', explanation: 'التحول النهائي للغز.' }
+      ],
+      missingIndex: 3,
+      options: [
+        { id: 'opt_puzzle', label: 'أفق واسع ولغز ممتع', icon: '🌈', explanation: 'تحول المشكلة المغلقة إلى تحدٍ إبداعي ممتع.', isCorrect: true },
+        { id: 'opt_stuck', label: 'انسداد تام', icon: '🛑', explanation: 'البقاء في نفس الزاوية الضيقة.', isCorrect: false }
+      ],
+      logicExplanationAr: 'التحول البصري يحول الثقل إلى استمتاع بالحل.'
+    }
+  },
+  {
+    id: 50,
+    worldId: 'image_secrets',
+    titleAr: 'لوحة الرؤية البصرية الكبرى',
+    subtitleAr: 'تتويج عالم أسرار الصور بتركيب الخريطة الكبرى للوعي والسكينة',
+    quoteId: 'quote-9',
+    rewardToken: {
+      type: 'word',
+      value: 'زاوية الرؤية،',
+      display: 'زاوية الرؤية،',
+      explanationAr: 'المرونة البصرية الذهنية تجعلك قادراً على رؤية الحلول المخفية.'
+    },
+    puzzleType: 'tile_puzzle',
+    difficulty: 'challenging',
+    xpReward: 260,
+    hints: [
+      'أعد ترتيب خريطة الوعي البصرية المكونة من ٩ مربعات.',
+      'البوصلة التاجية تقع في المنتصف [4].',
+      'انقر على القطع لتبديل مكانها حتى يكتمل النور.'
+    ],
+    insightNote: 'مبارك عليك! لقد أنهيت العالم الخامس (أسرار الصور) واكتسبت الرؤية البصرية الشاملة.',
+    puzzleData: {
+      instructionsAr: 'رتّب خريطة البصيرة الكبرى لإتمام العالم الخامس والانتقال لمختبر التفكير.',
+      previewTitle: 'خريطة البصيرة والتحول الإيجابي',
+      gridSize: 3,
+      imageSrc: CIPHER_IMAGES.heroMap,
+      targetOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    }
+  },
+
+  // ==========================================
+  // العالم السادس: مختبر التفكير (المستويات 51 - 60)
+  // ==========================================
+  {
+    id: 51,
+    worldId: 'mind_lab',
+    titleAr: 'مختبر إعادة التأطير المعرفي',
+    subtitleAr: 'رتّب خطوات تجربة تحويل المشكلة المعقدة إلى لغز ممتع بالمعمل المعرفي',
+    quoteId: 'quote-9',
+    rewardToken: {
+      type: 'word',
+      value: 'المشكلة المعقدة',
+      display: 'المشكلة المعقدة',
+      explanationAr: 'المشكلات المعقدة هي مجرد ألغاز تنتظر الزاوية المناسبة للحل.'
+    },
+    puzzleType: 'scenario_order',
+    difficulty: 'medium',
+    xpReward: 210,
+    hints: [
+      'الخطوة 1: إيقاف النظرة التقليدية الضيقة وتفكيك التعقيد.',
+      'الخطوة 2: صياغة سؤال إبداعي ("كيف يمكن تحويل هذا إلى تجربة؟").',
+      'الخطوة 3: الاستمتاع بتطبيق الحل الجديد بابتسامة.'
+    ],
+    insightNote: 'مختبر التفكير يدرب عقلك على تحويل التحديات الصعبة إلى مهارات مكتسبة.',
+    narrativeContext: {
+      storyChapterAr: 'الفصل السادس والأخير: التتويج في مختبر التفكير',
+      companionIntroAr: 'مرحباً بك في مختبر التفكير والحلول! هنا ندمج كل المهارات السابقة لنحكم السيطرة ونصل للسيادة الداخلية الكبرى.',
+      companionOutroAr: 'ممتاز! لقد نجحت التجربة وأضفت لقاموسك: "المشكلة المعقدة".'
+    },
+    puzzleData: {
+      instructionsAr: 'رتّب مراحل التجربة المعرفية لتحويل العائق إلى لغز ممتع.',
+      situationTitle: 'تجربة إعادة التأطير بالمعمل',
+      situationDesc: 'عائق مفاجئ يعطل خطتك ويحتاج لزاوية مبتكرة.',
+      steps: [
+        { id: 'l1', text: 'التوقف عن الرؤية المغلقة وتفكيك عناصر العائق', correctOrder: 1, reflectionAr: 'التحرر من النظرة الأولى.' },
+        { id: 'l2', text: 'طرح سؤال إعادة التأطير الإيجابي المبتكر', correctOrder: 2, reflectionAr: 'فتح آفاق الحلول الممتعة.' },
+        { id: 'l3', text: 'تطبيق الخيار الجديد بشغف ومرونة', correctOrder: 3, reflectionAr: 'الوصول للسيادة والإنجاز.' }
+      ]
+    }
+  },
+  {
+    id: 52,
+    worldId: 'mind_lab',
+    titleAr: 'شفرة المرونة الذهنية',
+    subtitleAr: 'ترجم شفرة العناصر الكيميائية المعرفية لاكتشاف كلمة السر "مرونة"',
+    quoteId: 'quote-9',
+    rewardToken: {
+      type: 'word',
+      value: 'بتتحول',
+      display: 'بتتحول',
+      explanationAr: 'التحول والتغير السلس هو جوهر المرونة النفسية.'
+    },
+    puzzleType: 'symbol_cipher',
+    difficulty: 'medium',
+    xpReward: 220,
+    hints: [
+      'جدول الشفرات: 🧪 تعني "م"، 💎 تعني "ر"، 🌿 تعني "و"، 🔮 تعني "ن"، 🌸 تعني "ة".',
+      'فك الرموز الخمسة بالترتيب.',
+      'الكلمة هي "مرونة".'
+    ],
+    insightNote: 'المرونة الذهنية تجعل العقل كالماء يتكيف مع جميع الأواني دون أن يفقد نقاءه.',
+    puzzleData: {
+      instructionsAr: 'فك الرموز المختبرية للوصول لكلمة السر "مرونة".',
+      cipherTable: { '🧪': 'م', '💎': 'ر', '🌿': 'و', '🔮': 'ن', '🌸': 'ة' },
+      encryptedMessage: ['🧪', '💎', '🌿', '🔮', '🌸'],
+      targetWord: 'مرونة',
+      hintsLetters: { '🧪': 'م', '🌸': 'ة' }
+    }
+  },
+  {
+    id: 53,
+    worldId: 'mind_lab',
+    titleAr: 'مختبر الفرضيات الإيجابية',
+    subtitleAr: 'حدد الفرضية المعرفية الناجحة التي تحول التعقد إلى لغز ممتع',
+    quoteId: 'quote-9',
+    rewardToken: {
+      type: 'word',
+      value: 'للغز',
+      display: 'للغز',
+      explanationAr: 'الألغاز تثير الفضول والإبداع بدلاً من إثارة الخوف والدفاع.'
+    },
+    puzzleType: 'missing_piece',
+    difficulty: 'medium',
+    xpReward: 230,
+    hints: [
+      'الفرضية الخاطئة: "هذا المأزق دمر كل مخططاتي".',
+      'الفرضية المختبرية الناجحة: "هذه الفرصة تدربني على حل الألغاز المعقدة بسرعة".',
+      'اختر الفرضية الناجحة لإتمام التجربة.'
+    ],
+    insightNote: 'صياغة الفرضيات الإيجابية يفتح قنوات الإبداع في القشرة المخية.',
+    puzzleData: {
+      instructionsAr: 'اختر الفرضية المعرفية الناجحة المكملة لمعادلة التفكير الإيجابي.',
+      conceptTitle: 'معادلة تحويل المشكلة إلى لغز',
+      boardItems: [
+        { title: 'المشكلة الأولى', desc: 'تأخر مشروع أو خطة.', icon: '⌛' },
+        { title: 'الفرضية الضيقة', desc: 'أنا غير محظوظ إطلاقاً.', icon: '❌' },
+        { title: 'فرضية المختبر', desc: 'فرصة لاستكشاف زاوية مبتكرة.', icon: '🧪' }
+      ],
+      missingSlotIndex: 2,
+      options: [
+        { id: 'opt_lab_hypothesis', title: 'فرصة لاستكشاف زاوية مبتكرة ممتعة', desc: 'فرضية تطلق طاقات الإبداع والحل.', icon: '🧪', isCorrect: true, feedbackAr: 'أحسنت! الفرضية الإيجابية تحول المشكلة للغز ممتع.' },
+        { id: 'opt_block', title: 'انسداد تام واستسلام', desc: 'فرضية تحبط العزيمة.', icon: '🚫', isCorrect: false, feedbackAr: 'هذه الفرضية تعطل طاقة المختبر.' }
+      ]
+    }
+  },
+  {
+    id: 54,
+    worldId: 'mind_lab',
+    titleAr: 'التحدي المركب لزاويتك الجديدة',
+    subtitleAr: 'دمج فك الشفرة وترتيب شطر المقولة التاسعة لإتمام العالم السادس',
+    quoteId: 'quote-9',
+    rewardToken: {
+      type: 'word',
+      value: 'ممتع.',
+      display: 'ممتع.',
+      explanationAr: 'استمتاع العقل بالرحلة واكتشاف الحلول بابتسامة وثقة.'
+    },
+    puzzleType: 'hybrid_challenge',
+    difficulty: 'challenging',
+    xpReward: 280,
+    hints: [
+      'المرحلة 1: فك شفرة كلمة "أمل" (🧪، 🌟، 💎).',
+      'المرحلة 2: رتّب "تغيير الزاوية يحل المعضلة".',
+      'أكمل التحدي المزدوج لفتح المقولة التاسعة كاملة!'
+    ],
+    insightNote: 'مبارك! لقد أتممت المقولة التاسعة وأصبحت أستاذاً في تغيير زوايا الرؤية.',
+    puzzleData: {
+      instructionsAr: 'أكمل التحدي المزدوج لمختبر التفكير: فك الشفرة أولاً ثم ترتيب الحل.',
+      phase1: {
+        type: 'cipher',
+        cipherKey: { '🧪': 'أ', '🌟': 'م', '💎': 'ل' },
+        codeWords: ['🧪', '🌟', '💎'],
+        solution: 'أمل'
+      },
+      phase2: {
+        type: 'order',
+        prompt: 'رتّب كلمات المعادلة النفسية:',
+        words: ['المعضلة', 'الزاوية', 'تغيير'],
+        correctOrder: ['تغيير', 'الزاوية', 'المعضلة']
+      }
+    }
+  },
+  {
+    id: 55,
+    worldId: 'mind_lab',
+    titleAr: 'متاهة الضباب والبوصلة الداخلية',
+    subtitleAr: 'اعبر المتاهة الكثيفة باستخدام البوصلة الداخلية والوعي الحر',
+    quoteId: 'quote-10',
+    rewardToken: {
+      type: 'word',
+      value: 'الحكم الذاتي',
+      display: 'الحكم الذاتي',
+      explanationAr: 'السيادة والقدرة على اتخاذ القرار المستقل منبع قوتك.'
+    },
+    puzzleType: 'path_maze',
+    difficulty: 'challenging',
+    xpReward: 270,
+    hints: [
+      'المتاهة مليئة بسحب الضباب والآراء المشتتة.',
+      'اجمع البوصلة الأولى في [0,3] والبوصلة الثانية في [3,0].',
+      'تجنب حواجز التشويش في [2,2] واخرج عند [4,4].'
+    ],
+    insightNote: 'البوصلة الداخلية تنير لك الطريق مهما كانت آراء الآخرين مشتتة.',
+    puzzleData: {
+      instructionsAr: 'وجه نقطة الوعي لجمع البوصلات الداخلية والخروج من ضباب المتاهة.',
+      gridRows: 5,
+      gridCols: 5,
+      startPos: [0, 0],
+      endPos: [4, 4],
+      obstacles: [[1, 2], [2, 2], [3, 2]],
+      keyPositions: [[0, 3], [3, 0]],
+      pathTheme: 'serenity'
+    }
+  },
+  {
+    id: 56,
+    worldId: 'mind_lab',
+    titleAr: 'مصفوفة الاستقلال الإدراكي',
+    subtitleAr: 'استكمل تسلسل رموز الاستقلال الذهني والسيادة الذاتية',
+    quoteId: 'quote-10',
+    rewardToken: {
+      type: 'word',
+      value: 'والوعي الحر',
+      display: 'والوعي الحر',
+      explanationAr: 'الوعي الحر التافه من القيود والتأثيرات الضارة.'
+    },
+    puzzleType: 'pattern_matrix',
+    difficulty: 'medium',
+    xpReward: 260,
+    hints: [
+      'التسلسل: صمت خارجي 🧘‍♂️ -> استماع للذات 👂 -> توجيه البوصلة 🧭 -> ؟',
+      'ما هو الرمز المكمل للسيادة والوعي الحر؟',
+      'اختر "تاج الحكم الذاتي والسيادة 👑" لإتمام المصفوفة.'
+    ],
+    insightNote: 'الاستقلال الإدراكي يحميك من الانجراف وراء صخب المشتتات.',
+    puzzleData: {
+      instructionsAr: 'حدد النمط السليم المكمل لمصفوفة الاستقلال والوعي الحر.',
+      patternSequence: [
+        { id: 'i1', label: 'صمت وتأمل', icon: '🧘‍♂️', explanation: 'الانسحاب من الضوضاء الخارجية.' },
+        { id: 'i2', label: 'استماع داخلي', icon: '👂', explanation: 'الإنصات لنبرة الحكمة الداخلية.' },
+        { id: 'i3', label: 'توجيه البوصلة', icon: '🧭', explanation: 'تحديد الاتجاه المتوافق مع قيمك.' },
+        { id: 'i4', label: '؟', icon: '❓', explanation: 'التاج النهائي للوعي.' }
+      ],
+      missingIndex: 3,
+      options: [
+        { id: 'opt_sovereignty', label: 'تاج الحكم الذاتي والسيادة', icon: '👑', explanation: 'الاستقلال الكامل والسيادة على قراراتك.', isCorrect: true },
+        { id: 'opt_conformity', label: 'التبعية العمياء', icon: '🐑', explanation: 'الانقياد لآراء الآخرين المشتتة.', isCorrect: false }
+      ],
+      logicExplanationAr: 'الوعي الحر يتوج صاحبه بالسيادة والاتزان.'
+    }
+  },
+  {
+    id: 57,
+    worldId: 'mind_lab',
+    titleAr: 'خطوات استعادة الحكم الذاتي',
+    subtitleAr: 'رتّب خطوات استعادة البوصلة الداخلية عند كثرة ضوضاء الآراء',
+    quoteId: 'quote-10',
+    rewardToken: {
+      type: 'word',
+      value: 'هما بوصلتي',
+      display: 'هما بوصلتي',
+      explanationAr: 'بوصلتك الداخلية لا تخطئ عندما تعتمد على قيمك ووعيك.'
+    },
+    puzzleType: 'scenario_order',
+    difficulty: 'medium',
+    xpReward: 280,
+    hints: [
+      'الخطوة 1: الابتعاد عن الضوضاء والآراء المتضاربة.',
+      'الخطوة 2: الرجوع للقيم الذاتية والوعي الصافي.',
+      'الخطوة 3: اتخاذ القرار المستقل بثقة وسكينة.'
+    ],
+    insightNote: 'استعادة البوصلة يتم بخطوات هادئة تعيدك لمركز قوتك الداخلي.',
+    puzzleData: {
+      instructionsAr: 'اسحب البطاقات لترتيب خطوات استعادة الحكم الذاتي والبوصلة.',
+      situationTitle: 'ضوضاء آراء وضغوط خارجية',
+      situationDesc: 'حالة ارتباك بسبب كثرة التوجيهات والآراء المتناقضة من حولك.',
+      steps: [
+        { id: 'g1', text: 'تخفيف الضوضاء الخارجية والعودة للصمت الداخلي', correctOrder: 1, reflectionAr: 'حماية مساحتك العقلية.' },
+        { id: 'g2', text: 'استشارة البوصلة الذاتية والقيم الشخصية الصادقة', correctOrder: 2, reflectionAr: 'فحص ما يتوافق مع حقيقتك.' },
+        { id: 'g3', text: 'إصدار الحكم المستقل والالتزام به بهدوء', correctOrder: 3, reflectionAr: 'السيادة والوعي الحر.' }
+      ]
+    }
+  },
+  {
+    id: 58,
+    worldId: 'mind_lab',
+    titleAr: 'مقولة البوصلة النورانية',
+    subtitleAr: 'رتّب الكلمات لتشكل عبارة السيادة والوعي الحر الأمينة',
+    quoteId: 'quote-10',
+    rewardToken: {
+      type: 'word',
+      value: 'لما الضباب',
+      display: 'لما الضباب',
+      explanationAr: 'الضباب المؤقت يزول ولا يؤثر على ثبات الجبال والمبادئ.'
+    },
+    puzzleType: 'word_sequence',
+    difficulty: 'medium',
+    xpReward: 290,
+    hints: [
+      'الكلمة الأولى: "وعيي".',
+      'ثم "الحر", "هو", "بوصلتي".',
+      'الترتيب: "وعيي الحر هو بوصلتي الأمينة".'
+    ],
+    insightNote: 'الوعي الحر هو الحارس الأمين لسكينتك واستقلالك.',
+    puzzleData: {
+      instructionsAr: 'رتّب الكلمات المبعثرة لتأكيد شفرة البوصلة الداخلية.',
+      correctSentence: ['وعيي', 'الحر', 'هو', 'بوصلتي', 'الأمينة'],
+      scrambledWords: ['الأمينة', 'بوصلتي', 'الحر', 'وعيي', 'هو'],
+      contextAr: 'السيادة والاعتماد على البوصلة الداخلية.'
+    }
+  },
+  {
+    id: 59,
+    worldId: 'mind_lab',
+    titleAr: 'التحدي قبل النهائي لمختبر التفكير',
+    subtitleAr: 'فك شفرة كلمة "حرية" وترتيب عبارة القيادة الذاتية',
+    quoteId: 'quote-10',
+    rewardToken: {
+      type: 'word',
+      value: 'يكتر',
+      display: 'يكتر',
+      explanationAr: 'مهما كثر الضباب، فإن نور وعيك يظل مشعاً وقادراً على اختراقه.'
+    },
+    puzzleType: 'hybrid_challenge',
+    difficulty: 'challenging',
+    xpReward: 350,
+    hints: [
+      'المرحلة 1: فك رموز 👑، 💎، 🌟، 🌸 لتشكيل كلمة "حرية".',
+      'المرحلة 2: رتّب "الوعي الذاتي يوجه خطواتي".',
+      'أكمل التحدي لفتح العتبة الأخيرة للتتويج الشامل!'
+    ],
+    insightNote: 'أنت على بعد خطوة واحدة من إتمام كافة المستويات الـ 60 وتتويج رحلة شفرة نسمة الكبرى!',
+    puzzleData: {
+      instructionsAr: 'أكمل التحدي المركب قبل النهائي: فك الشفرة ثم رتّب عبارة القيادة.',
+      phase1: {
+        type: 'cipher',
+        cipherKey: { '👑': 'ح', '💎': 'ر', '🌟': 'ي', '🌸': 'ة' },
+        codeWords: ['👑', '💎', '🌟', '🌸'],
+        solution: 'حرية'
+      },
+      phase2: {
+        type: 'order',
+        prompt: 'رتّب عبارة القيادة الذاتية:',
+        words: ['خطواتي', 'الوعي', 'يوجه'],
+        correctOrder: ['الوعي', 'يوجه', 'خطواتي']
+      }
+    }
+  },
+  {
+    id: 60,
+    worldId: 'mind_lab',
+    titleAr: 'التتويج الأعظم لشفرة نسمة الكبرى',
+    subtitleAr: 'اللغز الختامي لفك شفرة المستويات الـ 60 كاملة وتتويج تاج الوعي والسيادة',
+    quoteId: 'quote-10',
+    rewardToken: {
+      type: 'word',
+      value: 'حواليا.',
+      display: 'حواليا.',
+      explanationAr: 'كلمة التتويج والسيادة الكبرى: أنت سيد وعيك ومالك لسكينتك التامة.'
+    },
+    puzzleType: 'pattern_matrix',
+    difficulty: 'challenging',
+    xpReward: 500,
+    hints: [
+      'تأمل مسار العوالم الستة كاملة: حديقة البدايات -> مكتبة الأسرار -> كهف التفكير -> متاهة الرموز -> أسرار الصور -> مختبر التفكير.',
+      'ما هي القمة الشاملة التي تتوج هذه الرحلة المعرفية العظيمة؟',
+      'اختر "تاج السيادة والوعي الحر الأسمى 👑" لإتمام اللعبة بالكامل كفاتح حكيم!'
+    ],
+    insightNote: 'ألف مبارك! لقد أتممت 60 مرحلة كاملة من لعبة «شفرة نسمة»، وجمعت 10 مقولات خالدة، وحققت السيادة النفسية والوعي الحر الأسمى!',
+    puzzleData: {
+      instructionsAr: 'اختر التتويج النهائي الأعظم الذي يكلل رحلتك عبر العوالم الستة لشفرة نسمة.',
+      patternSequence: [
+        { id: 'w1', label: 'حديقة البدايات', icon: '🌱', explanation: 'الرفق بالنفس والخطوة الصغيرة.' },
+        { id: 'w2', label: 'مكتبة الأسرار', icon: '📜', explanation: 'الحدود الشخصية وتسمية المشاعر.' },
+        { id: 'w3', label: 'كهف التفكير', icon: '💎', explanation: 'الذات المراقبة وتفكيك الأفكار.' },
+        { id: 'w4', label: 'متاهة الرموز', icon: '🌀', explanation: 'التمييز بين السراب والواقع.' },
+        { id: 'w5', label: 'أسرار الصور', icon: '🖼️', explanation: 'الرؤية الشاملة والتسمية الصريحة.' },
+        { id: 'w6', label: 'مختبر التفكير', icon: '🧪', explanation: 'إعادة التأطير والسيادة الذاتية.' },
+        { id: 'w7', label: '؟', icon: '❓', explanation: 'التاج الأعظم للرحلة.' }
+      ],
+      missingIndex: 6,
+      options: [
+        { id: 'opt_grand_mastery', label: 'تاج السيادة والوعي الحر الأسمى', icon: '👑', explanation: 'الحكم الذاتي والوعي الحر هما بوصلتي لما الضباب يكتر حواليا.', isCorrect: true },
+        { id: 'opt_back_to_zero', label: 'الضياع والتخبط القديم', icon: '🌫️', explanation: 'الرجوع لنقطة الصفر.', isCorrect: false },
+        { id: 'opt_external_noise', label: 'الانقياد لضوضاء الآخرين', icon: '📢', explanation: 'التخلي عن البوصلة الداخلية.', isCorrect: false }
+      ],
+      logicExplanationAr: 'مسار النضج الشامل: من البدايات الرفيقة إلى الحكم الذاتي والسيادة النفسية الكاملة.'
+    }
   }
 ];
 
@@ -1279,9 +2429,55 @@ export const CIPHER_GARDEN_COLLECTIBLES: GardenCollectible[] = [
   {
     id: 'grand_tree',
     nameAr: 'شجرة الحياة والنور الكبرى',
+    nameEn: 'Grand Tree of Life',
     descAr: 'تتفتح أوراقها الذهبية في سماء الحديقة عند إكمال المستوى 30 وفك شفرة نسمة الكبرى بالكامل.',
     icon: '🌳',
     requiredLevel: 30,
     category: 'plant'
+  },
+  {
+    id: 'symbol_astrolabe',
+    nameAr: 'أسترلاب الرموز البصيرة',
+    nameEn: 'Symbol Astrolabe',
+    descAr: 'يوضع على القاعدة الحجرية عند إكمال متاهة الرموز بالمستوى 36. رمز للتفريق بين السراب والواقع.',
+    icon: '🌀',
+    requiredLevel: 36,
+    category: 'stone'
+  },
+  {
+    id: 'golden_lens',
+    nameAr: 'عدسة الرؤية الكاملة الذهبية',
+    nameEn: 'Golden Perception Lens',
+    descAr: 'تضيء ركن الحديقة عند اكتشاف مقولة الصبر بالمستوى 42. رمز لصبر تجميع الصورة.',
+    icon: '🔍',
+    requiredLevel: 42,
+    category: 'light'
+  },
+  {
+    id: 'clarity_mirror',
+    nameAr: 'مرآة التسمية والوضوح النقي',
+    nameEn: 'Mirror of Naming Clarity',
+    descAr: 'تتوهج بالماء عند إكمال أسرار الصور بالمستوى 48. رمز لتسمية المشاعر وإزالة الخوف.',
+    icon: '🪞',
+    requiredLevel: 48,
+    category: 'fountain'
+  },
+  {
+    id: 'mind_prism',
+    nameAr: 'منشور التناغم الذهني',
+    nameEn: 'Mind Prism of Harmony',
+    descAr: 'يعكس ألوان الطيف في الحديقة عند حل تجارب مختبر التفكير بالمستوى 54. رمز لإعادة التأطير.',
+    icon: '🔮',
+    requiredLevel: 54,
+    category: 'stone'
+  },
+  {
+    id: 'mastery_crown',
+    nameAr: 'تاج السيادة والوعي الأسمى الكوني',
+    nameEn: 'Ultimate Mastery Crown',
+    descAr: 'يتوج قمة الحديقة النورانية عند إكمال المستويات الـ 60 كاملة وتتويج رحلة شفرة نسمة الكبرى.',
+    icon: '👑',
+    requiredLevel: 60,
+    category: 'light'
   }
 ];

@@ -84,6 +84,39 @@ export interface GameCatalogItem {
 
 export const ALL_36_GAMES: GameCatalogItem[] = [
   // =========================================================================
+  // المغامرة الموحدة الكبرى: جزيرة الأسرار المتحركة
+  // =========================================================================
+  {
+    id: 'moving-island',
+    number: '🏝️',
+    nameAr: 'جزيرة الأسرار المتحركة — رحلة اكتشاف ما وراء الألغاز',
+    nameEn: 'Moving Island of Secrets — Beyond the Puzzles',
+    descAr: 'مغامرة موحّدة تربط ٦ ألعاب في خريطة حية بـ ٩ مناطق، ٢٤ تحدياً مترابطاً، مقتنيات وظيفية، ولغز ختامي كبير.',
+    descEn: 'A unified archipelago adventure connecting 6 games across 9 stateful regions, 24 challenges, and a Grand Finale.',
+    categoryKey: 'nesma9',
+    categoryAr: 'نسمة حياة — المغامرة الموحدة',
+    categoryEn: 'Nesma Hayat — Unified Meta-Adventure',
+    ideaAndGoalAr: 'ربط التقدم الحقيقي في الألعاب الست لفتح الجسور والممرات السرية وغرفة الكنوز ومعبد البصيرة.',
+    ideaAndGoalEn: 'Unite progress across 6 games to repair bridges, reveal hidden observatories, and unlock the Grand Finale.',
+    howToPlayAr: 'استكشف مناطق الجزيرة، اجمع الشظايا والبلورات والبذور والمفاتيح، وحل الآليات المتقاطعة واللغز الختامي.',
+    howToPlayEn: 'Explore regions, gather functional collectibles and clues, and solve cross-game mechanisms.',
+    approxDuration: 'مغامرة مفتوحة مترابطة',
+    interactionTypeAr: 'خريطة حية متغيرة وألغاز متقاطعة',
+    interactionTypeEn: 'Stateful world map & cross-game puzzles',
+    experienceType: 'cognitive',
+    suitableForAr: 'محبي الاستكشاف، التحديات المترابطة، وكشف الأسرار العميقة بهدوء',
+    suitableForEn: 'Explorers seeking interconnected challenges, collectibles, and meaningful progression',
+    worksOffline: true,
+    savesData: true,
+    overlapNoteAr: 'توحّد ٦ ألعاب دون تكرارها مع نظام حفظ مستقل ومترابط.',
+    overlapNoteEn: 'Unifies 6 existing games without duplicating them.',
+    states: ['mental_challenge', 'try_new', 'focus', 'understand_self'],
+    icon: Compass,
+    color: 'from-teal-700 via-emerald-700 to-amber-600',
+    badgeAr: 'جزيرة الأسرار 🏝️',
+    badgeEn: 'Secrets Island 🏝️'
+  },
+  // =========================================================================
   // اللعبة الكبرى: شفرة نسمة (المغامرة النفسية القصصية)
   // =========================================================================
   {

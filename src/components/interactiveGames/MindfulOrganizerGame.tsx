@@ -322,8 +322,10 @@ export const MindfulOrganizerGame: React.FC<MindfulOrganizerGameProps> = ({
               <div 
                 key={item.id}
                 onClick={(e) => {
-                  e.stopPropagation();
-                  handleReturnToTray(item);
+                  if (!selectedItem) {
+                    e.stopPropagation();
+                    handleReturnToTray(item);
+                  }
                 }}
                 className="group relative flex flex-col items-center justify-center p-2 rounded-xl bg-white dark:bg-stone-800 border shadow-xs hover:scale-105 transition-transform cursor-pointer"
                 title={isAr ? 'انقر لإعادته للصندوق' : 'Click to return to tray'}
@@ -363,8 +365,10 @@ export const MindfulOrganizerGame: React.FC<MindfulOrganizerGameProps> = ({
               <div 
                 key={item.id}
                 onClick={(e) => {
-                  e.stopPropagation();
-                  handleReturnToTray(item);
+                  if (!selectedItem) {
+                    e.stopPropagation();
+                    handleReturnToTray(item);
+                  }
                 }}
                 className={`group relative flex flex-col items-center justify-end p-2 rounded-xl text-white border shadow-xs hover:scale-105 transition-transform cursor-pointer ${item.color}`}
                 style={{ height: `${item.height * 14 + 20}px`, minWidth: '42px' }}
@@ -405,8 +409,10 @@ export const MindfulOrganizerGame: React.FC<MindfulOrganizerGameProps> = ({
               <div 
                 key={item.id}
                 onClick={(e) => {
-                  e.stopPropagation();
-                  handleReturnToTray(item);
+                  if (!selectedItem) {
+                    e.stopPropagation();
+                    handleReturnToTray(item);
+                  }
                 }}
                 className="group relative flex flex-col items-center justify-center p-2 rounded-xl bg-white dark:bg-stone-800 border shadow-xs hover:scale-105 transition-transform cursor-pointer"
                 title={isAr ? 'انقر لإعادته للصندوق' : 'Click to return to tray'}

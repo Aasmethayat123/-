@@ -111,16 +111,40 @@ export const GamesLibrary: React.FC<GamesLibraryProps> = ({
           </p>
         </div>
 
-        {/* Back to Home Button */}
-        <button
-          onClick={() => {
-            soundManager.playSoftTap();
-            onBackToHome();
-          }}
-          className="px-4 py-2 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-750 text-stone-800 dark:text-stone-200 rounded-xl text-xs font-bold transition-colors cursor-pointer shrink-0 self-start sm:self-auto border border-stone-200 dark:border-stone-700"
-        >
-          {isAr ? '← العودة لمغامرتك' : '← Back to Adventure'}
-        </button>
+        {/* Action Buttons Header */}
+        <div className="flex items-center gap-2 flex-wrap shrink-0 self-start sm:self-auto">
+          <button
+            onClick={() => {
+              soundManager.playChime();
+              onSelectGame('moving-island' as GameMode);
+            }}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black transition-all cursor-pointer shadow-md flex items-center gap-1.5"
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>{isAr ? 'جزيرة الأسرار المتحركة 🏝️' : 'Secrets Island 🏝️'}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              soundManager.playChime();
+              onSelectGame('smart-games-hub' as GameMode);
+            }}
+            className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl text-xs font-black transition-all cursor-pointer shadow-md flex items-center gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>{isAr ? 'مركز التحديات المتجددة 🎯' : 'Smart Games Hub 🎯'}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              soundManager.playSoftTap();
+              onBackToHome();
+            }}
+            className="px-4 py-2 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-750 text-stone-800 dark:text-stone-200 rounded-xl text-xs font-bold transition-colors cursor-pointer border border-stone-200 dark:border-stone-700"
+          >
+            {isAr ? '← العودة لمغامرتك' : '← Back to Adventure'}
+          </button>
+        </div>
       </div>
 
       {/* Search & Filter Bar */}

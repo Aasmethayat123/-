@@ -28,12 +28,14 @@ export function loadCipherProgress(): CipherProgress {
     }
 
     // Validate arrays and numbers strictly
+    const maxLevels = CIPHER_LEVELS.length || 60;
+
     const completedLevels = Array.isArray(parsed.completedLevels)
-      ? parsed.completedLevels.filter((id: unknown): id is number => typeof id === 'number' && id >= 1 && id <= 30)
+      ? parsed.completedLevels.filter((id: unknown): id is number => typeof id === 'number' && id >= 1 && id <= maxLevels)
       : [];
 
     const unlockedLevels = Array.isArray(parsed.unlockedLevels) && parsed.unlockedLevels.length > 0
-      ? parsed.unlockedLevels.filter((id: unknown): id is number => typeof id === 'number' && id >= 1 && id <= 30)
+      ? parsed.unlockedLevels.filter((id: unknown): id is number => typeof id === 'number' && id >= 1 && id <= maxLevels)
       : [1];
 
     if (!unlockedLevels.includes(1)) unlockedLevels.push(1);
@@ -43,7 +45,7 @@ export function loadCipherProgress(): CipherProgress {
       Object.entries(parsed.levelStars).forEach(([k, v]) => {
         const lvlId = parseInt(k, 10);
         const stars = typeof v === 'number' ? Math.max(0, Math.min(3, Math.round(v))) : 0;
-        if (!isNaN(lvlId) && lvlId >= 1 && lvlId <= 30 && stars > 0) {
+        if (!isNaN(lvlId) && lvlId >= 1 && lvlId <= maxLevels && stars > 0) {
           levelStars[lvlId] = stars;
         }
       });
@@ -64,7 +66,7 @@ export function loadCipherProgress(): CipherProgress {
       Object.entries(parsed.hintsUsedCount).forEach(([k, v]) => {
         const lvlId = parseInt(k, 10);
         const hints = typeof v === 'number' ? Math.max(0, Math.min(3, Math.round(v))) : 0;
-        if (!isNaN(lvlId) && lvlId >= 1 && lvlId <= 30) {
+        if (!isNaN(lvlId) && lvlId >= 1 && lvlId <= maxLevels) {
           hintsUsedCount[lvlId] = hints;
         }
       });
@@ -74,7 +76,7 @@ export function loadCipherProgress(): CipherProgress {
       ? parsed.secretDoorsUnlocked.filter((id: unknown): id is string => typeof id === 'string')
       : [];
 
-    const lastPlayedLevel = typeof parsed.lastPlayedLevel === 'number' && parsed.lastPlayedLevel >= 1 && parsed.lastPlayedLevel <= 30
+    const lastPlayedLevel = typeof parsed.lastPlayedLevel === 'number' && parsed.lastPlayedLevel >= 1 && parsed.lastPlayedLevel <= maxLevels
       ? parsed.lastPlayedLevel
       : 1;
 
@@ -143,14 +145,16 @@ export function completeCipherLevel(
 
   // 2. Unlock next level (e.g. if level 1 completed, level 2 unlocks)
   const nextLevelToUnlock = levelId + 1;
-  const nextUnlocked = (nextLevelToUnlock <= 30 && !current.unlockedLevels.includes(nextLevelToUnlock))
+  const maxLevels = CIPHER_LEVELS.length || 60;
+  const nextUnlocked = (nextLevelToUnlock <= maxLevels && !current.unlockedLevels.includes(nextLevelToUnlock))
     ? [...current.unlockedLevels, nextLevelToUnlock].sort((a, b) => a - b)
     : current.unlockedLevels;
 
-  // 3. Record hints used
+  // 3. Record best (minimum) hints used
+  const prevHints = current.hintsUsedCount[levelId];
   const nextHints = {
     ...current.hintsUsedCount,
-    [levelId]: hintsUsed
+    [levelId]: prevHints !== undefined ? Math.min(prevHints, hintsUsed) : hintsUsed
   };
 
   // 4. Check if a full quote was completed
@@ -226,7 +230,8 @@ export function unlockSecretDoor(secretId: string): CipherProgress {
 
 export function unlockAllCipherLevels(): CipherProgress {
   const current = loadCipherProgress();
-  const allLevels = Array.from({ length: 30 }, (_, i) => i + 1);
+  const maxLevels = CIPHER_LEVELS.length || 60;
+  const allLevels = Array.from({ length: maxLevels }, (_, i) => i + 1);
   const updatedProgress: CipherProgress = {
     ...current,
     unlockedLevels: allLevels

@@ -19,14 +19,25 @@ export const LetterScramblePuzzle: React.FC<LetterScramblePuzzleProps> = ({ data
   const [isSolved, setIsSolved] = useState<boolean>(false);
   const [errorShake, setErrorShake] = useState<boolean>(false);
 
+  const solvedTriggeredRef = React.useRef<boolean>(false);
+  const solveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (solveTimerRef.current) clearTimeout(solveTimerRef.current);
+    };
+  }, []);
+
   // Check whenever placed letters match target word length
   useEffect(() => {
+    if (solvedTriggeredRef.current) return;
     if (placed.length === data.targetWord.length) {
       const currentWord = placed.map(p => p.char).join('');
       if (currentWord === data.targetWord) {
+        solvedTriggeredRef.current = true;
         setIsSolved(true);
         soundManager.playCorrect();
-        setTimeout(() => {
+        solveTimerRef.current = setTimeout(() => {
           onSolve();
         }, 700);
       } else {
@@ -38,6 +49,14 @@ export const LetterScramblePuzzle: React.FC<LetterScramblePuzzleProps> = ({ data
       }
     }
   }, [placed, data.targetWord, onSolve]);
+
+  const handleResetRefSafe = () => {
+    solvedTriggeredRef.current = false;
+    if (solveTimerRef.current) {
+      clearTimeout(solveTimerRef.current);
+      solveTimerRef.current = null;
+    }
+  };
 
   const handlePickFromBank = (item: { id: string; char: string }) => {
     if (isSolved || placed.length >= data.targetWord.length) return;
@@ -54,6 +73,7 @@ export const LetterScramblePuzzle: React.FC<LetterScramblePuzzleProps> = ({ data
   };
 
   const handleReset = () => {
+    handleResetRefSafe();
     setBank(data.scrambledLetters.map((char, idx) => ({ id: `${char}-${idx}`, char })));
     setPlaced([]);
     setIsSolved(false);

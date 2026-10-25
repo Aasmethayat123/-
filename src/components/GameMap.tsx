@@ -543,6 +543,58 @@ export const GameMap: React.FC<GameMapProps> = ({
         </div>
       </div>
 
+      {/* Unified Meta-Adventure: جزيرة الأسرار المتحركة + مركز التحديات */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-teal-950 via-stone-900 to-emerald-950 text-white p-5 sm:p-6 border-2 border-amber-400/60 shadow-xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-start sm:items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-white flex items-center justify-center text-3xl shrink-0">
+              🏝️
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg bg-amber-400 text-stone-950">
+                  {isAr ? 'مغامرة موحّدة مترابطة' : 'Unified Meta-Adventure'}
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-emerald-900/80 text-emerald-300 border border-emerald-700/60">
+                  {isAr ? '٦ ألعاب · ٢٤ تحدياً · لغز ختامي كبير' : '6 Games · 24 Challenges · Grand Finale'}
+                </span>
+              </div>
+              <h2 className="text-base sm:text-xl font-extrabold text-white tracking-tight">
+                {isAr ? 'جزيرة الأسرار المتحركة — رحلة اكتشاف ما وراء الألغاز' : 'Moving Island of Secrets — Beyond the Puzzles'}
+              </h2>
+              <p className="text-xs text-stone-300 leading-relaxed max-w-xl">
+                {isAr
+                  ? 'خريطة حية تتغير مع إنجازاتك: أصلح جسر التوازن، بدّد ضباب المرصد الخفي، افتح غرفة الكنوز، وحل اللغز الختامي عبر ٦ ألعاب.'
+                  : 'A stateful archipelago where progress across 6 games repairs bridges, clears fog, unlocks vaults, and opens the Grand Finale.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onNavigateMode('moving-island');
+              }}
+              className="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-stone-950 rounded-2xl text-xs sm:text-sm font-black transition-transform hover:scale-103 shadow-md flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Compass className="w-4 h-4" />
+              <span>{isAr ? 'دخول جزيرة الأسرار 🏝️' : 'Enter Secrets Island 🏝️'}</span>
+            </button>
+            <button
+              onClick={() => {
+                soundManager.playSoftTap();
+                onNavigateMode('smart-games-hub');
+              }}
+              className="px-4 py-3 bg-white/10 hover:bg-white/20 text-amber-200 border border-white/15 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{isAr ? 'مركز التحديات' : 'Challenges Hub'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Featured Premier Game: شفرة نسمة (في أول الشاشة) */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-950 via-stone-900 to-amber-950 text-white p-5 sm:p-6 border-2 border-emerald-500/60 shadow-xl transition-all hover:border-emerald-400">
         <div className="absolute top-0 end-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />

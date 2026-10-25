@@ -396,7 +396,11 @@ export const ZenStonePuzzleGame: React.FC<ZenStonePuzzleGameProps> = ({
   const [progress, setProgress] = useState<GameProgressData>(() => getGameLevelProgress(GAME_ID));
   const [currentStageId, setCurrentStageId] = useState<number>(() => progress.currentStage || 1);
 
-  const stage = STAGES_DATA.find(s => s.id === currentStageId) || STAGES_DATA[0];
+  const resolveZenStage = (stageNum: number) =>
+    STAGES_DATA.find((s) => s.id === stageNum) ||
+    STAGES_DATA[(Math.max(1, stageNum) - 1) % STAGES_DATA.length];
+
+  const stage = resolveZenStage(currentStageId);
 
   // Gameplay state
   const [unplacedStones, setUnplacedStones] = useState<ZenStone[]>(stage.availableStones);
@@ -426,11 +430,25 @@ export const ZenStonePuzzleGame: React.FC<ZenStonePuzzleGameProps> = ({
   // Wind offset simulation
   const [currentWindForce, setCurrentWindForce] = useState<number>(0);
 
+  const holdTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) {
+        clearInterval(holdTimerRef.current);
+      }
+    };
+  }, []);
+
   // Load / Reset Stage
   const loadStage = (stageNum: number) => {
+    if (holdTimerRef.current) {
+      clearInterval(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
     setCurrentStageId(stageNum);
     setActiveStage(GAME_ID, stageNum);
-    const targetStage = STAGES_DATA.find(s => s.id === stageNum) || STAGES_DATA[0];
+    const targetStage = resolveZenStage(stageNum);
     setUnplacedStones(targetStage.availableStones);
     setSelectedStone(null);
     setStackedStones([]);
@@ -563,7 +581,8 @@ export const ZenStonePuzzleGame: React.FC<ZenStonePuzzleGameProps> = ({
     setUnplacedStones(remaining);
     setSelectedStone(null);
     setPlacementXOffset(0);
-    setMovesCount(prev => prev + 1);
+    const nextMoves = movesCount + 1;
+    setMovesCount(nextMoves);
 
     // Evaluate physics immediately after drop
     const evalResult = evaluateTowerPhysics(newStack);
@@ -577,24 +596,30 @@ export const ZenStonePuzzleGame: React.FC<ZenStonePuzzleGameProps> = ({
 
     // If all stones placed, trigger 3-second stability hold test
     if (remaining.length === 0) {
-      triggerHoldTest(newStack);
+      triggerHoldTest(newStack, nextMoves);
     }
   };
 
   // Trigger 3-second Hold Stability Test
-  const triggerHoldTest = (finalStack: StackedStone[]) => {
+  const triggerHoldTest = (finalStack: StackedStone[], finalMovesCount: number) => {
+    if (holdTimerRef.current) {
+      clearInterval(holdTimerRef.current);
+    }
     setIsHoldingTest(true);
     setHoldTimeLeftSec(3);
 
     let count = 3;
-    const interval = setInterval(() => {
+    holdTimerRef.current = setInterval(() => {
       count -= 1;
       setHoldTimeLeftSec(count);
 
       // Check physics during hold test (e.g. wind shifts)
       const livePhysics = evaluateTowerPhysics(finalStack);
       if (!livePhysics.isStable) {
-        clearInterval(interval);
+        if (holdTimerRef.current) {
+          clearInterval(holdTimerRef.current);
+          holdTimerRef.current = null;
+        }
         soundManager.playIncorrect();
         setIsHoldingTest(false);
         setIsCollapsed(true);
@@ -604,26 +629,29 @@ export const ZenStonePuzzleGame: React.FC<ZenStonePuzzleGameProps> = ({
       }
 
       if (count <= 0) {
-        clearInterval(interval);
+        if (holdTimerRef.current) {
+          clearInterval(holdTimerRef.current);
+          holdTimerRef.current = null;
+        }
         setIsHoldingTest(false);
-        handleStageSuccess(finalStack);
+        handleStageSuccess(finalStack, finalMovesCount);
       }
     }, 1000);
   };
 
   // Stage Success Evaluation
-  const handleStageSuccess = (finalStack: StackedStone[]) => {
+  const handleStageSuccess = (finalStack: StackedStone[], finalMovesCount: number) => {
     soundManager.playChime();
 
     // Rate performance: stars based on tilt precision and moves
     const finalPhysics = evaluateTowerPhysics(finalStack);
     let stars = 3;
     if (Math.abs(finalPhysics.tiltAngleDeg) > stage.maxAllowedTiltDeg * 0.6) stars = 2;
-    if (movesCount > stage.maxMoves) stars = 1;
+    if (finalMovesCount > stage.maxMoves) stars = 1;
 
     setStarsAwarded(stars);
 
-    const result = completeStage(GAME_ID, currentStageId, stars, undefined, onAddXP);
+    const result = completeStage(GAME_ID, currentStageId, stars, finalMovesCount, onAddXP);
     setEarnedXP(result.xpAwarded);
     setProgress(getGameLevelProgress(GAME_ID));
     setShowCompletionModal(true);
@@ -663,7 +691,7 @@ export const ZenStonePuzzleGame: React.FC<ZenStonePuzzleGameProps> = ({
   };
 
   const handleNextStage = () => {
-    if (currentStageId < 4) {
+    if (currentStageId < 35) {
       loadStage(currentStageId + 1);
     } else {
       setShowCompletionModal(false);

@@ -71,6 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems = [
     { mode: 'map' as GameMode, label: isAr ? 'الرئيسية 🌿' : 'Home 🌿', icon: Compass },
+    { mode: 'moving-island' as GameMode, label: isAr ? 'جزيرة الأسرار 🏝️' : 'Secrets Island 🏝️', icon: MapPin },
     { mode: 'nesma-cipher' as GameMode, label: isAr ? 'شفرة نسمة 🗝️' : 'Nesma Cipher 🗝️', icon: KeyRound },
     { mode: 'library' as GameMode, label: isAr ? 'مكتبة الألعاب 🎮' : 'Library 🎮', icon: Gamepad2 },
     { mode: 'weekly-session' as GameMode, label: isAr ? 'الجلسة الأسبوعية 🛋️' : 'Weekly Session 🛋️', icon: HeartHandshake },
@@ -83,26 +84,26 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-stone-200/80 dark:border-stone-800 transition-colors">
       {/* Top Banner: Brand and Controls */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-2">
         {/* Brand */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
           <button 
             onClick={() => onSelectMode('map')}
-            className="flex items-center gap-2.5 group cursor-pointer text-start"
+            className="flex items-center gap-2 sm:gap-2.5 group cursor-pointer text-start min-w-0"
           >
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-stone-900 to-emerald-900 dark:from-emerald-950 dark:to-emerald-700 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-              <span className="text-xl">🌿</span>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-2xl bg-gradient-to-tr from-stone-900 to-emerald-900 dark:from-emerald-950 dark:to-emerald-700 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
+              <span className="text-lg sm:text-xl">🌿</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base tracking-tight text-stone-900 dark:text-stone-100 font-serif">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-extrabold text-sm sm:text-base tracking-tight text-stone-900 dark:text-stone-100 font-serif whitespace-nowrap">
                   {isAr ? 'فكر فيها' : 'Think About It'}
                 </span>
-                <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-extrabold px-1.5 py-0.5 rounded-md">
+                <span className="hidden sm:inline-block text-[10px] bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-extrabold px-1.5 py-0.5 rounded-md whitespace-nowrap">
                   {isAr ? 'نسمة حياة' : 'Nesma Hayat'}
                 </span>
               </div>
-              <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">
+              <p className="hidden md:block text-[11px] text-stone-500 dark:text-stone-400 font-medium">
                 {isAr ? 'ألعاب نفسية تفاعلية — جزء من نسمة حياة 🌿' : 'Interactive Games — Part of Nesma Hayat 🌿'}
               </p>
             </div>
@@ -110,7 +111,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Global Controls & Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Awareness Rank Badge (XP-Based Progression) */}
           <RankHeaderBadge 
             language={language} 
@@ -123,7 +124,9 @@ export const Header: React.FC<HeaderProps> = ({
           <StreakHeaderBadge language={language} onAddXP={onAddXP} />
 
           {/* PWA In-App Install Prompt & Offline Info */}
-          <PWAInstallPrompt language={language} />
+          <div className="hidden sm:block">
+            <PWAInstallPrompt language={language} />
+          </div>
 
           {/* Breathing Pause Quick Action */}
           <button
@@ -131,7 +134,7 @@ export const Header: React.FC<HeaderProps> = ({
               soundManager.playSoftTap();
               onOpenBreathing();
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 transition-all cursor-pointer shadow-2xs"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 transition-all cursor-pointer shadow-2xs"
             title={isAr ? 'وقفة أنفاس مهدئة' : 'Mindful Breathing Pause'}
           >
             <Wind className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 animate-pulse" />
@@ -145,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({
                 soundManager.playSoftTap();
                 onToggleTheme();
               }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-stone-200/90 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all cursor-pointer shadow-2xs text-xs font-semibold"
+              className="flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 rounded-full border border-stone-200/90 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all cursor-pointer shadow-2xs text-xs font-semibold"
               title={theme === 'dark' ? (isAr ? 'التبديل إلى الوضع الفاتح ☀️' : 'Light Mode ☀️') : (isAr ? 'التبديل إلى الوضع الداكن 🌙' : 'Dark Mode 🌙')}
               aria-label="Toggle dark mode"
             >
@@ -166,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Sound Toggle */}
           <button
             onClick={onToggleSound}
-            className={`p-2 rounded-full border transition-all cursor-pointer ${
+            className={`hidden sm:inline-flex p-2 rounded-full border transition-all cursor-pointer ${
               soundEnabled
                 ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 border-stone-200 dark:border-stone-700 hover:bg-stone-200 dark:hover:bg-stone-700'
                 : 'bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 border-stone-200 dark:border-stone-700 line-through'
@@ -179,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Language Toggle */}
           <button
             onClick={onToggleLanguage}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-stone-200 dark:border-stone-700 bg-stone-100/60 dark:bg-stone-800/60 text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-200/80 dark:hover:bg-stone-700 transition-colors cursor-pointer"
+            className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-stone-200 dark:border-stone-700 bg-stone-100/60 dark:bg-stone-800/60 text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-200/80 dark:hover:bg-stone-700 transition-colors cursor-pointer"
           >
             <Languages className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
             <span className="font-mono">{language === 'ar' ? 'EN' : 'عربي'}</span>
@@ -188,7 +191,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Info Modal Trigger */}
           <button
             onClick={() => setShowInfo(true)}
-            className="p-2 rounded-full border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+            className="hidden sm:inline-flex p-2 rounded-full border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
             title="عن الألعاب"
           >
             <Info className="w-4 h-4" />
@@ -201,7 +204,7 @@ export const Header: React.FC<HeaderProps> = ({
                 soundManager.playSoftTap();
                 onOpenTechnicalAudit();
               }}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-colors cursor-pointer"
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-colors cursor-pointer"
               title={isAr ? 'التدقيق التقني وفحص الكود والأمان' : 'Technical Audit & Code Verification'}
             >
               <Terminal className="w-3.5 h-3.5" />
@@ -212,6 +215,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={isAr ? 'القائمة الرئيسية' : 'Main menu'}
             className="md:hidden p-2 rounded-xl text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

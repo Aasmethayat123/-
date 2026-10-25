@@ -304,6 +304,44 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
         </button>
       </div>
 
+      {/* Unified Meta-Adventure: جزيرة الأسرار المتحركة */}
+      <div className="bg-gradient-to-r from-teal-950 via-stone-900 to-emerald-950 text-white rounded-3xl p-5 sm:p-6 shadow-md border-2 border-emerald-500/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center text-2xl shrink-0">
+            🏝️
+          </div>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] font-extrabold text-stone-950 bg-amber-400 px-2.5 py-0.5 rounded-lg">
+                {isAr ? 'مغامرة موحّدة جديدة' : 'Unified Island Adventure'}
+              </span>
+              <span className="text-[10px] text-emerald-300 font-bold">
+                {isAr ? '٩ مناطق · ٢٤ تحدياً مترابطاً · ٦ ألعاب' : '9 Regions · 24 Challenges · 6 Games'}
+              </span>
+            </div>
+            <h3 className="text-base sm:text-lg font-extrabold text-white">
+              {isAr ? 'جزيرة الأسرار المتحركة — رحلة اكتشاف ما وراء الألغاز' : 'Moving Island of Secrets — Beyond the Puzzles'}
+            </h3>
+            <p className="text-xs text-stone-300">
+              {isAr
+                ? 'استكشف خريطة حية تربط شفرة نسمة وأحجار التوازن وقوارير المشاعر ومكتبة النظام وبوابة الاختيار وجبل الأسرار في لغز ختامي واحد.'
+                : 'Explore a living island uniting 6 games with dynamic bridges, secret mist observatories, and a multi-step Grand Finale.'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            soundManager.playClick();
+            onNavigateToGame('moving-island');
+          }}
+          className="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-black rounded-2xl text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-transform hover:scale-103 shadow-sm flex items-center justify-center gap-2 shrink-0"
+        >
+          <span>{isAr ? 'استكشف الجزيرة الآن' : 'Explore the Island'}</span>
+          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+        </button>
+      </div>
+
       {/* Grand Feature Game: شفرة نسمة */}
       <div className="bg-gradient-to-r from-amber-950 via-stone-900 to-emerald-950 text-white rounded-3xl p-5 sm:p-6 shadow-md border-2 border-amber-500/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">

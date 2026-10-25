@@ -17,17 +17,27 @@ import { soundManager } from '../../utils/audio';
 interface NesmaCipherMainProps {
   onExit: () => void;
   onAddXP?: (amount: number) => void;
+  initialLevelId?: number;
 }
 
 type CipherView = 'map' | 'level' | 'vault' | 'garden';
 
-export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddXP }) => {
+export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddXP, initialLevelId }) => {
   const [progress, setProgress] = useState<CipherProgress>(() => loadCipherProgress());
-  const [view, setView] = useState<CipherView>('map');
+  const [view, setView] = useState<CipherView>(() => {
+    const p = loadCipherProgress();
+    if (initialLevelId && initialLevelId >= 1 && initialLevelId <= CIPHER_LEVELS.length && p.unlockedLevels.includes(initialLevelId)) {
+      return 'level';
+    }
+    return 'map';
+  });
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [selectedLevelId, setSelectedLevelId] = useState<number>(() => {
     const p = loadCipherProgress();
-    return (p.lastPlayedLevel && p.lastPlayedLevel >= 1 && p.lastPlayedLevel <= 30) ? p.lastPlayedLevel : 1;
+    if (initialLevelId && initialLevelId >= 1 && initialLevelId <= CIPHER_LEVELS.length && p.unlockedLevels.includes(initialLevelId)) {
+      return initialLevelId;
+    }
+    return (p.lastPlayedLevel && p.lastPlayedLevel >= 1 && p.lastPlayedLevel <= CIPHER_LEVELS.length) ? p.lastPlayedLevel : 1;
   });
 
   // Scroll to top immediately on mobile whenever screen or level changes
@@ -45,7 +55,7 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
       const lvl = params.get('cipherLevel') || params.get('level');
       if (lvl) {
         const num = parseInt(lvl, 10);
-        if (!isNaN(num) && num >= 1 && num <= 30 && progress.unlockedLevels.includes(num)) {
+        if (!isNaN(num) && num >= 1 && num <= CIPHER_LEVELS.length && progress.unlockedLevels.includes(num)) {
           setSelectedLevelId(num);
           setView('level');
         }
@@ -72,7 +82,9 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
     setView('level');
   };
 
-  const handleSolveLevel = (hintsUsed: number, isDeepChallenge: boolean = false) => {
+  const handleSolveLevel = React.useCallback((solvedLevelId: number, hintsUsed: number, isDeepChallenge: boolean = false) => {
+    if (solvedLevelId !== selectedLevel.id) return;
+
     // Determine stars
     let stars = 3;
     if (hintsUsed === 1) stars = 2;
@@ -104,12 +116,12 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
         setRevealedQuote(result.newlyDiscoveredQuote || null);
       }, 500);
     }
-  };
+  }, [selectedLevel, difficulty, onAddXP]);
 
   const handleNextLevel = () => {
     setVictoryData(null);
     const nextId = selectedLevel.id + 1;
-    if (nextId <= 30) {
+    if (nextId <= CIPHER_LEVELS.length) {
       setSelectedLevelId(nextId);
       setView('level');
     } else {
@@ -149,6 +161,7 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
       {/* 2. Level Play View */}
       {view === 'level' && (
         <CipherLevelPlay
+          key={selectedLevel.id}
           level={selectedLevel}
           progress={progress}
           difficulty={difficulty}
@@ -180,7 +193,7 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
           level={victoryData.level}
           stars={victoryData.stars}
           scoreEarned={victoryData.scoreEarned}
-          hasNextLevel={victoryData.level.id < 30}
+          hasNextLevel={victoryData.level.id < CIPHER_LEVELS.length}
           onNextLevel={handleNextLevel}
           onReturnToMap={handleReturnToMapFromVictory}
         />

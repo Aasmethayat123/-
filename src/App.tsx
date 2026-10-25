@@ -74,9 +74,17 @@ import { BloomingGratitudeGame } from './components/interactiveGames/BloomingGra
 import { MindfulOrganizerGame } from './components/interactiveGames/MindfulOrganizerGame';
 import { ZenStonePuzzleGame } from './components/interactiveGames/ZenStonePuzzleGame';
 import { EmotionSortPuzzleGame } from './components/interactiveGames/EmotionSortPuzzleGame';
+import { UnifiedGamesHub } from './components/games/UnifiedGamesHub';
 
 // شفرة نسمة — لعبة الألغاز النفسية التفاعلية الحقيقية
 import { NesmaCipherMain } from './components/nesmaCipher/NesmaCipherMain';
+import { MovingIslandMain, ActiveIslandMissionContext } from './components/movingIsland/MovingIslandMain';
+import { ISLAND_CHALLENGES } from './data/movingIslandData';
+import {
+  isChallengeConditionMet,
+  loadMovingIslandState,
+  readAllSixGamesSnapshot,
+} from './utils/movingIslandManager';
 
 // Choose Your Adventure & Creative Discovery Modals
 import { AdventureHome } from './components/AdventureHome';
@@ -145,12 +153,15 @@ const VALID_MODES: Set<string> = new Set<string>([
   'mindful-organizer',
   'zen-puzzle',
   'emotion-sort-puzzle',
+  'smart-games-hub',
+  'moving-island',
   'workshop',
   'my-journey',
   'weekly-session',
   'profile',
   'projects',
   'cms',
+  'admin-cms',
 ]);
 
 function getModeFromUrl(): GameMode | null {
@@ -189,6 +200,9 @@ export default function App() {
   const [isHiddenPathsOpen, setIsHiddenPathsOpen] = useState<boolean>(false);
   const [isExperienceMixerOpen, setIsExperienceMixerOpen] = useState<boolean>(false);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
+  const [islandReturnActive, setIslandReturnActive] = useState<boolean>(false);
+  const [activeIslandMission, setActiveIslandMission] = useState<ActiveIslandMissionContext | null>(null);
+  const [islandCipherLevel, setIslandCipherLevel] = useState<number | undefined>(undefined);
 
   const SOUND_STORAGE_KEY = 'fakkerfeha_sound_v1';
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
@@ -222,6 +236,7 @@ export default function App() {
   }, [soundEnabled]);
 
   // Synchronize URL hash with currentMode & ensure top of screen is visible
+  const isPopNavigationRef = React.useRef(false);
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -230,12 +245,14 @@ export default function App() {
     try {
       const targetHash = currentMode === 'map' ? '' : `#${currentMode}`;
       if (window.location.hash !== targetHash) {
-        window.history.replaceState(
-          { mode: currentMode }, 
-          '', 
-          targetHash || window.location.pathname + window.location.search
-        );
+        const nextUrl = targetHash || window.location.pathname + window.location.search;
+        if (isPopNavigationRef.current) {
+          window.history.replaceState({ mode: currentMode }, '', nextUrl);
+        } else {
+          window.history.pushState({ mode: currentMode }, '', nextUrl);
+        }
       }
+      isPopNavigationRef.current = false;
     } catch {
       // ignore
     }
@@ -246,6 +263,7 @@ export default function App() {
     if (typeof window === 'undefined') return;
 
     const handleLocationChange = () => {
+      isPopNavigationRef.current = true;
       const detected = getModeFromUrl() || 'map';
       setCurrentMode(detected);
       window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
@@ -296,7 +314,11 @@ export default function App() {
       {/* Game Header */}
       <Header
         currentMode={currentMode}
-        onSelectMode={(mode) => setCurrentMode(mode)}
+        onSelectMode={(mode) => {
+          setIslandReturnActive(false);
+          setActiveIslandMission(null);
+          setCurrentMode(mode);
+        }}
         language={language}
         onToggleLanguage={toggleLanguage}
         onOpenBreathing={() => setIsBreathingOpen(true)}
@@ -319,6 +341,73 @@ export default function App() {
         aria-label={language === 'ar' ? 'المحتوى الرئيسي للتطبيق والألعاب التفاعلية' : 'Main application and interactive games content'} 
         className="flex-1 pb-12 outline-none"
       >
+        {/* Active Moving Island Mission Companion Bar */}
+        {islandReturnActive &&
+          ['nesma-cipher', 'zen-puzzle', 'emotion-sort-puzzle', 'mindful-organizer', 'hands-control', 'break-mountain'].includes(currentMode) && (() => {
+            const missionDef = activeIslandMission
+              ? ISLAND_CHALLENGES.find((c) => c.id === activeIslandMission.challengeId)
+              : undefined;
+            const isMissionMetNow = missionDef
+              ? isChallengeConditionMet(
+                  missionDef,
+                  loadMovingIslandState(),
+                  readAllSixGamesSnapshot()
+                )
+              : false;
+
+            return (
+              <div
+                className={`${
+                  isMissionMetNow
+                    ? 'bg-emerald-800 border-emerald-400'
+                    : 'bg-emerald-950 border-emerald-700/70'
+                } text-white border-b px-4 py-2.5 transition-colors`}
+                dir="rtl"
+              >
+                <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`px-2 py-0.5 rounded-md font-black ${
+                        isMissionMetNow
+                          ? 'bg-emerald-300 text-stone-950'
+                          : 'bg-amber-500 text-stone-950'
+                      }`}
+                    >
+                      {isMissionMetNow
+                        ? '✓ اكتمل هدف المهمة!'
+                        : `مهمة جزيرة الأسرار ${activeIslandMission ? `#${activeIslandMission.challengeNumber}` : ''}`}
+                    </span>
+                    <span className="font-extrabold text-emerald-100">
+                      {isMissionMetNow
+                        ? `أنجزت «${activeIslandMission?.titleAr}» بنجاح — عد للجزيرة الآن لاستلام المقتنى وفتح المسار!`
+                        : activeIslandMission
+                        ? `${activeIslandMission.titleAr} — ${activeIslandMission.howToCompleteAr}`
+                        : 'كل تقدم تحرزه في هذه اللعبة يُحتسب تلقائياً في جزيرة الأسرار المتحركة.'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIslandReturnActive(false);
+                      setActiveIslandMission(null);
+                      setIslandCipherLevel(undefined);
+                      setCurrentMode('moving-island');
+                    }}
+                    className={`min-h-9 px-3.5 py-1.5 rounded-xl font-black cursor-pointer self-start sm:self-auto shrink-0 transition-colors ${
+                      isMissionMetNow
+                        ? 'bg-amber-400 hover:bg-amber-300 text-stone-950 shadow-sm'
+                        : 'bg-white/15 hover:bg-white/25 text-white'
+                    }`}
+                  >
+                    {isMissionMetNow
+                      ? 'العودة للجزيرة واستلام المكافأة ←'
+                      : 'العودة لجزيرة الأسرار واستلام التقدم ←'}
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+
         {/* Main 'Choose Your Adventure' System (اختار مغامرتك) */}
         {currentMode === 'map' && (
           <AdventureHome
@@ -363,7 +452,15 @@ export default function App() {
         {currentMode === 'hands-control' && (
           <HandsControlGame
             language={language}
-            onBackToMap={() => setCurrentMode('map')}
+            onBackToMap={() => {
+              if (islandReturnActive) {
+                setIslandReturnActive(false);
+                setActiveIslandMission(null);
+                setCurrentMode('moving-island');
+              } else {
+                setCurrentMode('map');
+              }
+            }}
             onAddXP={addXP}
           />
         )}
@@ -378,7 +475,15 @@ export default function App() {
         {currentMode === 'break-mountain' && (
           <BreakTheMountainGame
             language={language}
-            onBackToMap={() => setCurrentMode('map')}
+            onBackToMap={() => {
+              if (islandReturnActive) {
+                setIslandReturnActive(false);
+                setActiveIslandMission(null);
+                setCurrentMode('moving-island');
+              } else {
+                setCurrentMode('map');
+              }
+            }}
             onAddXP={addXP}
           />
         )}
@@ -748,7 +853,15 @@ export default function App() {
           <MindfulOrganizerGame
             language={language}
             onAddXP={addXP}
-            onBackToMap={() => setCurrentMode('map')}
+            onBackToMap={() => {
+              if (islandReturnActive) {
+                setIslandReturnActive(false);
+                setActiveIslandMission(null);
+                setCurrentMode('moving-island');
+              } else {
+                setCurrentMode('map');
+              }
+            }}
           />
         )}
 
@@ -756,7 +869,15 @@ export default function App() {
           <ZenStonePuzzleGame
             language={language}
             onAddXP={addXP}
-            onBackToMap={() => setCurrentMode('map')}
+            onBackToMap={() => {
+              if (islandReturnActive) {
+                setIslandReturnActive(false);
+                setActiveIslandMission(null);
+                setCurrentMode('moving-island');
+              } else {
+                setCurrentMode('map');
+              }
+            }}
           />
         )}
 
@@ -764,14 +885,56 @@ export default function App() {
           <EmotionSortPuzzleGame
             language={language}
             onAddXP={addXP}
-            onBackToMap={() => setCurrentMode('map')}
+            onBackToMap={() => {
+              if (islandReturnActive) {
+                setIslandReturnActive(false);
+                setActiveIslandMission(null);
+                setCurrentMode('moving-island');
+              } else {
+                setCurrentMode('map');
+              }
+            }}
+          />
+        )}
+
+        {currentMode === 'smart-games-hub' && (
+          <UnifiedGamesHub
+            language={language}
+            onSelectGame={(gId) => setCurrentMode(gId)}
+            onBackToHome={() => setCurrentMode('library')}
+            onAddXP={addXP}
+          />
+        )}
+
+        {/* جزيرة الأسرار المتحركة — رحلة اكتشاف ما وراء الألغاز */}
+        {currentMode === 'moving-island' && (
+          <MovingIslandMain
+            language={language}
+            onBack={() => setCurrentMode('map')}
+            onLaunchLinkedGame={(gameId, targetStage, mission) => {
+              setIslandReturnActive(true);
+              setActiveIslandMission(mission || null);
+              setIslandCipherLevel(gameId === 'nesma-cipher' ? targetStage : undefined);
+              setCurrentMode(gameId);
+            }}
+            onAddXP={addXP}
           />
         )}
 
         {/* شفرة نسمة — لعبة الألغاز النفسية التفاعلية */}
         {currentMode === 'nesma-cipher' && (
           <NesmaCipherMain
-            onExit={() => setCurrentMode('map')}
+            initialLevelId={islandCipherLevel}
+            onExit={() => {
+              if (islandReturnActive) {
+                setIslandReturnActive(false);
+                setActiveIslandMission(null);
+                setIslandCipherLevel(undefined);
+                setCurrentMode('moving-island');
+              } else {
+                setCurrentMode('map');
+              }
+            }}
             onAddXP={addXP}
           />
         )}
@@ -835,7 +998,7 @@ export default function App() {
           <nav 
             role="navigation" 
             aria-label={language === 'ar' ? 'روابط التنقل السريع في التذييل' : 'Footer quick navigation links'} 
-            className="flex items-center gap-4 text-[11px] text-stone-500"
+            className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] text-stone-500"
           >
             <button
               type="button"

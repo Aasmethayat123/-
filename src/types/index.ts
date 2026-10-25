@@ -64,6 +64,8 @@ export type GameMode =
   | 'mindful-organizer'          // ترتيب الفوضى والرفوف والسكينة
   | 'zen-puzzle'                 // بازل وتوازن أحجار الزن والماندالا
   | 'emotion-sort-puzzle'        // بازل فرز وسكب قوارير المشاعر
+  | 'smart-games-hub'            // مركز التحديات المتجددة
+  | 'moving-island'              // جزيرة الأسرار المتحركة — رحلة اكتشاف ما وراء الألغاز
   | 'workshop' 
   | 'my-journey'
   | 'weekly-session'

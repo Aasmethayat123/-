@@ -43,11 +43,41 @@ export const WORLD_SECRETS: Record<string, WorldSecretInfo> = {
     storyLoreAr: 'حين تنعكس الأنوار على مياه الكهف الساكنة، تدرك اللاعبة أنها ليست عواصف أفكارها العابرة، بل السماء الصامتة التي تشهد العابرين دون أن تفقد صفاءها.',
     practicalInsightAr: 'أنت لست أفكارك القلقة؛ أنت الوعي الهادئ الذي يختار ما يُصدّق وما يتركه يرحل.',
     requiredLevel: 25
+  },
+  symbol_maze: {
+    id: 'symbol_maze_secret',
+    worldId: 'symbol_maze',
+    titleAr: 'سر تمييز اليقين من السراب',
+    subtitleAr: 'شفرة الحقيقة الناصعة في قلب المتاهة',
+    icon: '🌀✨',
+    storyLoreAr: 'في أزقة المتاهة، يتضح أن ليس كل ما يلمع في العقل حقيقة. تمييز الشواهد يطرد السراب.',
+    practicalInsightAr: 'اختبار الفكرة مع الواقع يرفع عنك أعباء الظنون التلقائية.',
+    requiredLevel: 33
+  },
+  image_secrets: {
+    id: 'image_secrets_secret',
+    worldId: 'image_secrets',
+    titleAr: 'سر تسمية المشاعر الصريحة',
+    subtitleAr: 'الرؤية البصرية التي تنجلي بها الظلمات',
+    icon: '🖼️✨',
+    storyLoreAr: 'حين تنظر إلى الصورة بعين فاحصة وتسمي الخوف باسمه، يتلاشى نصف الغموض فوراً.',
+    practicalInsightAr: 'تسمية المشاعر بوضوح يعيد الدماغ لمركز اتزانه وسيطرته.',
+    requiredLevel: 43
+  },
+  mind_lab: {
+    id: 'mind_lab_secret',
+    worldId: 'mind_lab',
+    titleAr: 'سر السيادة والوعي الحر',
+    subtitleAr: 'جوهر التاج الأسمى في مختبر التفكير',
+    icon: '🧪✨',
+    storyLoreAr: 'في القمة النهائية للمختبر، تثبت البوصلة الداخلية على النغمة الخاصة بوعيك الحر.',
+    practicalInsightAr: 'الحكم الذاتي والسيادة النفسية هما حصنك المنيع مهما كثف الضباب.',
+    requiredLevel: 55
   }
 };
 
 interface CipherSecretModalProps {
-  worldId: 'garden' | 'library' | 'cave';
+  worldId: string;
   isUnlocked: boolean;
   isAlreadyDiscovered: boolean;
   onClose: () => void;

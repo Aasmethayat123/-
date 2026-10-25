@@ -1,4 +1,4 @@
-export type CipherWorldId = 'garden' | 'library' | 'cave';
+export type CipherWorldId = 'garden' | 'library' | 'cave' | 'symbol_maze' | 'image_secrets' | 'mind_lab';
 
 export type CipherPuzzleType = 
   | 'tile_puzzle'        // بازل الصور
@@ -183,6 +183,7 @@ export interface CipherQuote {
 export interface GardenCollectible {
   id: string;
   nameAr: string;
+  nameEn?: string;
   descAr: string;
   icon: string;
   requiredLevel: number;
