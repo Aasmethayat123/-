@@ -20,7 +20,14 @@ const apiKey = process.env.GEMINI_API_KEY;
 
 if (apiKey && apiKey !== 'MY_GEMINI_API_KEY') {
   try {
-    aiClient = new GoogleGenAI({ apiKey });
+    aiClient = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
   } catch (err) {
     console.warn('Could not initialize GoogleGenAI client with provided key:', err);
   }

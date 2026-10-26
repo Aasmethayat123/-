@@ -34,8 +34,17 @@ import {
   CheckCircle2,
   Wind,
   Flame,
-  Award
+  Award,
+  Smartphone,
+  Share2,
+  RefreshCw,
+  Download
 } from 'lucide-react';
+import { usePWAInstall } from '../hooks/usePWAInstall';
+import {
+  SW_AUTO_PREF_CHANGED_EVENT,
+  isAutoUpdateEnabled,
+} from '../utils/appLifecycle';
 
 interface AdventureHomeProps {
   language: Language;
@@ -55,6 +64,9 @@ interface AdventureHomeProps {
     totalGamesCompleted?: number;
   };
   onOpenAvatarModal?: () => void;
+  onOpenInstall?: () => void;
+  onOpenShare?: () => void;
+  onOpenUpdate?: () => void;
 }
 
 export const AdventureHome: React.FC<AdventureHomeProps> = ({
@@ -69,7 +81,10 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
   onOpenExperienceMixer,
   onOpenBreathing,
   playerStats,
-  onOpenAvatarModal
+  onOpenAvatarModal,
+  onOpenInstall,
+  onOpenShare,
+  onOpenUpdate,
 }) => {
   const isAr = language === 'ar';
   const lastPlayed = getLastPlayedGame();
@@ -78,6 +93,14 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
   const currentLevel = getCurrentAwarenessLevel(playerStats.xp, language);
   const { streakData } = useStreak();
   const earnedBadgesCount = getEarnedBadges(playerStats.badges || []).length;
+  const { isInstallable, isInstalled, isStandalone, install } = usePWAInstall();
+  const [autoUpdateActive, setAutoUpdateActive] = useState<boolean>(() => isAutoUpdateEnabled());
+
+  useEffect(() => {
+    const syncAutoPref = () => setAutoUpdateActive(isAutoUpdateEnabled());
+    window.addEventListener(SW_AUTO_PREF_CHANGED_EVENT, syncAutoPref);
+    return () => window.removeEventListener(SW_AUTO_PREF_CHANGED_EVENT, syncAutoPref);
+  }, []);
 
   // Selected Category State from the 4 primary gateways
   const [activeCategory, setActiveCategory] = useState<ExperienceState | null>(null);
@@ -790,6 +813,99 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
             </p>
           </button>
         </div>
+
+        {/* Mobile App Bar: Install on Phone, Share App & Auto-Update */}
+        {(onOpenInstall || onOpenShare || onOpenUpdate) && (
+          <div className="mt-4 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 p-4 sm:p-5 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div>
+                <h3 className="text-xs sm:text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif">
+                  {isAr
+                    ? 'تطبيق نسمة حياة على موبايلك — يعمل بدون إنترنت ويتحدّث تلقائياً'
+                    : 'Nesma Hayat on Your Phone — Offline Ready & Auto-Updated'}
+                </h3>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                  {isAr
+                    ? 'ثبّت التطبيق كأيقونة على شاشتك الرئيسية، شاركه مع من تحب، أو تحكّم في التحديث التلقائي.'
+                    : 'Add to your home screen, share with friends, or manage automatic updates.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {onOpenInstall && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    soundManager.playSoftTap();
+                    if (!isStandalone && !isInstalled && isInstallable) {
+                      const accepted = await install();
+                      if (!accepted) {
+                        onOpenInstall();
+                      }
+                      return;
+                    }
+                    onOpenInstall();
+                  }}
+                  className="min-h-[46px] px-4 py-2.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  {isStandalone || isInstalled ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-200 shrink-0" />
+                      <span>{isAr ? 'مثبّت على جهازك ✓' : 'Installed ✓'}</span>
+                    </>
+                  ) : isInstallable ? (
+                    <>
+                      <Download className="w-4 h-4 shrink-0" />
+                      <span>{isAr ? 'تثبيت على الموبايل الآن' : 'Install on Mobile'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Smartphone className="w-4 h-4 shrink-0" />
+                      <span>{isAr ? 'تثبيت على الموبايل' : 'Install on Mobile'}</span>
+                    </>
+                  )}
+                </button>
+              )}
+
+              {onOpenShare && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playSoftTap();
+                    onOpenShare();
+                  }}
+                  className="min-h-[46px] px-4 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  <Share2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                  <span>{isAr ? 'مشاركة التطبيق' : 'Share App'}</span>
+                </button>
+              )}
+
+              {onOpenUpdate && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playSoftTap();
+                    onOpenUpdate();
+                  }}
+                  className="min-h-[46px] px-4 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  <RefreshCw className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                  <span>
+                    {autoUpdateActive
+                      ? isAr
+                        ? 'التحديث التلقائي: مفعّل ✓'
+                        : 'Auto-Update: On ✓'
+                      : isAr
+                      ? 'إعدادات التحديث'
+                      : 'Update Settings'}
+                  </span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ================================================================= */}

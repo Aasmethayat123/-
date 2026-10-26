@@ -149,6 +149,14 @@
           }, true);
 
           try {
+            window.addEventListener('beforeinstallprompt', function(e) {
+              e.preventDefault();
+              window.__deferredPWAInstallPrompt = e;
+              window.dispatchEvent(new CustomEvent('nesma:pwa-prompt-captured'));
+            });
+          } catch(e) {}
+
+          try {
             var saved = localStorage.getItem('fakkerfeha_theme_mode');
             var isDark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
             if (isDark) {
@@ -169,6 +177,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="نسمة حياة" />
+    <link rel="manifest" href="./manifest.json" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <link rel="icon" type="image/svg+xml" href="./icon.svg" />
     <link rel="icon" type="image/png" sizes="192x192" href="./pwa-192x192.png" />

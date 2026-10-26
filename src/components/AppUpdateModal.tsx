@@ -7,13 +7,19 @@ import {
   X,
   DownloadCloud,
   RotateCw,
+  Sparkles,
 } from 'lucide-react';
 import { Language } from '../types';
 import {
   APP_VERSION,
+  SW_AUTO_APPLYING_EVENT,
+  SW_AUTO_PREF_CHANGED_EVENT,
   SW_UPDATE_EVENT,
   applyAppUpdateAndReload,
   checkForAppUpdate,
+  getLastAutoCheckTimestamp,
+  isAutoUpdateEnabled,
+  setAutoUpdateEnabled,
 } from '../utils/appLifecycle';
 import { soundManager } from '../utils/audio';
 
@@ -33,6 +39,13 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
   const isAr = language === 'ar';
   const [checkState, setCheckState] = useState<CheckState>('idle');
   const [lastCheckedTime, setLastCheckedTime] = useState<string | null>(null);
+  const [autoUpdate, setAutoUpdate] = useState<boolean>(() => isAutoUpdateEnabled());
+
+  const formatTimestamp = (ts: number) =>
+    new Date(ts).toLocaleTimeString(isAr ? 'ar-EG' : 'en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
   const runUpdateCheck = async () => {
     setCheckState('checking');
@@ -41,20 +54,33 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
       setCheckState('offline');
       return;
     }
-    const timeStr = new Date().toLocaleTimeString(isAr ? 'ar-EG' : 'en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    setLastCheckedTime(timeStr);
+    setLastCheckedTime(formatTimestamp(Date.now()));
     if (result.status === 'update-ready') {
       setCheckState('update-ready');
+      if (isAutoUpdateEnabled()) {
+        setCheckState('applying');
+        window.setTimeout(() => {
+          applyAppUpdateAndReload(false).catch(() => {});
+        }, 900);
+      }
     } else {
       setCheckState('up-to-date');
     }
   };
 
   useEffect(() => {
+    const syncPref = () => setAutoUpdate(isAutoUpdateEnabled());
+    window.addEventListener(SW_AUTO_PREF_CHANGED_EVENT, syncPref);
+    return () => window.removeEventListener(SW_AUTO_PREF_CHANGED_EVENT, syncPref);
+  }, []);
+
+  useEffect(() => {
     if (isOpen) {
+      setAutoUpdate(isAutoUpdateEnabled());
+      const prevTs = getLastAutoCheckTimestamp();
+      if (prevTs) {
+        setLastCheckedTime(formatTimestamp(prevTs));
+      }
       runUpdateCheck();
     } else {
       setCheckState('idle');
@@ -71,6 +97,17 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
   }, [isOpen, checkState, onClose]);
 
   if (!isOpen) return null;
+
+  const handleToggleAutoUpdate = () => {
+    soundManager.playSoftTap();
+    const next = !autoUpdate;
+    setAutoUpdate(next);
+    setAutoUpdateEnabled(next);
+    if (next && checkState === 'update-ready') {
+      setCheckState('applying');
+      applyAppUpdateAndReload(false).catch(() => {});
+    }
+  };
 
   const handleApplyReload = async (forceUnregister: boolean) => {
     soundManager.playSoftTap();
@@ -89,7 +126,7 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
       aria-labelledby="app-update-modal-title"
     >
       <div
-        className="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-white dark:bg-stone-900 border-t sm:border border-stone-200 dark:border-stone-800 p-5 sm:p-6 shadow-2xl space-y-4 text-start max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-white dark:bg-stone-900 border-t sm:border border-stone-200 dark:border-stone-800 p-5 sm:p-6 shadow-2xl space-y-4 text-start max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile grab handle */}
@@ -98,7 +135,7 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 flex items-center justify-center shrink-0">
               <RefreshCw
                 className={`w-4 h-4 ${
                   checkState === 'checking' || checkState === 'applying' ? 'animate-spin' : ''
@@ -110,7 +147,7 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
                 id="app-update-modal-title"
                 className="text-base font-extrabold text-stone-900 dark:text-stone-100 font-serif truncate"
               >
-                {isAr ? 'تحديث التطبيق' : 'Update Application'}
+                {isAr ? 'التحديث التلقائي للتطبيق' : 'Automatic App Updates'}
               </h3>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
                 {isAr ? `الإصدار الحالي v${APP_VERSION}` : `Current Version v${APP_VERSION}`}
@@ -129,7 +166,52 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
           </button>
         </div>
 
-        {/* Status Card */}
+        {/* Auto-Update Toggle Card */}
+        <div className="rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/35 border border-emerald-200/80 dark:border-emerald-800/70 p-3.5 space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-xs font-extrabold text-stone-900 dark:text-stone-100">
+                {isAr ? 'التحديث التلقائي الذكي في الخلفية' : 'Background Auto-Update'}
+              </div>
+              <div className="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5">
+                {autoUpdate
+                  ? isAr
+                    ? 'مفعّل — يتم تنزيل وتفعيل أحدث نسخة تلقائياً دون مقاطعة لعبك'
+                    : 'Active — downloads & applies updates automatically between games'
+                  : isAr
+                  ? 'يدوي — ينبهك التطبيق عند توفر تحديث لتختار وقت التثبيت'
+                  : 'Manual — notifies you before applying new updates'}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              role="switch"
+              aria-checked={autoUpdate}
+              onClick={handleToggleAutoUpdate}
+              className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors cursor-pointer ${
+                autoUpdate
+                  ? 'bg-emerald-700 dark:bg-emerald-600'
+                  : 'bg-stone-300 dark:bg-stone-700'
+              }`}
+              aria-label={isAr ? 'تبديل التحديث التلقائي' : 'Toggle automatic updates'}
+            >
+              <span
+                className={`inline-block h-5 w-5 rounded-full bg-white shadow-xs transition-transform ${
+                  autoUpdate
+                    ? isAr
+                      ? '-translate-x-6'
+                      : 'translate-x-6'
+                    : isAr
+                    ? '-translate-x-1'
+                    : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Live Check Status Card */}
         <div className="rounded-2xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 p-4 space-y-2">
           {checkState === 'checking' && (
             <div className="flex items-center gap-2.5 text-xs font-bold text-stone-700 dark:text-stone-200">
@@ -145,8 +227,8 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
               <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
               <span>
                 {isAr
-                  ? 'جاري تحديث ملفات الواجهة وإعادة تشغيل التطبيق...'
-                  : 'Refreshing application files and reloading...'}
+                  ? 'جاري تفعيل التحديث الجديد وإعادة التشغيل بسلاسة...'
+                  : 'Applying update and reloading smoothly...'}
               </span>
             </div>
           )}
@@ -157,13 +239,15 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>
                   {isAr
-                    ? 'التطبيق يعمل بأحدث إصدار متاح حالياً'
+                    ? 'التطبيق محدّث ويعمل بأحدث إصدار حالياً'
                     : 'Your app is running the latest version'}
                 </span>
               </div>
               {lastCheckedTime && (
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 ps-6">
-                  {isAr ? `آخر فحص: ${lastCheckedTime}` : `Last checked: ${lastCheckedTime}`}
+                  {isAr
+                    ? `آخر فحص تلقائي: ${lastCheckedTime} · يفحص دورياً وعند عودة الإنترنت`
+                    : `Last checked: ${lastCheckedTime} · Auto-checks periodically & on reconnect`}
                 </p>
               )}
             </div>
@@ -192,27 +276,25 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
               <div className="flex items-center gap-2 text-xs font-extrabold text-stone-700 dark:text-stone-200">
                 <WifiOff className="w-4 h-4 text-amber-600 shrink-0" />
                 <span>
-                  {isAr
-                    ? 'لا يوجد اتصال بالإنترنت حالياً'
-                    : 'You are currently offline'}
+                  {isAr ? 'لا يوجد اتصال بالإنترنت حالياً' : 'You are currently offline'}
                 </span>
               </div>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 ps-6 leading-relaxed">
                 {isAr
-                  ? 'يعمل التطبيق بكامل ألعابه دون اتصال، ويمكنك التحقق من التحديثات فور عودة الشبكة.'
-                  : 'All games continue working offline. Reconnect to check for new updates.'}
+                  ? 'جميع الألعاب تعمل بدون اتصال، وسيقوم التطبيق بفحص التحديثات تلقائياً فور عودة الشبكة.'
+                  : 'All games continue working offline. Updates will be checked automatically once online.'}
               </p>
             </div>
           )}
         </div>
 
         {/* Data Safety Guarantee */}
-        <div className="rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 p-3.5 flex items-start gap-2.5">
+        <div className="rounded-2xl bg-stone-50 dark:bg-stone-800/40 border border-stone-200/70 dark:border-stone-800 p-3.5 flex items-start gap-2.5">
           <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-          <p className="text-[11px] text-emerald-900 dark:text-emerald-200 leading-relaxed">
+          <p className="text-[11px] text-stone-600 dark:text-stone-300 leading-relaxed">
             {isAr
-              ? 'أمان تقدمك مضمون: تحديث التطبيق يجدّد ملفات الواجهة فقط، ولا يمسح نقاطك أو تقدمك في «جزيرة الأسرار» أو ملاحظاتك في «دفتر رحلتي».'
-              : 'Your progress is safe: updating refreshes static files only and never erases your XP, island progress, or journal notes.'}
+              ? 'أمان تقدمك مضمون 100%: التحديث التلقائي أو اليدوي يجدّد ملفات الواجهة فقط، ولا يمسح نقاطك أو أوسمتك أو تقدمك في الألعاب أو «دفتر رحلتي».'
+              : 'Your progress is 100% safe: automatic and manual updates refresh interface files only and never erase XP, badges, or journal notes.'}
           </p>
         </div>
 
@@ -240,7 +322,7 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
               <RefreshCw
                 className={`w-4 h-4 shrink-0 ${checkState === 'checking' ? 'animate-spin' : ''}`}
               />
-              <span>{isAr ? 'إعادة فحص التحديثات' : 'Check Again'}</span>
+              <span>{isAr ? 'فحص التحديثات الآن' : 'Check for Updates Now'}</span>
             </button>
           )}
 
@@ -249,13 +331,13 @@ export const AppUpdateModal: React.FC<AppUpdateModalProps> = ({
               type="button"
               disabled={checkState === 'applying'}
               onClick={() => handleApplyReload(true)}
-              className="w-full min-h-[46px] px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap"
+              className="w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap"
             >
               <RotateCw className="w-4 h-4 shrink-0" />
               <span>
                 {isAr
-                  ? 'مسح الكاش المؤقت وإعادة تحميل أحدث نسخة'
-                  : 'Clear Static Cache & Reload Fresh'}
+                  ? 'تحديث الكاش وإعادة تحميل أحدث نسخة'
+                  : 'Refresh Static Cache & Reload'}
               </span>
             </button>
           )}
@@ -270,29 +352,66 @@ interface AppUpdateAvailableToastProps {
 }
 
 /**
- * Listens for background Service Worker updates and displays a compact, non-intrusive toast
- * when a newer version is downloaded and waiting.
+ * Listens for background Service Worker updates:
+ * - Shows a smooth auto-updating banner when Auto-Update activates on a hub screen.
+ * - Shows an action toast when an update is queued during gameplay or in manual mode.
  */
 export const AppUpdateAvailableToast: React.FC<AppUpdateAvailableToastProps> = ({ language }) => {
   const isAr = language === 'ar';
-  const [visible, setVisible] = useState(false);
+  const [mode, setMode] = useState<'hidden' | 'ready' | 'auto-applying'>('hidden');
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
-    const handleUpdateReady = () => setVisible(true);
+    const handleUpdateReady = () => setMode('ready');
+    const handleAutoApplying = () => {
+      setUpdating(true);
+      setMode('auto-applying');
+    };
     window.addEventListener(SW_UPDATE_EVENT, handleUpdateReady);
-    return () => window.removeEventListener(SW_UPDATE_EVENT, handleUpdateReady);
+    window.addEventListener(SW_AUTO_APPLYING_EVENT, handleAutoApplying);
+    return () => {
+      window.removeEventListener(SW_UPDATE_EVENT, handleUpdateReady);
+      window.removeEventListener(SW_AUTO_APPLYING_EVENT, handleAutoApplying);
+    };
   }, []);
 
-  if (!visible) return null;
+  if (mode === 'hidden') return null;
+
+  if (mode === 'auto-applying') {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:start-6 z-50 max-w-sm rounded-2xl bg-emerald-900 text-white p-3.5 shadow-xl border border-emerald-700 flex items-center gap-2.5 animate-fade-in"
+      >
+        <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
+        <span className="text-xs font-bold">
+          {isAr
+            ? 'تم تنزيل نسخة أحدث — جاري التحديث التلقائي الآن...'
+            : 'New version downloaded — auto-updating now...'}
+        </span>
+      </div>
+    );
+  }
+
+  const autoOn = isAutoUpdateEnabled();
 
   return (
     <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:start-6 z-50 max-w-sm rounded-2xl bg-stone-900 dark:bg-stone-800 text-white p-3.5 shadow-xl border border-stone-700 flex items-center justify-between gap-3 animate-fade-in">
-      <div className="flex items-center gap-2.5 min-w-0">
-        <DownloadCloud className="w-4 h-4 text-emerald-400 shrink-0" />
-        <span className="text-xs font-bold truncate">
-          {isAr ? 'يتوفر تحديث جديد للتطبيق' : 'A new app update is ready'}
-        </span>
+      <div className="min-w-0">
+        <div className="flex items-center gap-2">
+          <DownloadCloud className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span className="text-xs font-bold truncate">
+            {isAr ? 'تحديث جديد جاهز للتطبيق' : 'New app update ready'}
+          </span>
+        </div>
+        {autoOn && (
+          <p className="text-[10px] text-stone-300 ps-6 mt-0.5 truncate">
+            {isAr
+              ? 'سيتفعّل تلقائياً عند العودة للرئيسية دون فقدان تقدمك'
+              : 'Will auto-apply when you return to Home'}
+          </p>
+        )}
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
         <button
@@ -308,7 +427,7 @@ export const AppUpdateAvailableToast: React.FC<AppUpdateAvailableToastProps> = (
         </button>
         <button
           type="button"
-          onClick={() => setVisible(false)}
+          onClick={() => setMode('hidden')}
           aria-label={isAr ? 'تجاهل مؤقتاً' : 'Dismiss'}
           className="p-1.5 text-stone-400 hover:text-white rounded-lg cursor-pointer"
         >

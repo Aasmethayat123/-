@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { resolveRuntimeAssetUrl, getEmbeddedFallbackForAsset } from '../../utils/assetPaths';
+import { resolveRuntimeAssetUrl, loadEmbeddedFallbackForAsset } from '../../utils/assetPaths';
 
 interface SafeCipherImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   src: string;
 }
 
 /**
- * Renders game artwork using forced absolute static URLs (/images/...) in Web & Capacitor,
- * with automatic instant fallback to embedded sRGB data URIs if static loading fails.
+ * Renders game artwork using resolved static URLs (./images/...) in Web & Capacitor,
+ * with automatic on-demand fallback to embedded sRGB data URIs if static loading ever fails.
  */
 export const SafeCipherImage: React.FC<SafeCipherImageProps> = ({
   src,
@@ -22,11 +22,13 @@ export const SafeCipherImage: React.FC<SafeCipherImageProps> = ({
     setActiveSrc(resolveRuntimeAssetUrl(src));
   }, [src]);
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    const fallback = getEmbeddedFallbackForAsset(src);
-    if (fallback && activeSrc !== fallback) {
-      setActiveSrc(fallback);
-      return;
+  const handleImageError = async (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    if (!activeSrc.startsWith('data:')) {
+      const fallback = await loadEmbeddedFallbackForAsset(src);
+      if (fallback && activeSrc !== fallback) {
+        setActiveSrc(fallback);
+        return;
+      }
     }
     if (onError) {
       onError(e);
@@ -38,6 +40,7 @@ export const SafeCipherImage: React.FC<SafeCipherImageProps> = ({
       {...rest}
       src={activeSrc}
       alt={alt}
+      loading="lazy"
       decoding="async"
       onError={handleImageError}
     />

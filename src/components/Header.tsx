@@ -26,10 +26,13 @@ import {
   HeartHandshake,
   KeyRound,
   Share2,
-  RefreshCw
+  RefreshCw,
+  WifiOff,
+  Smartphone
 } from 'lucide-react';
 import { GameMode, Language, UserRank, RankProgress } from '../types';
 import { AMBIENT_SOUNDSCAPES, AmbientSoundscapeId, soundManager } from '../utils/audio';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { StreakHeaderBadge } from './StreakHeaderBadge';
 import { RankHeaderBadge } from './RankHeaderBadge';
@@ -51,6 +54,7 @@ interface HeaderProps {
   onOpenTechnicalAudit?: () => void;
   onOpenShare?: () => void;
   onOpenUpdate?: () => void;
+  onOpenInstall?: () => void;
   onOpenSettings?: () => void;
   earnedBadgeIds?: string[];
   totalGamesCompleted?: number;
@@ -73,6 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenTechnicalAudit,
   onOpenShare,
   onOpenUpdate,
+  onOpenInstall,
   onOpenSettings,
   earnedBadgeIds = [],
   totalGamesCompleted = 0
@@ -82,6 +87,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [activeSoundscape, setActiveSoundscape] = useState<AmbientSoundscapeId>(() =>
     soundManager.getSoundscape()
   );
+  const isOnline = useOnlineStatus();
   const isAr = language === 'ar';
 
   useEffect(() => {
@@ -109,6 +115,26 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-stone-200/80 dark:border-stone-800 transition-colors">
+      {/* Live Offline Status Reassurance Bar */}
+      {!isOnline && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="bg-emerald-900 dark:bg-emerald-950 text-emerald-50 border-b border-emerald-800 px-3 sm:px-6 py-1.5 text-[11px] sm:text-xs font-bold"
+        >
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <WifiOff className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+              <span>
+                {isAr
+                  ? 'وضع العمل بدون إنترنت نشط — جميع الألعاب والتجارب والحفظ المحلي تعمل بكفاءة كاملة.'
+                  : 'Offline Mode Active — All games, soundscapes, and local progress work 100% offline.'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top Banner: Brand and Controls */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-2">
         {/* Brand */}
@@ -152,9 +178,16 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Daily Streak Fire Tracking */}
           <StreakHeaderBadge language={language} onAddXP={onAddXP} />
 
-          {/* PWA In-App Install Prompt & Offline Info */}
+          {/* PWA In-App Install Prompt (Compact on Mobile + Full on Desktop) */}
+          <div className="sm:hidden">
+            <PWAInstallPrompt
+              compactMobile
+              language={language}
+              onOpenInstallModal={onOpenInstall}
+            />
+          </div>
           <div className="hidden sm:block">
-            <PWAInstallPrompt language={language} />
+            <PWAInstallPrompt language={language} onOpenInstallModal={onOpenInstall} />
           </div>
 
           {/* Breathing Pause Quick Action */}
@@ -166,7 +199,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 transition-all cursor-pointer shadow-2xs"
             title={isAr ? 'وقفة أنفاس مهدئة' : 'Mindful Breathing Pause'}
           >
-            <Wind className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+            <Wind className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span className="hidden sm:inline">{isAr ? 'وقفة أنفاس' : 'Breathe'}</span>
           </button>
 
@@ -252,7 +285,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="font-mono">{language === 'ar' ? 'EN' : 'عربي'}</span>
           </button>
 
-          {/* Share App Trigger (Desktop) */}
+          {/* Share App Trigger (Mobile & Desktop) */}
           {onOpenShare && (
             <button
               type="button"
@@ -260,7 +293,7 @@ export const Header: React.FC<HeaderProps> = ({
                 soundManager.playSoftTap();
                 onOpenShare();
               }}
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold transition-colors cursor-pointer whitespace-nowrap"
+              className="flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold transition-colors cursor-pointer whitespace-nowrap"
               title={isAr ? 'مشاركة التطبيق مع أصدقائك' : 'Share App'}
               aria-label={isAr ? 'مشاركة التطبيق' : 'Share App'}
             >
@@ -407,6 +440,21 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
+            {onOpenInstall && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playSoftTap();
+                  setMobileMenuOpen(false);
+                  onOpenInstall();
+                }}
+                className="w-full min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition-colors cursor-pointer whitespace-nowrap"
+              >
+                <Smartphone className="w-4 h-4 shrink-0" />
+                <span>{isAr ? 'تثبيت التطبيق على الموبايل' : 'Install App on Mobile'}</span>
+              </button>
+            )}
+
             {(onOpenShare || onOpenUpdate) && (
               <div className="grid grid-cols-2 gap-2">
                 {onOpenShare && (
@@ -417,7 +465,7 @@ export const Header: React.FC<HeaderProps> = ({
                       setMobileMenuOpen(false);
                       onOpenShare();
                     }}
-                    className="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition-colors cursor-pointer whitespace-nowrap"
+                    className="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 transition-colors cursor-pointer whitespace-nowrap"
                   >
                     <Share2 className="w-4 h-4 shrink-0" />
                     <span>{isAr ? 'مشاركة التطبيق' : 'Share App'}</span>
@@ -435,15 +483,11 @@ export const Header: React.FC<HeaderProps> = ({
                     className="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold bg-stone-200/80 hover:bg-stone-300/80 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 transition-colors cursor-pointer whitespace-nowrap"
                   >
                     <RefreshCw className="w-4 h-4 shrink-0" />
-                    <span>{isAr ? 'تحديث التطبيق' : 'Update App'}</span>
+                    <span>{isAr ? 'التحديث التلقائي' : 'Auto Update'}</span>
                   </button>
                 )}
               </div>
             )}
-
-            <div className="sm:hidden">
-              <PWAInstallPrompt language={language} />
-            </div>
 
             {onToggleTheme && (
               <button

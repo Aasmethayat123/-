@@ -1,4 +1,5 @@
 import { GAME_STAGES_CONFIG, getGameLevelProgress } from './gameLevelsManager';
+import { loadCipherProgress } from './nesmaCipherStorage';
 
 export interface DailyChallengeInfo {
   dateString: string; // YYYY-MM-DD
@@ -110,20 +111,26 @@ export function getTodayChallenge(): DailyChallengeInfo {
   let stageTitleEn = 'Stage 1';
 
   if (game.id === 'nesma-cipher') {
-    stageNumber = (positiveHash % 60) + 1;
+    const cipherProg = loadCipherProgress();
+    const unlocked = cipherProg.unlockedLevels?.length ? cipherProg.unlockedLevels : [1];
+    stageNumber = unlocked[positiveHash % unlocked.length] || 1;
     stageTitleAr = `المرحلة ${stageNumber} في شفرة نسمة`;
     stageTitleEn = `Stage ${stageNumber} in Nesma Cipher`;
-  } else if (game.id === 'zen-puzzle') {
-    stageNumber = (positiveHash % 35) + 1;
-    stageTitleAr = `المرحلة ${stageNumber} في ميزان الأحجار`;
-    stageTitleEn = `Stage ${stageNumber} in Zen Stones`;
   } else {
+    const prog = getGameLevelProgress(game.id);
+    const unlocked = prog.unlockedStages?.length ? prog.unlockedStages : [1];
+    stageNumber = unlocked[positiveHash % unlocked.length] || 1;
     const config = GAME_STAGES_CONFIG[game.id] || [];
-    if (config.length > 0) {
-      const idx = positiveHash % config.length;
-      stageNumber = config[idx].stageNumber;
-      stageTitleAr = config[idx].titleAr;
-      stageTitleEn = config[idx].titleEn;
+    const matchedCfg = config.find((c) => c.stageNumber === stageNumber);
+    if (matchedCfg) {
+      stageTitleAr = matchedCfg.titleAr;
+      stageTitleEn = matchedCfg.titleEn;
+    } else if (game.id === 'zen-puzzle') {
+      stageTitleAr = `المرحلة ${stageNumber} في ميزان الأحجار`;
+      stageTitleEn = `Stage ${stageNumber} in Zen Stones`;
+    } else {
+      stageTitleAr = `المرحلة ${stageNumber}`;
+      stageTitleEn = `Stage ${stageNumber}`;
     }
   }
 
@@ -148,6 +155,16 @@ export function getTodayChallenge(): DailyChallengeInfo {
     bonusXP: 80,
     isCompleted: state.lastCompletedDailyDate === dateStr
   };
+}
+
+export function isDailyChallengeTargetSolved(challenge?: DailyChallengeInfo): boolean {
+  const active = challenge || getTodayChallenge();
+  if (active.gameId === 'nesma-cipher') {
+    const cipherProg = loadCipherProgress();
+    return Boolean(cipherProg.completedLevels && cipherProg.completedLevels.includes(active.stageNumber));
+  }
+  const prog = getGameLevelProgress(active.gameId);
+  return Boolean(prog.stars && (prog.stars[active.stageNumber] || 0) >= 1);
 }
 
 export function completeDailyChallenge(onAddXP?: (amount: number) => void): void {

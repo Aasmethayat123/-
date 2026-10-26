@@ -1,8 +1,84 @@
 import { GameMode } from '../types';
 import { ALL_36_GAMES } from '../data/gamesCatalog';
 
-export const APP_VERSION = '2.4.0';
+export const APP_VERSION = '2.5.0';
 export const SW_UPDATE_EVENT = 'nesma:sw-update-available';
+export const SW_AUTO_APPLYING_EVENT = 'nesma:sw-auto-applying';
+export const SW_AUTO_PREF_CHANGED_EVENT = 'nesma:sw-auto-pref-changed';
+
+const AUTO_UPDATE_STORAGE_KEY = 'nesma_auto_update_enabled_v1';
+const LAST_AUTO_CHECK_STORAGE_KEY = 'nesma_last_update_check_ts_v1';
+
+let registeredSWUpdater: ((reloadPage?: boolean) => Promise<void>) | null = null;
+let pendingUpdateAvailable = false;
+
+export function registerGlobalSWUpdater(updater: (reloadPage?: boolean) => Promise<void>): void {
+  registeredSWUpdater = updater;
+}
+
+export function markPendingSWUpdate(available: boolean): void {
+  pendingUpdateAvailable = available;
+}
+
+export function hasPendingSWUpdate(): boolean {
+  return pendingUpdateAvailable;
+}
+
+/**
+ * Auto-update is enabled by default (`true`) so users always receive new games & fixes seamlessly.
+ */
+export function isAutoUpdateEnabled(): boolean {
+  if (typeof window === 'undefined') return true;
+  try {
+    const raw = localStorage.getItem(AUTO_UPDATE_STORAGE_KEY);
+    if (raw === null) return true;
+    return raw !== 'false';
+  } catch {
+    return true;
+  }
+}
+
+export function setAutoUpdateEnabled(enabled: boolean): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(AUTO_UPDATE_STORAGE_KEY, enabled ? 'true' : 'false');
+  } catch {
+    // ignore storage quota errors
+  }
+  window.dispatchEvent(new CustomEvent(SW_AUTO_PREF_CHANGED_EVENT, { detail: { enabled } }));
+}
+
+export function recordAutoCheckTimestamp(ts: number = Date.now()): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(LAST_AUTO_CHECK_STORAGE_KEY, String(ts));
+  } catch {
+    // ignore storage errors
+  }
+}
+
+export function getLastAutoCheckTimestamp(): number | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(LAST_AUTO_CHECK_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Checks whether the user is currently on a browse/navigation hub screen (not mid-session/mid-puzzle)
+ * so silent automatic updates never interrupt active gameplay or psychological reflections.
+ */
+export function isSafeScreenForSilentAutoUpdate(): boolean {
+  if (typeof window === 'undefined') return false;
+  const rawHash = window.location.hash.replace(/^#/, '').trim();
+  const safeHubs = new Set(['', 'map', 'library', 'discover', 'projects', 'profile']);
+  return safeHubs.has(rawHash);
+}
 
 const MODE_LABELS_AR: Partial<Record<GameMode, string>> = {
   map: 'الرئيسية — نسمة حياة',
@@ -82,26 +158,35 @@ export function buildShareUrl(currentMode: GameMode, scope: 'app' | 'current'): 
 export function buildShareInvitation(
   currentMode: GameMode,
   scope: 'app' | 'current',
-  isAr: boolean
+  isAr: boolean,
+  includeInstallHint = true
 ): { title: string; text: string; url: string } {
   const url = buildShareUrl(currentMode, scope);
+  const installNoteAr = includeInstallHint
+    ? ' (يمكنك تثبيته مباشرة على شاشة موبايلك واللعب بدون إنترنت 📲)'
+    : '';
+  const installNoteEn = includeInstallHint
+    ? ' (Installable on your phone home screen & works 100% offline 📲)'
+    : '';
 
   if (scope === 'current' && currentMode !== 'map') {
     const modeTitle = getModeDisplayTitle(currentMode, isAr);
     return {
       title: isAr ? `${modeTitle} | نسمة حياة` : `${modeTitle} | Nesma Hayat`,
       text: isAr
-        ? `جرّب تجربة «${modeTitle}» التفاعلية داخل تطبيق نسمة حياة — مساحة هادئة لفك تشابك الأفكار وتهدئة المشاعر:`
-        : `Try "${modeTitle}" inside Nesma Hayat — an interactive space for clarity, calm, and emotional balance:`,
+        ? `جرّب تجربة «${modeTitle}» التفاعلية داخل تطبيق نسمة حياة — مساحة هادئة لفك تشابك الأفكار وتهدئة المشاعر${installNoteAr}:`
+        : `Try "${modeTitle}" inside Nesma Hayat — an interactive space for clarity, calm, and emotional balance${installNoteEn}:`,
       url,
     };
   }
 
   return {
-    title: isAr ? 'فكر فيها — ألعاب نسمة حياة التفاعلية' : 'Think About It — Nesma Hayat Interactive Games',
+    title: isAr
+      ? 'فكر فيها — ألعاب نسمة حياة التفاعلية'
+      : 'Think About It — Nesma Hayat Interactive Games',
     text: isAr
-      ? 'جرّب تطبيق «نسمة حياة — فكر فيها»: ألعاب نفسية وتفاعلية ومغامرة جزيرة الأسرار المتحركة لفك تشابك الأفكار وتهدئة التوتر:'
-      : 'Explore "Nesma Hayat — Think About It": interactive psychological games and the Moving Secrets Island adventure:',
+      ? `جرّب تطبيق «نسمة حياة — فكر فيها»: 54 لعبة نفسية وتفاعلية ومغامرة جزيرة الأسرار المتحركة لفك تشابك الأفكار وتهدئة التوتر${installNoteAr}:`
+      : `Explore "Nesma Hayat — Think About It": 54 interactive psychological games and the Moving Secrets Island adventure${installNoteEn}:`,
     url,
   };
 }
@@ -177,15 +262,24 @@ export async function checkForAppUpdate(): Promise<UpdateCheckResult> {
     return { status: 'offline' };
   }
 
+  const now = Date.now();
+  recordAutoCheckTimestamp(now);
+
+  if (pendingUpdateAvailable) {
+    return { status: 'update-ready' };
+  }
+
   try {
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations();
       for (const reg of registrations) {
         if (reg.waiting) {
+          pendingUpdateAvailable = true;
           return { status: 'update-ready', registration: reg };
         }
         await reg.update();
         if (reg.waiting) {
+          pendingUpdateAvailable = true;
           return { status: 'update-ready', registration: reg };
         }
         if (reg.installing) {
@@ -208,6 +302,7 @@ export async function checkForAppUpdate(): Promise<UpdateCheckResult> {
           });
 
           if (installedUpdate) {
+            pendingUpdateAvailable = true;
             return { status: 'update-ready', registration: reg };
           }
         }
@@ -215,14 +310,19 @@ export async function checkForAppUpdate(): Promise<UpdateCheckResult> {
     }
 
     // Perform a lightweight cache-bypassing HEAD ping to verify live reachability
-    await fetch(`${window.location.pathname}?_ping=${Date.now()}`, {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 5000);
+    await fetch(`${window.location.pathname}?_ping=${now}`, {
       method: 'HEAD',
       cache: 'no-store',
-    }).catch(() => {});
+      signal: controller.signal,
+    })
+      .catch(() => {})
+      .finally(() => window.clearTimeout(timer));
 
-    return { status: 'up-to-date', checkedAt: Date.now() };
+    return { status: 'up-to-date', checkedAt: now };
   } catch {
-    return { status: 'up-to-date', checkedAt: Date.now() };
+    return { status: 'up-to-date', checkedAt: now };
   }
 }
 
@@ -232,6 +332,15 @@ export async function checkForAppUpdate(): Promise<UpdateCheckResult> {
  */
 export async function applyAppUpdateAndReload(unregisterServiceWorkers = false): Promise<void> {
   if (typeof window === 'undefined') return;
+  pendingUpdateAvailable = false;
+
+  if (!unregisterServiceWorkers && registeredSWUpdater) {
+    try {
+      await registeredSWUpdater(true);
+    } catch {
+      // fallback below
+    }
+  }
 
   try {
     if ('caches' in window) {

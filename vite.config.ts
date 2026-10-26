@@ -13,6 +13,35 @@ export default defineConfig(() => {
       assetsDir: 'assets',
       assetsInlineLimit: 4096,
       emptyOutDir: true,
+      chunkSizeWarningLimit: 950,
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              {
+                name: 'vendor-react',
+                test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+                priority: 30,
+              },
+              {
+                name: 'vendor-motion',
+                test: /node_modules[\\/](motion|framer-motion)[\\/]/,
+                priority: 25,
+              },
+              {
+                name: 'vendor-icons',
+                test: /node_modules[\\/]lucide-react[\\/]/,
+                priority: 20,
+              },
+              {
+                name: 'cipher-data',
+                test: /src[\\/]data[\\/]nesmaCipherData/,
+                priority: 15,
+              },
+            ],
+          },
+        },
+      },
     },
     plugins: [
       react(),
@@ -20,7 +49,13 @@ export default defineConfig(() => {
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: null,
-        includeAssets: [],
+        includeAssets: [
+          'apple-touch-icon.png',
+          'icon.svg',
+          'pwa-192x192.png',
+          'pwa-512x512.png',
+          'pwa-maskable-512x512.png',
+        ],
         includeManifestIcons: false,
         manifest: {
           id: './',
@@ -61,9 +96,10 @@ export default defineConfig(() => {
           clientsClaim: true,
           skipWaiting: true,
           maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-          globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,webp,svg,woff,woff2}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,webp,svg,woff,woff2,webmanifest}'],
           globIgnores: [
             '**/fakkerfeha-dist.zip',
+            '**/cipherEmbeddedImages-*.js',
             '**/manifest.json',
             '**/_redirects',
             '**/sw.js',
@@ -122,7 +158,8 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: false,
+          enabled: true,
+          type: 'module',
         },
       }),
     ],

@@ -81,7 +81,7 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
       <div className="bg-stone-900 text-white rounded-3xl p-6 sm:p-8 shadow-sm border border-stone-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <FolderKanban className="w-4 h-4 text-emerald-400 shrink-0" />
             <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
               {isAr ? 'المشروعات الحقيقية المعتمدة' : 'Verified Real Projects'}
             </span>
@@ -112,13 +112,13 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
       </div>
 
       {/* Transparency & Authenticity Notice */}
-      <div className="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl flex items-start gap-3 text-xs text-emerald-950">
-        <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
+      <div className="p-4 bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl flex items-start gap-3 text-xs text-emerald-950 dark:text-emerald-100">
+        <ShieldCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <span className="font-extrabold block">
             {isAr ? 'معيار البيانات الحقيقية والشفافية:' : 'Data Integrity Standard:'}
           </span>
-          <p className="leading-relaxed text-emerald-900">
+          <p className="leading-relaxed text-emerald-900 dark:text-emerald-200/90">
             {isAr
               ? 'جميع المشروعات المعروضة هنا مستندة حصراً إلى البيانات الحقيقية المعتمدة. الرموز والأيقونات المستخدمة هي عناصر تصميم توضيحية للواجهة وليست صوراً فوتوغرافية للمشروع.'
               : 'All projects displayed are strictly based on authentic approved information. Icons used are UI design elements, not project photographs.'}
@@ -142,8 +142,8 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
             }}
             className={`px-4 py-2 rounded-xl transition-all cursor-pointer whitespace-nowrap ${
               selectedCategory === tab.id
-                ? 'bg-stone-900 text-white shadow-xs'
-                : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-100'
+                ? 'bg-stone-900 dark:bg-emerald-700 text-white shadow-xs'
+                : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
             }`}
           >
             {tab.label}
@@ -154,9 +154,9 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
       {/* Projects Showcase Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredProjects.length === 0 ? (
-          <div className="col-span-full bg-white rounded-3xl border-2 border-dashed border-stone-200 p-10 text-center space-y-2">
+          <div className="col-span-full bg-white dark:bg-stone-900 rounded-3xl border-2 border-dashed border-stone-200 dark:border-stone-800 p-10 text-center space-y-2">
             <span className="text-3xl">📦</span>
-            <h3 className="text-sm font-bold text-stone-700">
+            <h3 className="text-sm font-bold text-stone-700 dark:text-stone-200">
               {isAr ? 'لا توجد مشروعات منشورة في هذا التصنيف حالياً' : 'No published projects in this category'}
             </h3>
             <p className="text-xs text-stone-400">
@@ -170,20 +170,20 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
           return (
             <div
               key={project.id}
-              className="bg-white rounded-3xl border-2 border-stone-200 hover:border-emerald-500/50 transition-all p-6 sm:p-7 shadow-xs hover:shadow-md flex flex-col justify-between space-y-6"
+              className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 hover:border-emerald-500/50 transition-all p-6 sm:p-7 shadow-xs hover:shadow-md flex flex-col justify-between space-y-6"
             >
               {/* Card Header */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center text-2xl shadow-inner shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 flex items-center justify-center text-2xl shadow-inner shrink-0">
                       {project.icon || '📦'}
                     </div>
                     <div>
                       <span className="text-[11px] font-bold text-stone-400 block uppercase tracking-wider">
                         {getCategoryLabel(project.category)}
                       </span>
-                      <h3 className="text-xl font-extrabold text-stone-900 font-serif">
+                      <h3 className="text-xl font-extrabold text-stone-900 dark:text-stone-100 font-serif">
                         {project.name}
                       </h3>
                     </div>
@@ -195,7 +195,7 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
                 </div>
 
                 {/* Description */}
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
                   {project.description}
                 </p>
 

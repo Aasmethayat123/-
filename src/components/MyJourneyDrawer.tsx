@@ -66,13 +66,13 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
       </div>
 
       <div className="text-center max-w-md mx-auto space-y-1">
-        <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider block">
+        <span className="text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
           {isAr ? 'خاطراتك ومحطات هدوئك' : 'Your Personal Sanctuary'}
         </span>
-        <h2 className="text-2xl font-extrabold text-stone-900">
+        <h2 className="text-2xl font-extrabold text-stone-900 dark:text-stone-100">
           {isAr ? 'لحظات الوعي في رحلتك 🌿' : 'Saved Moments in Your Journey 🌿'}
         </h2>
-        <p className="text-xs text-stone-500">
+        <p className="text-xs text-stone-500 dark:text-stone-400">
           {isAr
             ? 'كل لحظة حفظتها في ألعاب نسمة حياة تبقى هنا، مساحة آمنة لتتذكري ما تعلمته عن نفسك.'
             : 'All your saved reflections and insights are kept safely here for you.'}
@@ -80,11 +80,11 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
       </div>
 
       {moments.length === 0 ? (
-        <div className="bg-white rounded-3xl border-2 border-dashed border-stone-300 p-12 text-center space-y-3">
-          <div className="w-16 h-16 rounded-full bg-stone-100 text-stone-400 flex items-center justify-center mx-auto text-3xl">
+        <div className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-dashed border-stone-300 dark:border-stone-800 p-12 text-center space-y-3">
+          <div className="w-16 h-16 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-400 flex items-center justify-center mx-auto text-3xl">
             📖
           </div>
-          <h3 className="text-base font-bold text-stone-700">
+          <h3 className="text-base font-bold text-stone-700 dark:text-stone-200">
             {isAr ? 'لا توجد لحظات محفوظة بعد' : 'No moments saved yet'}
           </h3>
           <p className="text-xs text-stone-400 max-w-xs mx-auto">
@@ -98,11 +98,11 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
           {moments.map((m) => (
             <div
               key={m.id}
-              className="bg-white rounded-3xl border-2 border-stone-200 p-6 shadow-sm space-y-3 relative group"
+              className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 p-6 shadow-sm space-y-3 relative group"
             >
-              <div className="flex items-center justify-between border-b border-stone-100 pb-2.5">
+              <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-2.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-extrabold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                  <span className="text-xs font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
                     {m.gameTitle}
                   </span>
                   <span className="text-[11px] text-stone-400">{m.date}</span>
@@ -110,7 +110,7 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
 
                 <button
                   onClick={() => handleDelete(m.id)}
-                  className="text-stone-300 hover:text-rose-600 transition-colors p-1"
+                  className="text-stone-400 hover:text-rose-600 transition-colors p-1.5 cursor-pointer"
                   title={isAr ? 'حذف' : 'Delete'}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -118,7 +118,7 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
               </div>
 
               {/* Quote */}
-              <div className="p-3 bg-stone-50 rounded-2xl border border-stone-100 text-xs font-serif font-bold text-stone-800 italic">
+              <div className="p-3 bg-stone-50 dark:bg-stone-800/70 rounded-2xl border border-stone-100 dark:border-stone-800 text-xs font-serif font-bold text-stone-800 dark:text-stone-200 italic">
                 «{m.quote}»
               </div>
 
@@ -128,7 +128,7 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
                   <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
                     {isAr ? 'تأملك الشخصي:' : 'Your reflection:'}
                   </span>
-                  <p className="text-xs text-stone-700 leading-relaxed font-medium">
+                  <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-medium">
                     {m.reflection}
                   </p>
                 </div>

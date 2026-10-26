@@ -146,15 +146,21 @@ export async function processCompanionMessage(
   // 2. Scrub PII before any potential transmission
   const scrubbedText = scrubPII(userInput);
 
-  // 3. Attempt Server-side Cloud AI if enabled
+  // 3. Attempt Server-side Cloud AI if enabled AND device is online
   const allowCloud = options.allowCloud !== false;
-  if (allowCloud && typeof window !== 'undefined') {
+  const isBrowserOnline =
+    typeof navigator === 'undefined' ? true : navigator.onLine !== false;
+
+  if (allowCloud && isBrowserOnline && typeof window !== 'undefined') {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 6000);
     try {
       const response = await fetch('/api/companion', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
+        signal: controller.signal,
         body: JSON.stringify({
           message: scrubbedText,
           history: history.slice(-6).map(m => ({
@@ -181,7 +187,9 @@ export async function processCompanionMessage(
         }
       }
     } catch {
-      // Network or API failure -> seamlessly fall back to local CBT engine
+      // Network timeout or offline state -> seamlessly fall back to local CBT engine
+    } finally {
+      window.clearTimeout(timeoutId);
     }
   }
 
@@ -220,13 +228,13 @@ export async function runCompanionEngineTests(): Promise<{
     note: piiPassed ? 'تم استبدال أرقام الهواتف والبريد بنجاح قبل الإرسال.' : 'فشل في حجب البيانات الشخصية'
   });
 
-  // Test 2: Local Cognitive Engine
+  // Test 2: Local Cognitive Engine (100% Offline CBT/ACT)
   const localRes = generateLocalCBTReply('أنا دايماً بفشل في كل شيء وكل حاجة باظت', 'ar');
   const localPassed = !!localRes.reply && !!localRes.distortionIdentified && localRes.provider === 'local-cbt-engine';
   details.push({
-    testName: 'محرك التحليل المعرفي المحلي (Local CBT/ACT Engine)',
+    testName: 'محرك التحليل المعرفي المحلي بدون إنترنت (Offline CBT/ACT Engine)',
     passed: localPassed,
-    note: `نجح في تحديد التشوه المعرفي: [${localRes.distortionIdentified}] وصياغة رد تعاطفي.`
+    note: `نجح فورياً بدون شبكة في تحديد التشوه المعرفي: [${localRes.distortionIdentified}] وصياغة رد تعاطفي.`
   });
 
   // Test 3: Crisis Handling

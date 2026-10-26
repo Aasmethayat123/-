@@ -60,17 +60,31 @@ export const TechnicalAuditModal: React.FC<TechnicalAuditModalProps> = ({
       const cp = await runCompanionEngineTests();
       setCompanionResults(cp);
 
-      // 4. Cloud Health check
-      try {
-        const resp = await fetch('/api/health');
-        if (resp.ok) {
-          const json = await resp.json();
-          setCloudResults({ ok: true, data: json });
-        } else {
-          setCloudResults({ ok: false, error: `HTTP ${resp.status}` });
+      // 4. Cloud Health check (with instant offline detection & 5s timeout)
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        setCloudResults({
+          ok: false,
+          offline: true,
+          error: isAr
+            ? 'الجهاز يعمل حالياً بدون اتصال بالإنترنت — المحرك المعرفي المحلي (CBT/ACT) نشط تلقائياً.'
+            : 'Device is currently offline — Local CBT/ACT engine is active automatically.',
+        });
+      } else {
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), 5000);
+        try {
+          const resp = await fetch('/api/health', { signal: controller.signal });
+          if (resp.ok) {
+            const json = await resp.json();
+            setCloudResults({ ok: true, data: json });
+          } else {
+            setCloudResults({ ok: false, error: `HTTP ${resp.status}` });
+          }
+        } catch (err: any) {
+          setCloudResults({ ok: false, error: err?.message || 'Network unavailable (Local CBT active)' });
+        } finally {
+          window.clearTimeout(timeoutId);
         }
-      } catch (err: any) {
-        setCloudResults({ ok: false, error: err.message || 'Network error' });
       }
 
       soundManager.playSuccess();

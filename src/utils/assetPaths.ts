@@ -1,5 +1,3 @@
-import { EMBEDDED_CIPHER_IMAGES } from '../data/cipherEmbeddedImages';
-
 /**
  * Normalizes any static asset reference into a clean path relative to index.html ("./..."),
  * matching Vite's `base: './'` configuration for Capacitor/Android WebView (`https://localhost`,
@@ -62,21 +60,30 @@ export function resolveRuntimeAssetUrl(rawPath: string): string {
   return relPath;
 }
 
-const FALLBACK_BY_FILENAME: Record<string, string> = {
-  'nesma_cipher_hero_map_1792598958892.jpg': EMBEDDED_CIPHER_IMAGES.heroMap,
-  'puzzle_garden_dawn_1792598959302.jpg': EMBEDDED_CIPHER_IMAGES.gardenDawn,
-  'puzzle_library_secrets_1792598959558.jpg': EMBEDDED_CIPHER_IMAGES.librarySecrets,
-  'puzzle_cave_reflection_1792598961556.jpg': EMBEDDED_CIPHER_IMAGES.caveReflection,
+const FALLBACK_KEY_BY_FILENAME: Record<
+  string,
+  'heroMap' | 'gardenDawn' | 'librarySecrets' | 'caveReflection'
+> = {
+  'nesma_cipher_hero_map_1792598958892.jpg': 'heroMap',
+  'puzzle_garden_dawn_1792598959302.jpg': 'gardenDawn',
+  'puzzle_library_secrets_1792598959558.jpg': 'librarySecrets',
+  'puzzle_cave_reflection_1792598961556.jpg': 'caveReflection',
 };
 
 /**
- * Returns an embedded sRGB data-URI fallback if a static image fails to load on mobile/offline.
+ * Lazily loads the embedded sRGB data-URI fallback chunk ONLY when a static image fails to load,
+ * keeping 869 KB of base64 data completely out of the initial JS bundle.
  */
-export function getEmbeddedFallbackForAsset(src: string): string | null {
+export async function loadEmbeddedFallbackForAsset(src: string): Promise<string | null> {
   if (!src || src.startsWith('data:')) return null;
-  for (const [filename, dataUri] of Object.entries(FALLBACK_BY_FILENAME)) {
+  for (const [filename, key] of Object.entries(FALLBACK_KEY_BY_FILENAME)) {
     if (src.includes(filename)) {
-      return dataUri;
+      try {
+        const mod = await import('../data/cipherEmbeddedImages');
+        return mod.EMBEDDED_CIPHER_IMAGES[key] || null;
+      } catch {
+        return null;
+      }
     }
   }
   return null;

@@ -11,6 +11,9 @@ import {
   Sun,
   Moon,
   Languages,
+  Smartphone,
+  Share2,
+  RefreshCw,
 } from 'lucide-react';
 import { Language } from '../types';
 import {
@@ -18,6 +21,11 @@ import {
   AmbientSoundscapeId,
   soundManager,
 } from '../utils/audio';
+import {
+  SW_AUTO_PREF_CHANGED_EVENT,
+  isAutoUpdateEnabled,
+  setAutoUpdateEnabled,
+} from '../utils/appLifecycle';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -28,6 +36,9 @@ interface SettingsModalProps {
   onToggleSound: () => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  onOpenInstall?: () => void;
+  onOpenShare?: () => void;
+  onOpenUpdate?: () => void;
 }
 
 const SOUNDSCAPE_ICONS: Record<AmbientSoundscapeId, React.ComponentType<{ className?: string }>> = {
@@ -46,6 +57,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onToggleSound,
   theme,
   onToggleTheme,
+  onOpenInstall,
+  onOpenShare,
+  onOpenUpdate,
 }) => {
   const isAr = language === 'ar';
   const [selectedSoundscape, setSelectedSoundscape] = useState<AmbientSoundscapeId>(() =>
@@ -54,14 +68,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [ambientVolume, setAmbientVolume] = useState<number>(() =>
     soundManager.getAmbientVolume()
   );
+  const [autoUpdate, setAutoUpdate] = useState<boolean>(() => isAutoUpdateEnabled());
 
   useEffect(() => {
     const sync = () => {
       setSelectedSoundscape(soundManager.getSoundscape());
       setAmbientVolume(soundManager.getAmbientVolume());
+      setAutoUpdate(isAutoUpdateEnabled());
     };
     sync();
-    return soundManager.subscribe(sync);
+    window.addEventListener(SW_AUTO_PREF_CHANGED_EVENT, sync);
+    const unsub = soundManager.subscribe(sync);
+    return () => {
+      window.removeEventListener(SW_AUTO_PREF_CHANGED_EVENT, sync);
+      unsub();
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -305,6 +326,94 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <Languages className="w-4 h-4 text-stone-500 dark:text-stone-400 shrink-0" />
               <span>{isAr ? 'English' : 'العربية'}</span>
             </button>
+          </div>
+        </section>
+
+        {/* Mobile App, Sharing & Automatic Updates Section */}
+        <section
+          className="pt-4 border-t border-stone-100 dark:border-stone-800 space-y-2.5"
+          aria-labelledby="app-lifecycle-heading"
+        >
+          <h4
+            id="app-lifecycle-heading"
+            className="text-xs font-extrabold text-stone-900 dark:text-stone-100"
+          >
+            {isAr ? 'التثبيت والمشاركة والتحديث التلقائي' : 'Mobile App, Sharing & Auto-Update'}
+          </h4>
+
+          {/* Auto-Update Toggle Row */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={autoUpdate}
+            onClick={() => {
+              soundManager.playSoftTap();
+              const next = !autoUpdate;
+              setAutoUpdate(next);
+              setAutoUpdateEnabled(next);
+            }}
+            className="w-full min-h-[46px] px-3.5 py-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 dark:bg-stone-800/70 dark:hover:bg-stone-800 border border-stone-200/80 dark:border-stone-700 flex items-center justify-between text-xs font-bold text-stone-800 dark:text-stone-200 cursor-pointer transition-colors"
+          >
+            <div className="flex items-center gap-2.5">
+              <RefreshCw className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <span>{isAr ? 'التحديث التلقائي في الخلفية' : 'Automatic Background Updates'}</span>
+            </div>
+            <span
+              className={`text-[11px] font-bold ${
+                autoUpdate
+                  ? 'text-emerald-700 dark:text-emerald-400'
+                  : 'text-stone-500 dark:text-stone-400'
+              }`}
+            >
+              {autoUpdate ? (isAr ? 'مفعّل ✓' : 'On ✓') : isAr ? 'يدوي' : 'Manual'}
+            </span>
+          </button>
+
+          <div className="grid grid-cols-3 gap-2">
+            {onOpenInstall && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playSoftTap();
+                  onClose();
+                  onOpenInstall();
+                }}
+                className="min-h-[44px] px-2.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+              >
+                <Smartphone className="w-3.5 h-3.5 shrink-0" />
+                <span>{isAr ? 'تثبيت' : 'Install'}</span>
+              </button>
+            )}
+
+            {onOpenShare && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playSoftTap();
+                  onClose();
+                  onOpenShare();
+                }}
+                className="min-h-[44px] px-2.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+              >
+                <Share2 className="w-3.5 h-3.5 shrink-0" />
+                <span>{isAr ? 'مشاركة' : 'Share'}</span>
+              </button>
+            )}
+
+            {onOpenUpdate && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playSoftTap();
+                  onClose();
+                  onOpenUpdate();
+                }}
+                className="min-h-[44px] px-2.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+              >
+                <RefreshCw className="w-3.5 h-3.5 shrink-0" />
+                <span>{isAr ? 'التحديث' : 'Updates'}</span>
+              </button>
+            )}
           </div>
         </section>
       </div>

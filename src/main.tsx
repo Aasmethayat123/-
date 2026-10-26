@@ -1,10 +1,20 @@
-import {createRoot} from 'react-dom/client';
-import {Capacitor} from '@capacitor/core';
+import { createRoot } from 'react-dom/client';
+import { Capacitor } from '@capacitor/core';
+import { registerSW } from 'virtual:pwa-register';
 import App from './App.tsx';
-import {SW_UPDATE_EVENT} from './utils/appLifecycle';
+import {
+  SW_AUTO_APPLYING_EVENT,
+  SW_UPDATE_EVENT,
+  applyAppUpdateAndReload,
+  isAutoUpdateEnabled,
+  isSafeScreenForSilentAutoUpdate,
+  markPendingSWUpdate,
+  recordAutoCheckTimestamp,
+  registerGlobalSWUpdater,
+} from './utils/appLifecycle';
 import './index.css';
 
-// Clean temporary cache-busting query param (`?_updated=...`) after a manual refresh
+// Clean temporary cache-busting query param (`?_updated=...`) after an automatic or manual refresh
 if (typeof window !== 'undefined' && window.location.search.includes('_updated=')) {
   try {
     const cleanUrl = new URL(window.location.href);
@@ -19,12 +29,13 @@ if (typeof window !== 'undefined' && window.location.search.includes('_updated='
   }
 }
 
+const AUTO_UPDATE_INTERVAL_MS = 15 * 60 * 1000; // Check every 15 minutes in background
+
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   const isNativeCapacitor = Capacitor.isNativePlatform();
 
-  if (import.meta.env.DEV || isNativeCapacitor) {
-    // In Capacitor Android/iOS WebView (https://localhost) or DEV server,
-    // unregister any Service Worker so native local assets load directly without SW cache interception.
+  if (isNativeCapacitor) {
+    // In Capacitor Android/iOS native APK/IPA WebView, unregister web SW so bundled local assets load directly
     navigator.serviceWorker
       .getRegistrations()
       .then((registrations) => {
@@ -33,59 +44,83 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
         }
       })
       .catch(() => {});
+  } else {
+    const triggerOrQueueUpdate = () => {
+      markPendingSWUpdate(true);
 
-    if ('caches' in window) {
-      caches
-        .keys()
-        .then((keys) => {
-          for (const key of keys) {
-            if (key.includes('workbox') || key.includes('precache')) {
-              caches.delete(key).catch(() => {});
-            }
-          }
-        })
-        .catch(() => {});
-    }
-  } else if (import.meta.env.PROD) {
-    // In Web production, register ./sw.js with updateViaCache:'none', emit update notifications,
-    // and auto-reload once when a new Service Worker takes control.
-    const hadPreviousController = Boolean(navigator.serviceWorker.controller);
-    let refreshing = false;
-
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (hadPreviousController && !refreshing) {
-        refreshing = true;
-        window.location.reload();
+      if (isAutoUpdateEnabled() && isSafeScreenForSilentAutoUpdate()) {
+        // Notify UI briefly then automatically activate the new version without losing localStorage progress
+        window.dispatchEvent(new CustomEvent(SW_AUTO_APPLYING_EVENT));
+        window.setTimeout(() => {
+          applyAppUpdateAndReload(false).catch(() => {});
+        }, 1600);
+      } else {
+        // User is mid-game/session or chose manual mode: display non-intrusive toast & apply when back on Home
+        window.dispatchEvent(new CustomEvent(SW_UPDATE_EVENT));
       }
+    };
+
+    const updateSW = registerSW({
+      immediate: true,
+      onNeedRefresh() {
+        triggerOrQueueUpdate();
+      },
+      onRegisteredSW(_swUrl, registration) {
+        recordAutoCheckTimestamp();
+        if (!registration) return;
+
+        // Watch for newly installed waiting workers
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          triggerOrQueueUpdate();
+        }
+
+        registration.addEventListener('updatefound', () => {
+          const installing = registration.installing;
+          if (!installing) return;
+          installing.addEventListener('statechange', () => {
+            if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+              triggerOrQueueUpdate();
+            }
+          });
+        });
+
+        const safeCheck = () => {
+          if (navigator.onLine === false) return;
+          recordAutoCheckTimestamp();
+          registration.update().catch(() => {});
+        };
+
+        // Periodic automatic background check every 15 minutes
+        window.setInterval(safeCheck, AUTO_UPDATE_INTERVAL_MS);
+
+        // Check whenever the user returns to the app or reconnects to the internet
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            safeCheck();
+          }
+        });
+        window.addEventListener('online', safeCheck);
+      },
     });
 
-    window.addEventListener('load', () => {
-      navigator.serviceWorker
-        .register('./sw.js', { scope: './', updateViaCache: 'none' })
-        .then((registration) => {
-          if (registration.waiting && navigator.serviceWorker.controller) {
-            window.dispatchEvent(new CustomEvent(SW_UPDATE_EVENT));
-          }
+    registerGlobalSWUpdater(updateSW);
 
-          registration.addEventListener('updatefound', () => {
-            const installing = registration.installing;
-            if (!installing) return;
-            installing.addEventListener('statechange', () => {
-              if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-                window.dispatchEvent(new CustomEvent(SW_UPDATE_EVENT));
-              }
-            });
-          });
-
-          registration.update().catch(() => {});
-
-          document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-              registration.update().catch(() => {});
+    // If an update was queued while the user was inside a game and Auto-Update is ON,
+    // apply it automatically as soon as they return to a safe hub screen.
+    window.addEventListener('hashchange', () => {
+      if (isAutoUpdateEnabled() && isSafeScreenForSilentAutoUpdate()) {
+        navigator.serviceWorker
+          .getRegistrations()
+          .then((regs) => {
+            if (regs.some((r) => Boolean(r.waiting))) {
+              window.dispatchEvent(new CustomEvent(SW_AUTO_APPLYING_EVENT));
+              window.setTimeout(() => {
+                applyAppUpdateAndReload(false).catch(() => {});
+              }, 1200);
             }
-          });
-        })
-        .catch(() => {});
+          })
+          .catch(() => {});
+      }
     });
   }
 }

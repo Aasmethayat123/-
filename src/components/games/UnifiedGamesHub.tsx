@@ -23,6 +23,7 @@ import {
   getWeeklyQuests, 
   claimWeeklyQuest, 
   completeDailyChallenge,
+  isDailyChallengeTargetSolved,
   DailyChallengeInfo
 } from '../../utils/dailyGamesHubManager';
 import { GAME_STAGES_CONFIG, getGameLevelProgress } from '../../utils/gameLevelsManager';
@@ -48,6 +49,16 @@ export const UnifiedGamesHub: React.FC<UnifiedGamesHubProps> = ({
   const [hubState, setHubState] = useState(() => getHubState());
   const [weeklyQuests, setWeeklyQuests] = useState(() => getWeeklyQuests());
 
+  React.useEffect(() => {
+    const current = getTodayChallenge();
+    if (!current.isCompleted && isDailyChallengeTargetSolved(current)) {
+      completeDailyChallenge(onAddXP);
+      setTodayChallenge(getTodayChallenge());
+      setHubState(getHubState());
+      setWeeklyQuests(getWeeklyQuests());
+    }
+  }, [onAddXP]);
+
   const nesmaProgress = loadCipherProgress();
   const islandState = loadMovingIslandState();
 
@@ -62,7 +73,6 @@ export const UnifiedGamesHub: React.FC<UnifiedGamesHubProps> = ({
 
   const handleLaunchDaily = () => {
     soundManager.playChime();
-    // Launch the specific game for daily challenge
     onSelectGame(todayChallenge.gameId as GameMode, String(todayChallenge.stageNumber));
   };
 
@@ -248,7 +258,7 @@ export const UnifiedGamesHub: React.FC<UnifiedGamesHubProps> = ({
                       quest.isClaimed
                         ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-not-allowed'
                         : isReady
-                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white animate-bounce'
+                        ? 'bg-emerald-700 hover:bg-emerald-600 text-white shadow-sm'
                         : 'bg-stone-200 dark:bg-stone-800 text-stone-500 dark:text-stone-400 cursor-not-allowed'
                     }`}
                   >

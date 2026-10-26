@@ -26,6 +26,7 @@ import { triggerConfetti } from '../utils/confetti';
 import { storage } from '../utils/storage';
 import { CompanionEngine, CompanionMessage } from '../utils/companionEngine';
 import { checkTextSafety, triggerCrisisInterception } from '../utils/safetyInterceptor';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 interface WeeklyPsychologicalSessionProps {
   language: Language;
@@ -43,6 +44,7 @@ export const WeeklyPsychologicalSession: React.FC<WeeklyPsychologicalSessionProp
   onOpenBreathing
 }) => {
   const isAr = language === 'ar';
+  const isOnline = useOnlineStatus();
 
   const [step, setStep] = useState<SessionStep>('checkin');
   const [moodRating, setMoodRating] = useState<number>(6);
@@ -233,7 +235,7 @@ ${unloadContent}
             {isAr ? '← الرئيسية' : '← Home'}
           </button>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+            <Heart className="w-4 h-4 text-emerald-400 shrink-0" />
             <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
               {isAr ? 'الجلسة النفسية الأسبوعية 🛋️' : 'Weekly Psychological Session 🛋️'}
             </span>
@@ -429,16 +431,20 @@ ${unloadContent}
 
             {/* Cloud vs Local Switch */}
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-stone-400 text-[11px]">{isAr ? 'السحابة:' : 'Cloud AI:'}</span>
+              <span className="text-stone-400 text-[11px]">{isAr ? 'المحرك:' : 'Engine:'}</span>
               <button
                 onClick={() => setUseCloudAi(!useCloudAi)}
                 className={`px-3 py-1 rounded-xl font-bold text-[11px] transition-colors cursor-pointer ${
-                  useCloudAi
+                  useCloudAi && isOnline
                     ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                     : 'bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300'
                 }`}
               >
-                {useCloudAi ? (isAr ? 'سحابي (Gemini)' : 'Cloud Active') : (isAr ? 'محلي فقط (CBT)' : 'Local Only')}
+                {!isOnline
+                  ? (isAr ? 'محلي بدون إنترنت (CBT)' : 'Offline Local (CBT)')
+                  : useCloudAi
+                  ? (isAr ? 'سحابي (Gemini)' : 'Cloud Active')
+                  : (isAr ? 'محلي فقط (CBT)' : 'Local Only')}
               </button>
             </div>
           </div>

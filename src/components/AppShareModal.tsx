@@ -207,6 +207,30 @@ export const AppShareModal: React.FC<AppShareModalProps> = ({
         'bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-800/70',
     },
     {
+      id: 'facebook',
+      label: isAr ? 'فيسبوك' : 'Facebook',
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      icon: Share2,
+      className:
+        'bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/60 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800/70',
+    },
+    {
+      id: 'x',
+      label: isAr ? 'منصة X' : 'X / Post',
+      href: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
+      icon: Compass,
+      className:
+        'bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border-stone-200 dark:border-stone-700',
+    },
+    {
+      id: 'sms',
+      label: isAr ? 'رسالة SMS' : 'SMS',
+      href: `sms:?&body=${encodedFull}`,
+      icon: MessageCircle,
+      className:
+        'bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-300 border-amber-200 dark:border-amber-800/70',
+    },
+    {
       id: 'email',
       label: isAr ? 'البريد' : 'Email',
       href: `mailto:?subject=${encodeURIComponent(invitation.title)}&body=${encodedFull}`,
