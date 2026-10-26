@@ -1,7 +1,23 @@
 import {createRoot} from 'react-dom/client';
 import {Capacitor} from '@capacitor/core';
 import App from './App.tsx';
+import {SW_UPDATE_EVENT} from './utils/appLifecycle';
 import './index.css';
+
+// Clean temporary cache-busting query param (`?_updated=...`) after a manual refresh
+if (typeof window !== 'undefined' && window.location.search.includes('_updated=')) {
+  try {
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('_updated');
+    const nextPath =
+      cleanUrl.pathname +
+      (cleanUrl.search ? cleanUrl.search : '') +
+      cleanUrl.hash;
+    window.history.replaceState(window.history.state, '', nextPath);
+  } catch {
+    // ignore URL cleanup errors
+  }
+}
 
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   const isNativeCapacitor = Capacitor.isNativePlatform();
@@ -31,8 +47,8 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
         .catch(() => {});
     }
   } else if (import.meta.env.PROD) {
-    // In Web production, register /sw.js with updateViaCache:'none' and auto-reload once
-    // when a new Service Worker replaces an older cached controller on mobile browsers.
+    // In Web production, register ./sw.js with updateViaCache:'none', emit update notifications,
+    // and auto-reload once when a new Service Worker takes control.
     const hadPreviousController = Boolean(navigator.serviceWorker.controller);
     let refreshing = false;
 
@@ -47,7 +63,27 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('./sw.js', { scope: './', updateViaCache: 'none' })
         .then((registration) => {
+          if (registration.waiting && navigator.serviceWorker.controller) {
+            window.dispatchEvent(new CustomEvent(SW_UPDATE_EVENT));
+          }
+
+          registration.addEventListener('updatefound', () => {
+            const installing = registration.installing;
+            if (!installing) return;
+            installing.addEventListener('statechange', () => {
+              if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                window.dispatchEvent(new CustomEvent(SW_UPDATE_EVENT));
+              }
+            });
+          });
+
           registration.update().catch(() => {});
+
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              registration.update().catch(() => {});
+            }
+          });
         })
         .catch(() => {});
     });

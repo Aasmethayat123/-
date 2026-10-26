@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Compass, 
   Layers, 
@@ -24,10 +24,12 @@ import {
   Moon,
   Terminal,
   HeartHandshake,
-  KeyRound
+  KeyRound,
+  Share2,
+  RefreshCw
 } from 'lucide-react';
 import { GameMode, Language, UserRank, RankProgress } from '../types';
-import { soundManager } from '../utils/audio';
+import { AMBIENT_SOUNDSCAPES, AmbientSoundscapeId, soundManager } from '../utils/audio';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { StreakHeaderBadge } from './StreakHeaderBadge';
 import { RankHeaderBadge } from './RankHeaderBadge';
@@ -47,6 +49,11 @@ interface HeaderProps {
   onToggleTheme?: () => void;
   onAddXP?: (amount: number) => void;
   onOpenTechnicalAudit?: () => void;
+  onOpenShare?: () => void;
+  onOpenUpdate?: () => void;
+  onOpenSettings?: () => void;
+  earnedBadgeIds?: string[];
+  totalGamesCompleted?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -63,11 +70,29 @@ export const Header: React.FC<HeaderProps> = ({
   theme = 'light',
   onToggleTheme,
   onAddXP,
-  onOpenTechnicalAudit
+  onOpenTechnicalAudit,
+  onOpenShare,
+  onOpenUpdate,
+  onOpenSettings,
+  earnedBadgeIds = [],
+  totalGamesCompleted = 0
 }) => {
   const [showInfo, setShowInfo] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSoundscape, setActiveSoundscape] = useState<AmbientSoundscapeId>(() =>
+    soundManager.getSoundscape()
+  );
   const isAr = language === 'ar';
+
+  useEffect(() => {
+    const sync = () => setActiveSoundscape(soundManager.getSoundscape());
+    return soundManager.subscribe(sync);
+  }, []);
+
+  const activeSoundscapeOption =
+    soundEnabled && activeSoundscape !== 'off'
+      ? AMBIENT_SOUNDSCAPES.find((s) => s.id === activeSoundscape)
+      : undefined;
 
   const navItems = [
     { mode: 'map' as GameMode, label: isAr ? 'الرئيسية 🌿' : 'Home 🌿', icon: Compass },
@@ -78,6 +103,7 @@ export const Header: React.FC<HeaderProps> = ({
     { mode: 'projects' as GameMode, label: isAr ? 'المشروعات' : 'Projects', icon: FolderKanban },
     { mode: 'discover' as GameMode, label: isAr ? 'إضاءات ومقالات' : 'Discover', icon: BookOpen },
     { mode: 'my-journey' as GameMode, label: isAr ? 'دفتر رحلتي' : 'My Journey', icon: Bookmark },
+    { mode: 'profile' as GameMode, label: isAr ? 'أوسمتي 🏅' : 'Badges 🏅', icon: Award },
     { mode: 'workshop' as GameMode, label: isAr ? 'دليل الورش' : 'Workshop', icon: Users },
   ];
 
@@ -117,7 +143,10 @@ export const Header: React.FC<HeaderProps> = ({
             language={language} 
             playerXP={playerXP} 
             userRank={userRank} 
-            rankProgress={rankProgress} 
+            rankProgress={rankProgress}
+            earnedBadgeIds={earnedBadgeIds}
+            totalGamesCompleted={totalGamesCompleted}
+            onOpenProfile={() => onSelectMode('profile')}
           />
 
           {/* Daily Streak Fire Tracking */}
@@ -179,6 +208,41 @@ export const Header: React.FC<HeaderProps> = ({
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </button>
 
+          {/* Settings & Ambient Soundscapes Trigger (Desktop) */}
+          {onOpenSettings && (
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playSoftTap();
+                onOpenSettings();
+              }}
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                activeSoundscapeOption
+                  ? 'bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-700'
+                  : 'bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 border-stone-200 dark:border-stone-700'
+              }`}
+              title={
+                activeSoundscapeOption
+                  ? isAr
+                    ? `الإعدادات — أجواء نشطة: ${activeSoundscapeOption.labelAr}`
+                    : `Settings — Active: ${activeSoundscapeOption.labelEn}`
+                  : isAr
+                  ? 'الإعدادات والأجواء الصوتية'
+                  : 'Settings & Soundscapes'
+              }
+              aria-label={isAr ? 'الإعدادات والأجواء الصوتية' : 'Settings and Soundscapes'}
+            >
+              <Settings className="w-3.5 h-3.5 shrink-0" />
+              {activeSoundscapeOption ? (
+                <span className="hidden lg:inline">
+                  {isAr ? activeSoundscapeOption.labelAr : activeSoundscapeOption.labelEn}
+                </span>
+              ) : (
+                <span className="hidden xl:inline">{isAr ? 'الإعدادات' : 'Settings'}</span>
+              )}
+            </button>
+          )}
+
           {/* Language Toggle */}
           <button
             onClick={onToggleLanguage}
@@ -187,6 +251,39 @@ export const Header: React.FC<HeaderProps> = ({
             <Languages className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
             <span className="font-mono">{language === 'ar' ? 'EN' : 'عربي'}</span>
           </button>
+
+          {/* Share App Trigger (Desktop) */}
+          {onOpenShare && (
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playSoftTap();
+                onOpenShare();
+              }}
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold transition-colors cursor-pointer whitespace-nowrap"
+              title={isAr ? 'مشاركة التطبيق مع أصدقائك' : 'Share App'}
+              aria-label={isAr ? 'مشاركة التطبيق' : 'Share App'}
+            >
+              <Share2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden xl:inline">{isAr ? 'مشاركة' : 'Share'}</span>
+            </button>
+          )}
+
+          {/* Update App Trigger (Desktop) */}
+          {onOpenUpdate && (
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playSoftTap();
+                onOpenUpdate();
+              }}
+              className="hidden sm:inline-flex p-2 rounded-full border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+              title={isAr ? 'تحديث التطبيق والتحقق من أحدث إصدار' : 'Check for App Updates'}
+              aria-label={isAr ? 'تحديث التطبيق' : 'Update App'}
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          )}
 
           {/* Info Modal Trigger */}
           <button
@@ -278,14 +375,83 @@ export const Header: React.FC<HeaderProps> = ({
             );
           })}
 
-          {onToggleTheme && (
-            <div className="pt-2 mt-2 border-t border-stone-200 dark:border-stone-800">
+          {/* Mobile Quick Actions: Settings/Soundscapes, Share & Update App + Theme + Install */}
+          <div className="pt-2.5 mt-2 border-t border-stone-200 dark:border-stone-800 space-y-2">
+            {onOpenSettings && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playSoftTap();
+                  setMobileMenuOpen(false);
+                  onOpenSettings();
+                }}
+                className={`w-full min-h-[44px] flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                  activeSoundscapeOption
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+                    : 'bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                  <span>{isAr ? 'الإعدادات والأجواء الصوتية' : 'Settings & Soundscapes'}</span>
+                </div>
+                <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400">
+                  {activeSoundscapeOption
+                    ? isAr
+                      ? activeSoundscapeOption.labelAr
+                      : activeSoundscapeOption.labelEn
+                    : isAr
+                    ? 'إيقاف'
+                    : 'Off'}
+                </span>
+              </button>
+            )}
+
+            {(onOpenShare || onOpenUpdate) && (
+              <div className="grid grid-cols-2 gap-2">
+                {onOpenShare && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playSoftTap();
+                      setMobileMenuOpen(false);
+                      onOpenShare();
+                    }}
+                    className="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    <Share2 className="w-4 h-4 shrink-0" />
+                    <span>{isAr ? 'مشاركة التطبيق' : 'Share App'}</span>
+                  </button>
+                )}
+
+                {onOpenUpdate && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playSoftTap();
+                      setMobileMenuOpen(false);
+                      onOpenUpdate();
+                    }}
+                    className="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold bg-stone-200/80 hover:bg-stone-300/80 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    <RefreshCw className="w-4 h-4 shrink-0" />
+                    <span>{isAr ? 'تحديث التطبيق' : 'Update App'}</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="sm:hidden">
+              <PWAInstallPrompt language={language} />
+            </div>
+
+            {onToggleTheme && (
               <button
                 onClick={() => {
                   soundManager.playSoftTap();
                   onToggleTheme();
                 }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200"
+                className="w-full min-h-[44px] flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200"
               >
                 <div className="flex items-center gap-2">
                   {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-stone-600" />}
@@ -293,8 +459,8 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
                 <span className="text-[10px] text-stone-400 font-mono">{theme === 'dark' ? 'DARK ON' : 'LIGHT ON'}</span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 

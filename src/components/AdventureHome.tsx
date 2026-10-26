@@ -16,6 +16,7 @@ import { soundManager } from '../utils/audio';
 import { getSavedMoments } from '../utils/moments';
 import { getCurrentAwarenessLevel } from '../data/gamificationData';
 import { useStreak } from '../utils/streakManager';
+import { BADGES, getEarnedBadges } from '../utils/gameState';
 import { 
   Sparkles, 
   Gamepad2, 
@@ -46,9 +47,12 @@ interface AdventureHomeProps {
   onOpenExperienceMixer: () => void;
   onOpenBreathing: () => void;
   onNavigateToWorkshop?: () => void;
+  onNavigateToProfile?: () => void;
   playerStats: {
     xp: number;
     avatarId: string;
+    badges?: string[];
+    totalGamesCompleted?: number;
   };
   onOpenAvatarModal?: () => void;
 }
@@ -59,6 +63,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
   onNavigateToLibrary,
   onNavigateToJourney,
   onNavigateToWorkshop,
+  onNavigateToProfile,
   onOpenMinuteReflection,
   onOpenHiddenPaths,
   onOpenExperienceMixer,
@@ -72,6 +77,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
   const savedCount = getSavedMoments().length;
   const currentLevel = getCurrentAwarenessLevel(playerStats.xp, language);
   const { streakData } = useStreak();
+  const earnedBadgesCount = getEarnedBadges(playerStats.badges || []).length;
 
   // Selected Category State from the 4 primary gateways
   const [activeCategory, setActiveCategory] = useState<ExperienceState | null>(null);
@@ -190,10 +196,14 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
             className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-stone-900 to-emerald-900 dark:from-emerald-950 dark:to-emerald-700 text-white flex items-center justify-center text-2xl shadow-xs hover:scale-105 transition-transform cursor-pointer shrink-0"
             title={isAr ? 'تغيير الشخصية' : 'Change Avatar'}
           >
-            {playerStats.avatarId === 'phoenix' ? '🦅' :
+            {playerStats.avatarId === 'nada' ? '🌸' :
+             playerStats.avatarId === 'karim' ? '⚡' :
+             playerStats.avatarId === 'sara' ? '🌿' :
+             playerStats.avatarId === 'omar' ? '🌊' :
+             playerStats.avatarId === 'phoenix' ? '🦅' :
              playerStats.avatarId === 'owl' ? '🦉' :
              playerStats.avatarId === 'sprout' ? '🌱' :
-             playerStats.avatarId === 'lotus' ? '🪷' : '🧭'}
+             playerStats.avatarId === 'lotus' ? '🪷' : '🌿'}
           </button>
 
           <div>
@@ -211,8 +221,8 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
           </div>
         </div>
 
-        {/* Quick Stats Pill */}
-        <div className="flex items-center gap-2 self-end sm:self-center">
+        {/* Quick Stats Strip */}
+        <div className="flex flex-wrap items-center gap-2 self-end sm:self-center">
           {/* Daily Streak Flame Pill */}
           <div 
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all shadow-2xs ${
@@ -222,7 +232,7 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
             }`}
             title={isAr ? `شعلة الاستمرارية: ${streakData.currentStreak} يوم` : `Daily Streak: ${streakData.currentStreak} days`}
           >
-            <Flame className={`w-3.5 h-3.5 ${streakData.todayCompleted ? 'text-orange-500 fill-orange-500 animate-pulse' : 'text-amber-500 fill-amber-500/50'}`} />
+            <Flame className={`w-3.5 h-3.5 ${streakData.todayCompleted ? 'text-orange-500 fill-orange-500' : 'text-amber-500 fill-amber-500/50'}`} />
             <span className="font-mono">{streakData.currentStreak} {isAr ? (streakData.currentStreak === 1 ? 'يوم' : 'أيام') : (streakData.currentStreak === 1 ? 'day' : 'days')}</span>
           </div>
 
@@ -230,6 +240,21 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>{playerStats.xp} XP</span>
           </div>
+
+          {onNavigateToProfile && (
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playSoftTap();
+                onNavigateToProfile();
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/70 text-xs font-bold text-amber-900 dark:text-amber-300 transition-colors cursor-pointer"
+              title={isAr ? 'أوسمة الألعاب المكتملة' : 'Completion Badges'}
+            >
+              <Award className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <span className="font-mono">{earnedBadgesCount}/{BADGES.length}</span>
+            </button>
+          )}
 
           <button
             onClick={() => {

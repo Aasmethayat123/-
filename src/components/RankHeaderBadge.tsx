@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Trophy, ChevronDown, Zap, Star, ShieldCheck, X, Sparkles } from 'lucide-react';
+import { Trophy, ChevronDown, Award, X, Sparkles } from 'lucide-react';
 import { Language, UserRank, RankProgress } from '../types';
-import { USER_RANKS, getUserRank, getRankProgress } from '../utils/gameState';
+import { USER_RANKS, BADGES, getEarnedBadges, getUserRank, getRankProgress } from '../utils/gameState';
 import { soundManager } from '../utils/audio';
 
 interface RankHeaderBadgeProps {
@@ -9,13 +9,19 @@ interface RankHeaderBadgeProps {
   playerXP: number;
   userRank?: UserRank;
   rankProgress?: RankProgress;
+  earnedBadgeIds?: string[];
+  totalGamesCompleted?: number;
+  onOpenProfile?: () => void;
 }
 
 export const RankHeaderBadge: React.FC<RankHeaderBadgeProps> = ({
   language,
   playerXP,
   userRank,
-  rankProgress
+  rankProgress,
+  earnedBadgeIds = [],
+  totalGamesCompleted = 0,
+  onOpenProfile
 }) => {
   const isAr = language === 'ar';
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +29,8 @@ export const RankHeaderBadge: React.FC<RankHeaderBadgeProps> = ({
   // Fallbacks if not passed directly
   const activeRank = userRank || getUserRank(playerXP);
   const activeProgress = rankProgress || getRankProgress(playerXP);
+  const earnedBadges = getEarnedBadges(earnedBadgeIds);
+  const earnedSet = new Set(earnedBadges.map((b) => b.id));
 
   const nextRank = activeProgress.nextRank;
 
@@ -189,6 +197,58 @@ export const RankHeaderBadge: React.FC<RankHeaderBadgeProps> = ({
                   );
                 })}
               </div>
+            </div>
+
+            {/* Earned Completion Badges Strip */}
+            <div className="pt-2.5 border-t border-stone-100 dark:border-stone-800 space-y-2">
+              <div className="flex items-center justify-between px-1">
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-700 dark:text-stone-200">
+                  <Award className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span>
+                    {isAr
+                      ? `أوسمة الألعاب (${earnedBadges.length}/${BADGES.length})`
+                      : `Badges (${earnedBadges.length}/${BADGES.length})`}
+                  </span>
+                </span>
+                <span className="text-[10px] font-mono font-bold text-stone-400">
+                  {isAr ? `${totalGamesCompleted} مكتملة` : `${totalGamesCompleted} done`}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-6 gap-1.5">
+                {BADGES.map((badge) => {
+                  const unlocked = earnedSet.has(badge.id);
+                  return (
+                    <div
+                      key={badge.id}
+                      title={isAr ? badge.nameAr : badge.nameEn}
+                      className={`h-9 rounded-xl flex items-center justify-center text-sm border ${
+                        unlocked
+                          ? `bg-gradient-to-br ${badge.emblemGradient} text-white border-transparent`
+                          : 'bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 opacity-45 grayscale'
+                      }`}
+                    >
+                      <span role="img" aria-hidden="true">
+                        {badge.icon}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {onOpenProfile && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playSoftTap();
+                    setIsOpen(false);
+                    onOpenProfile();
+                  }}
+                  className="w-full min-h-[40px] px-3 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white text-xs font-bold transition-colors cursor-pointer"
+                >
+                  {isAr ? 'فتح ملفي وجميع الأوسمة ←' : 'Open Profile & All Badges →'}
+                </button>
+              )}
             </div>
 
           </div>

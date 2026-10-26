@@ -11,6 +11,7 @@ import { WorkshopMode } from './components/WorkshopMode';
 import { FinalScreen } from './components/FinalScreen';
 import { MindfulBreathingModal } from './components/MindfulBreathingModal';
 import { AvatarModal } from './components/AvatarModal';
+import { BadgeCelebrationModal } from './components/BadgeCelebrationModal';
 
 // 9 Core Nesma Hayat Games
 import { HandsControlGame } from './components/nesmaGames/HandsControlGame';
@@ -35,6 +36,9 @@ import { DiscoverReadings } from './components/DiscoverReadings';
 import { WeeklyPsychologicalSession } from './components/WeeklyPsychologicalSession';
 import { CrisisSafetyModal } from './components/CrisisSafetyModal';
 import { TechnicalAuditModal } from './components/TechnicalAuditModal';
+import { AppShareModal } from './components/AppShareModal';
+import { AppUpdateModal, AppUpdateAvailableToast } from './components/AppUpdateModal';
+import { SettingsModal } from './components/SettingsModal';
 
 // Subconscious & Physical Gamified Games
 import { InsightCardsGame } from './components/interactiveGames/InsightCardsGame';
@@ -96,7 +100,7 @@ import { ExperienceMixerModal } from './components/creative/ExperienceMixerModal
 import { ProjectsHubView } from './components/ProjectsHubView';
 import { ContentManagementView } from './components/ContentManagementView';
 
-import { useGameState } from './utils/gameState';
+import { useGameState, wasStageCompletionJustEmitted } from './utils/gameState';
 import { soundManager } from './utils/audio';
 import { getInitialTheme, applyTheme, ThemeMode } from './utils/theme';
 import { ALL_36_GAMES } from './data/gamesCatalog';
@@ -200,6 +204,9 @@ export default function App() {
   const [isHiddenPathsOpen, setIsHiddenPathsOpen] = useState<boolean>(false);
   const [isExperienceMixerOpen, setIsExperienceMixerOpen] = useState<boolean>(false);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const [islandReturnActive, setIslandReturnActive] = useState<boolean>(false);
   const [activeIslandMission, setActiveIslandMission] = useState<ActiveIslandMissionContext | null>(null);
   const [islandCipherLevel, setIslandCipherLevel] = useState<number | undefined>(undefined);
@@ -215,7 +222,25 @@ export default function App() {
     }
   });
 
-  const { stats, addXP, recordLevelCompletion, setAvatar, currentRank, rankProgress } = useGameState();
+  const {
+    stats,
+    addXP,
+    recordGameCompletion,
+    recordLevelCompletion,
+    setAvatar,
+    currentRank,
+    rankProgress,
+    activeCelebrationBadge,
+    dismissCelebrationBadge
+  } = useGameState();
+
+  const handleGameRewardXP = (amount: number, showSparkles = true) => {
+    if (amount >= 25 && !wasStageCompletionJustEmitted()) {
+      recordGameCompletion(currentMode, amount, showSparkles);
+    } else {
+      addXP(amount, showSparkles);
+    }
+  };
 
   useEffect(() => {
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
@@ -331,6 +356,11 @@ export default function App() {
         onToggleTheme={toggleTheme}
         onAddXP={addXP}
         onOpenTechnicalAudit={() => setIsAuditModalOpen(true)}
+        onOpenShare={() => setIsShareModalOpen(true)}
+        onOpenUpdate={() => setIsUpdateModalOpen(true)}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
+        earnedBadgeIds={stats.badges}
+        totalGamesCompleted={stats.totalGamesCompleted}
       />
 
       {/* Main Game Screen */}
@@ -428,11 +458,17 @@ export default function App() {
             onNavigateToLibrary={() => setCurrentMode('library')}
             onNavigateToJourney={() => setCurrentMode('my-journey')}
             onNavigateToWorkshop={() => setCurrentMode('workshop')}
+            onNavigateToProfile={() => setCurrentMode('profile')}
             onOpenMinuteReflection={() => setIsMinuteReflectionOpen(true)}
             onOpenHiddenPaths={() => setIsHiddenPathsOpen(true)}
             onOpenExperienceMixer={() => setIsExperienceMixerOpen(true)}
             onOpenBreathing={() => setIsBreathingOpen(true)}
-            playerStats={{ xp: stats.xp, avatarId: stats.avatarId }}
+            playerStats={{
+              xp: stats.xp,
+              avatarId: stats.avatarId,
+              badges: stats.badges,
+              totalGamesCompleted: stats.totalGamesCompleted
+            }}
             onOpenAvatarModal={() => setIsAvatarModalOpen(true)}
           />
         )}
@@ -461,7 +497,7 @@ export default function App() {
                 setCurrentMode('map');
               }
             }}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
           />
         )}
 
@@ -484,7 +520,7 @@ export default function App() {
                 setCurrentMode('map');
               }
             }}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
           />
         )}
 
@@ -534,7 +570,7 @@ export default function App() {
         {currentMode === 'game-butterfly-tap' && (
           <ButterflyTapGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -542,7 +578,7 @@ export default function App() {
         {currentMode === 'game-somatic-shake' && (
           <SomaticShakeGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -550,7 +586,7 @@ export default function App() {
         {currentMode === 'game-pmr-squeeze' && (
           <PmrSqueezeGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -558,7 +594,7 @@ export default function App() {
         {currentMode === 'game-sensory-grounding' && (
           <SensoryGroundingGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -566,7 +602,7 @@ export default function App() {
         {currentMode === 'game-infinity-flow' && (
           <InfinityFlowGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -574,7 +610,7 @@ export default function App() {
         {currentMode === 'game-balloon-breath' && (
           <BalloonBreathGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -608,7 +644,7 @@ export default function App() {
         {currentMode === 'cards-insight' && (
           <InsightCardsGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -616,7 +652,7 @@ export default function App() {
         {currentMode === 'scenarios-quick' && (
           <QuickScenariosGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -624,7 +660,7 @@ export default function App() {
         {currentMode === 'visual-projection' && (
           <VisualProjectionGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -633,7 +669,7 @@ export default function App() {
         {currentMode === 'micro-challenge-30s' && (
           <MicroChallenge30sGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -641,7 +677,7 @@ export default function App() {
         {currentMode === 'daily-quests' && (
           <DailyQuestCardsGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -658,7 +694,7 @@ export default function App() {
         {currentMode === 'touch-and-break' && (
           <TouchAndBreakGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -666,7 +702,7 @@ export default function App() {
         {currentMode === 'body-motion-challenge' && (
           <BodyMotionChallengeGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -674,7 +710,7 @@ export default function App() {
         {currentMode === 'emotion-roulette' && (
           <EmotionRouletteGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -682,7 +718,7 @@ export default function App() {
         {currentMode === 'scratch-to-reveal' && (
           <ScratchToRevealGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -690,7 +726,7 @@ export default function App() {
         {currentMode === 'multi-sensory-quest' && (
           <MultiSensoryQuestGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -698,7 +734,7 @@ export default function App() {
         {currentMode === 'speed-lie-detector' && (
           <SpeedLieDetectorGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -719,7 +755,7 @@ export default function App() {
         {currentMode === 'challenge-separate' && (
           <SeparateThemGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -727,7 +763,7 @@ export default function App() {
         {currentMode === 'challenge-feeling' && (
           <NameTheFeelingGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -735,7 +771,7 @@ export default function App() {
         {currentMode === 'challenge-perspective' && (
           <ChangePerspectiveGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -744,7 +780,7 @@ export default function App() {
           <BeforeYouReactGame
             language={language}
             onOpenBreathing={() => setIsBreathingOpen(true)}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -753,7 +789,7 @@ export default function App() {
         {currentMode === 'decisional-balance' && (
           <DecisionalScalesGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -761,7 +797,7 @@ export default function App() {
         {currentMode === 'thought-shredder' && (
           <ThoughtShredderGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -769,7 +805,7 @@ export default function App() {
         {currentMode === 'core-needs-compass' && (
           <CoreNeedsCompassGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -777,7 +813,7 @@ export default function App() {
         {currentMode === 'inner-mirror' && (
           <InnerMirrorGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -786,7 +822,7 @@ export default function App() {
         {currentMode === 'cognitive-reframing-puzzle' && (
           <CognitiveReframingPuzzleGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -794,7 +830,7 @@ export default function App() {
         {currentMode === 'inner-labyrinth' && (
           <InnerLabyrinthGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -802,7 +838,7 @@ export default function App() {
         {currentMode === 'digital-release-ritual' && (
           <DigitalReleaseRitualGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -810,7 +846,7 @@ export default function App() {
         {currentMode === 'relational-energy-matrix' && (
           <RelationalEnergyMatrixGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -819,7 +855,7 @@ export default function App() {
         {currentMode === 'resonance-chamber' && (
           <ResonanceChamberGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -827,7 +863,7 @@ export default function App() {
         {currentMode === 'mental-loom' && (
           <MentalLoomGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -835,7 +871,7 @@ export default function App() {
         {currentMode === 'worry-sandbox' && (
           <WorrySandboxGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -843,7 +879,7 @@ export default function App() {
         {currentMode === 'blooming-gratitude' && (
           <BloomingGratitudeGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => setCurrentMode('map')}
           />
         )}
@@ -852,7 +888,7 @@ export default function App() {
         {currentMode === 'mindful-organizer' && (
           <MindfulOrganizerGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => {
               if (islandReturnActive) {
                 setIslandReturnActive(false);
@@ -868,7 +904,7 @@ export default function App() {
         {currentMode === 'zen-puzzle' && (
           <ZenStonePuzzleGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => {
               if (islandReturnActive) {
                 setIslandReturnActive(false);
@@ -884,7 +920,7 @@ export default function App() {
         {currentMode === 'emotion-sort-puzzle' && (
           <EmotionSortPuzzleGame
             language={language}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onBackToMap={() => {
               if (islandReturnActive) {
                 setIslandReturnActive(false);
@@ -902,7 +938,7 @@ export default function App() {
             language={language}
             onSelectGame={(gId) => setCurrentMode(gId)}
             onBackToHome={() => setCurrentMode('library')}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
           />
         )}
 
@@ -917,7 +953,7 @@ export default function App() {
               setIslandCipherLevel(gameId === 'nesma-cipher' ? targetStage : undefined);
               setCurrentMode(gameId);
             }}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
           />
         )}
 
@@ -935,7 +971,7 @@ export default function App() {
                 setCurrentMode('map');
               }
             }}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
           />
         )}
 
@@ -944,7 +980,7 @@ export default function App() {
           <WeeklyPsychologicalSession
             language={language}
             onBackToMap={() => setCurrentMode('map')}
-            onAddXP={addXP}
+            onAddXP={handleGameRewardXP}
             onOpenBreathing={() => setIsBreathingOpen(true)}
           />
         )}
@@ -971,6 +1007,8 @@ export default function App() {
             language={language}
             onNavigate={(mode) => setCurrentMode(mode)}
             onOpenBreathing={() => setIsBreathingOpen(true)}
+            playerStats={stats}
+            onOpenAvatarModal={() => setIsAvatarModalOpen(true)}
           />
         )}
       </main>
@@ -1047,6 +1085,17 @@ export default function App() {
             <button
               type="button"
               role="button"
+              onClick={() => setCurrentMode('profile')}
+              aria-label={language === 'ar' ? 'الانتقال إلى ملفي وأوسمة الإنجاز' : 'Navigate to profile and badges'}
+              aria-current={currentMode === 'profile' ? 'page' : undefined}
+              className={`hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer font-bold ${currentMode === 'profile' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
+            >
+              {language === 'ar' ? 'أوسمتي 🏅' : 'Badges 🏅'}
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              role="button"
               onClick={() => setCurrentMode('workshop')}
               aria-label={language === 'ar' ? 'الانتقال إلى دليل واستمارات الورش التفاعلية' : 'Navigate to interactive workshops guide'}
               aria-current={currentMode === 'workshop' ? 'page' : undefined}
@@ -1061,9 +1110,36 @@ export default function App() {
               onClick={() => setCurrentMode('admin-cms')}
               aria-label={language === 'ar' ? 'الانتقال إلى نظام إدارة المحتوى والأنشطة' : 'Navigate to content management system'}
               aria-current={currentMode === 'admin-cms' ? 'page' : undefined}
-              className={`hover:text-stone-900 transition-colors cursor-pointer font-bold ${currentMode === 'admin-cms' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
+              className={`hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer font-bold ${currentMode === 'admin-cms' ? 'text-amber-700 underline underline-offset-4 decoration-2' : ''}`}
             >
               {language === 'ar' ? 'إدارة المحتوى' : 'CMS'}
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => setIsSettingsModalOpen(true)}
+              aria-label={language === 'ar' ? 'فتح الإعدادات والأجواء الصوتية' : 'Open settings and soundscapes'}
+              className="hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer font-bold"
+            >
+              {language === 'ar' ? 'الأجواء الصوتية' : 'Soundscapes'}
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => setIsShareModalOpen(true)}
+              aria-label={language === 'ar' ? 'مشاركة التطبيق مع الآخرين' : 'Share application'}
+              className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-colors cursor-pointer font-bold"
+            >
+              {language === 'ar' ? 'مشاركة التطبيق' : 'Share App'}
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => setIsUpdateModalOpen(true)}
+              aria-label={language === 'ar' ? 'التحقق من تحديثات التطبيق' : 'Update application'}
+              className="hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer font-bold"
+            >
+              {language === 'ar' ? 'تحديث التطبيق' : 'Update App'}
             </button>
           </nav>
         </div>
@@ -1078,7 +1154,7 @@ export default function App() {
         />
       )}
 
-      {/* Character Selection Modal */}
+      {/* Character & Profile Badges Modal */}
       {isAvatarModalOpen && (
         <AvatarModal
           isOpen={isAvatarModalOpen}
@@ -1086,8 +1162,23 @@ export default function App() {
           language={language}
           currentAvatarId={stats.avatarId}
           onSelectAvatar={setAvatar}
+          earnedBadgeIds={stats.badges}
+          totalGamesCompleted={stats.totalGamesCompleted}
+          onViewAllBadges={() => {
+            setIsAvatarModalOpen(false);
+            setCurrentMode('profile');
+          }}
         />
       )}
+
+      {/* Celebratory Badge Unlocked Popup */}
+      <BadgeCelebrationModal
+        badge={activeCelebrationBadge}
+        totalGamesCompleted={stats.totalGamesCompleted}
+        language={language}
+        onClose={dismissCelebrationBadge}
+        onViewAllBadges={() => setCurrentMode('profile')}
+      />
 
       {/* 1-Minute Reflection Reset Modal */}
       {isMinuteReflectionOpen && (
@@ -1144,6 +1235,34 @@ export default function App() {
         isOpen={isAuditModalOpen}
         onClose={() => setIsAuditModalOpen(false)}
         language={language}
+      />
+
+      {/* Share App Modal */}
+      <AppShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        currentMode={currentMode}
+        language={language}
+      />
+
+      {/* Update App Modal & Automatic SW Update Toast */}
+      <AppUpdateModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        language={language}
+      />
+      <AppUpdateAvailableToast language={language} />
+
+      {/* Settings & Ambient Soundscapes Modal */}
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        language={language}
+        onToggleLanguage={toggleLanguage}
+        soundEnabled={soundEnabled}
+        onToggleSound={toggleSound}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
     </div>
   );

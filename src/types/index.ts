@@ -133,12 +133,28 @@ export interface RankProgress {
   xpToNext: number;
 }
 
+export interface BadgeDefinition {
+  id: string;
+  requiredGames: number;
+  icon: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
+  tier: 'bronze' | 'silver' | 'emerald' | 'gold' | 'amethyst' | 'crown';
+  badgeBg: string;
+  badgeText: string;
+  badgeBorder: string;
+  emblemGradient: string;
+}
+
 export interface PlayerStats {
   xp: number;
   gems: number;
   levelStars: Record<string, number>;
   streak: number;
   badges: string[];
+  totalGamesCompleted: number;
   avatarId: string;
   rankId?: string;
 }

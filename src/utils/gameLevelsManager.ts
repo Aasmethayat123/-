@@ -1,6 +1,7 @@
 import { recordStreakActivity } from './streakManager';
 import { soundManager } from './audio';
 import { triggerConfetti } from './confetti';
+import { emitGameCompleted } from './gameState';
 
 export type StageDifficulty = 'easy' | 'medium' | 'hard' | 'expert' | 'master';
 
@@ -814,6 +815,8 @@ export function completeStage(
   soundManager.playLevelUpFanfare();
   triggerConfetti(0.5, 0.4);
   recordStreakActivity(`game_stage_${gameId}_${stageNumber}`);
+
+  emitGameCompleted(gameId, onAddXP ? 0 : xpEarned);
 
   if (onAddXP) {
     onAddXP(xpEarned);
