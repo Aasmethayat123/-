@@ -121,6 +121,27 @@ export const CipherSecretModal: React.FC<CipherSecretModalProps> = ({
     { id: 'wrong_noise', label: 'ضجيج المهام الخارجية المتراكمة', icon: '⚡', isCorrect: false }
   ];
 
+  // Symbol Maze Mini-Puzzle options (World 4)
+  const symbolMazePuzzleOptions = [
+    { id: 'wrong_mirage', label: 'تصديق كل ظن تلقائي يخطر في البال فوراً', icon: '🌫️', isCorrect: false },
+    { id: 'correct_reality', label: 'فحص الشواهد وتمييز اليقين من السراب بهدوء', icon: '🔍', isCorrect: true },
+    { id: 'wrong_escape', label: 'الهروب من المواقف وتجنب التفكير تماماً', icon: '🏃', isCorrect: false }
+  ];
+
+  // Image Secrets Mini-Puzzle options (World 5)
+  const imageSecretsPuzzleOptions = [
+    { id: 'correct_naming', label: 'ملاحظة الشعور وتسميته بوضوح وصدق', icon: '🏷️', isCorrect: true },
+    { id: 'wrong_suppress', label: 'كبت المشاعر وتجاهل إشارات الجسد', icon: '🙈', isCorrect: false },
+    { id: 'wrong_panic', label: 'تضخيم الغموض والاستسلام للارتباك', icon: '🌀', isCorrect: false }
+  ];
+
+  // Mind Lab Mini-Puzzle options (World 6)
+  const mindLabPuzzleOptions = [
+    { id: 'wrong_external', label: 'تعليق قيمتي النفسية على آراء الآخرين فقط', icon: '⚖️', isCorrect: false },
+    { id: 'wrong_perfection', label: 'اشتراط الكمال المطلق قبل الشعور بالسلام', icon: '⛓️', isCorrect: false },
+    { id: 'correct_sovereignty', label: 'تثبيت البوصلة الداخلية على الوعي الحر والاتزان', icon: '🧭', isCorrect: true }
+  ];
+
   const handleGardenItemToggle = (itemId: string, isCorrectItem: boolean) => {
     soundManager.playClick();
     setErrorMessage(null);
@@ -161,8 +182,8 @@ export const CipherSecretModal: React.FC<CipherSecretModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in" dir="rtl">
-      <div className="bg-white dark:bg-stone-900 w-full max-w-lg rounded-3xl border border-stone-200 dark:border-stone-800 shadow-2xl p-6 sm:p-8 space-y-6 animate-in zoom-in-95 relative overflow-hidden">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in" dir="rtl">
+      <div className="bg-white dark:bg-stone-900 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl border border-stone-200 dark:border-stone-800 shadow-2xl p-6 sm:p-8 space-y-6 animate-in zoom-in-95 relative">
         {/* Background decorative glow */}
         <div className="absolute -top-12 -left-12 w-32 h-32 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-2xl pointer-events-none" />
 
@@ -276,12 +297,30 @@ export const CipherSecretModal: React.FC<CipherSecretModalProps> = ({
                   حدد الكيان الحقيقي الذي يمثل المراقب الهادئ خلف الأفكار لفتح بلورة الكهف.
                 </p>
               )}
+              {worldId === 'symbol_maze' && (
+                <p className="text-xs text-stone-700 dark:text-stone-300">
+                  اختر القاعدة المعرفية التي تفرق بين الحقيقة والسراب داخل متاهة الرموز.
+                </p>
+              )}
+              {worldId === 'image_secrets' && (
+                <p className="text-xs text-stone-700 dark:text-stone-300">
+                  حدد المفتاح البصري والنفسي الذي يبدد الغموض ويعيد الدماغ إلى اتزانه.
+                </p>
+              )}
+              {worldId === 'mind_lab' && (
+                <p className="text-xs text-stone-700 dark:text-stone-300">
+                  اختر ركيزة السيادة النفسية والوعي الحر لإتمام استكشاف مختبر التفكير.
+                </p>
+              )}
 
               {showHint && (
                 <div className="p-2.5 bg-white dark:bg-stone-900 rounded-xl border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-200">
                   {worldId === 'garden' && 'التلميح: ابحث عن العنصرين النباتي والمائي وتجنب عاصفة التشتت.'}
                   {worldId === 'library' && 'التلميح: الحدود الصحية تهدف للمحبة الصادقة لا للقسوة أو المجاملة المفرطة.'}
                   {worldId === 'cave' && 'التلميح: لست أفكارك القلقة، بل الذات التي تلاحظها بهدوء.'}
+                  {worldId === 'symbol_maze' && 'التلميح: اختبار الفكرة بالدليل الواقعي يحررك من الظنون التلقائية.'}
+                  {worldId === 'image_secrets' && 'التلميح: تسمية الشعور باسمه الصريح يطفئ نصف حدته فوراً.'}
+                  {worldId === 'mind_lab' && 'التلميح: البوصلة الداخلية المستقلة هي أساس الحرية النفسية.'}
                 </div>
               )}
             </div>
@@ -343,10 +382,17 @@ export const CipherSecretModal: React.FC<CipherSecretModalProps> = ({
               </div>
             )}
 
-            {/* Cave Mini-Puzzle Options */}
-            {worldId === 'cave' && (
+            {/* Cave & Worlds 4-6 Single-Choice Mini-Puzzles */}
+            {(worldId === 'cave' || worldId === 'symbol_maze' || worldId === 'image_secrets' || worldId === 'mind_lab') && (
               <div className="space-y-2.5">
-                {cavePuzzleOptions.map((opt) => {
+                {(worldId === 'cave'
+                  ? cavePuzzleOptions
+                  : worldId === 'symbol_maze'
+                    ? symbolMazePuzzleOptions
+                    : worldId === 'image_secrets'
+                      ? imageSecretsPuzzleOptions
+                      : mindLabPuzzleOptions
+                ).map((opt) => {
                   const isSelected = selectedOptionId === opt.id;
                   return (
                     <button
@@ -361,7 +407,7 @@ export const CipherSecretModal: React.FC<CipherSecretModalProps> = ({
                           : 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-200 hover:border-emerald-400'
                       }`}
                     >
-                      <span className="text-xl p-2 rounded-xl bg-stone-200 dark:bg-stone-700">{opt.icon}</span>
+                      <span className="text-xl p-2 rounded-xl bg-stone-200 dark:bg-stone-700 shrink-0">{opt.icon}</span>
                       <span className="text-xs sm:text-sm font-bold">{opt.label}</span>
                     </button>
                   );

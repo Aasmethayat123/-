@@ -16,6 +16,7 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
   const [phase1Filled, setPhase1Filled] = useState<string[]>(['', '']);
   const [activeSlot, setActiveSlot] = useState<number>(0);
   const [phase1Done, setPhase1Done] = useState<boolean>(false);
+  const [phase1Error, setPhase1Error] = useState<string | null>(null);
 
   // Phase 2: Order
   const [phase2Words, setPhase2Words] = useState<string[]>([...data.phase2.words]);
@@ -28,6 +29,7 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
   const handlePickPhase1 = (letter: string) => {
     if (phase1Done) return;
     soundManager.playClick();
+    setPhase1Error(null);
 
     const next = [...phase1Filled];
     next[activeSlot] = letter;
@@ -46,6 +48,8 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
         }, 800);
       } else {
         soundManager.playIncorrect();
+        setPhase1Error('الرمزان غير مطابقين للشفرة؛ أعد المحاولة من الخانة الأولى.');
+        setActiveSlot(0);
       }
     }
   };
@@ -80,7 +84,7 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
   return (
     <div className="flex flex-col items-center gap-6 max-w-lg mx-auto w-full">
       {/* Stepper Header */}
-      <div className="flex items-center gap-3 w-full justify-center">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full justify-center">
         <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
           currentPhase === 1 
             ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 ring-2 ring-amber-400' 
@@ -110,12 +114,12 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
           </div>
 
           {/* Cipher Table */}
-          <div className="bg-stone-100 dark:bg-stone-900/60 p-3 rounded-xl border border-stone-200 dark:border-stone-800 flex items-center justify-around">
+          <div className="bg-stone-100 dark:bg-stone-900/60 p-3 rounded-xl border border-stone-200 dark:border-stone-800 flex flex-wrap items-center justify-around gap-2">
             {Object.entries(data.phase1.cipherKey).map(([sym, char]) => (
               <div key={sym} className="flex items-center gap-2">
                 <span className="text-xl">{sym}</span>
                 <span className="text-stone-400 font-mono">→</span>
-                <span className="text-sm font-bold bg-white dark:bg-stone-800 px-2 py-0.5 rounded border border-stone-300 dark:border-stone-700">
+                <span className="text-sm font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-800 px-2 py-0.5 rounded border border-stone-300 dark:border-stone-700">
                   {char}
                 </span>
               </div>
@@ -123,7 +127,7 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
           </div>
 
           {/* Slots */}
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             {data.phase1.codeWords.map((sym, idx) => {
               const char = phase1Filled[idx];
               const isActive = activeSlot === idx;
@@ -138,7 +142,7 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
                   }`}
                 >
                   <span className="text-2xl">{sym}</span>
-                  <div className="w-full h-7 bg-white dark:bg-stone-800 rounded flex items-center justify-center font-bold">
+                  <div className="w-full h-7 bg-white dark:bg-stone-800 rounded flex items-center justify-center font-bold text-stone-900 dark:text-stone-100">
                     {char || '؟'}
                   </div>
                 </button>
@@ -146,14 +150,20 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
             })}
           </div>
 
+          {phase1Error && (
+            <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 p-2 rounded-lg text-center">
+              {phase1Error}
+            </div>
+          )}
+
           {/* Letter Bank */}
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
             {availableLetters.map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => handlePickPhase1(c)}
-                className="w-12 h-12 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 font-bold text-lg hover:border-emerald-500 active:scale-95 transition-all shadow-xs cursor-pointer"
+                className="w-12 h-12 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 font-bold text-lg text-stone-900 dark:text-stone-100 hover:border-emerald-500 active:scale-95 transition-all shadow-xs cursor-pointer"
               >
                 {c}
               </button>
@@ -172,7 +182,7 @@ export const HybridChallengePuzzle: React.FC<HybridChallengePuzzleProps> = ({ da
           </div>
 
           {/* Words */}
-          <div className="flex items-center justify-center gap-2.5">
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
             {phase2Words.map((word, idx) => (
               <div
                 key={idx}

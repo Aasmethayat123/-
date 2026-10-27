@@ -21,6 +21,7 @@ import {
   Lock,
   Gamepad2
 } from 'lucide-react';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 
 interface FinalScreenProps {
   language: Language;
@@ -108,6 +109,9 @@ export const FinalScreen: React.FC<FinalScreenProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="profile" language={language} />
 
       {/* Player Profile & Badges Showcase */}
       <section aria-labelledby="badges-section-heading" className="space-y-6">

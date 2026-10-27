@@ -11,6 +11,7 @@ import {
   Heart,
   ArrowRight
 } from 'lucide-react';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 
 interface MyJourneyDrawerProps {
   language: Language;
@@ -58,21 +59,24 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
 
         <button
           onClick={handlePrint}
-          className="flex items-center gap-1.5 px-3 py-1 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+          className="min-h-[40px] flex items-center gap-1.5 px-3.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl text-xs sm:text-sm font-bold transition-colors cursor-pointer"
         >
-          <Printer className="w-3.5 h-3.5" />
+          <Printer className="w-4 h-4" />
           <span>{isAr ? 'طباعة' : 'Print'}</span>
         </button>
       </div>
 
-      <div className="text-center max-w-md mx-auto space-y-1">
-        <span className="text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="my-journey" language={language} />
+
+      <div className="text-center max-w-lg mx-auto space-y-1.5">
+        <span className="text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
           {isAr ? 'خاطراتك ومحطات هدوئك' : 'Your Personal Sanctuary'}
         </span>
-        <h2 className="text-2xl font-extrabold text-stone-900 dark:text-stone-100">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100">
           {isAr ? 'لحظات الوعي في رحلتك 🌿' : 'Saved Moments in Your Journey 🌿'}
         </h2>
-        <p className="text-xs text-stone-500 dark:text-stone-400">
+        <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
           {isAr
             ? 'كل لحظة حفظتها في ألعاب نسمة حياة تبقى هنا، مساحة آمنة لتتذكري ما تعلمته عن نفسك.'
             : 'All your saved reflections and insights are kept safely here for you.'}
@@ -80,14 +84,14 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
       </div>
 
       {moments.length === 0 ? (
-        <div className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-dashed border-stone-300 dark:border-stone-800 p-12 text-center space-y-3">
-          <div className="w-16 h-16 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-400 flex items-center justify-center mx-auto text-3xl">
+        <div className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-dashed border-stone-300 dark:border-stone-800 p-10 sm:p-12 text-center space-y-3">
+          <div className="w-16 h-16 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 flex items-center justify-center mx-auto text-3xl">
             📖
           </div>
-          <h3 className="text-base font-bold text-stone-700 dark:text-stone-200">
+          <h3 className="text-lg font-bold text-stone-800 dark:text-stone-100">
             {isAr ? 'لا توجد لحظات محفوظة بعد' : 'No moments saved yet'}
           </h3>
-          <p className="text-xs text-stone-400 max-w-xs mx-auto">
+          <p className="text-sm text-stone-600 dark:text-stone-300 max-w-sm mx-auto leading-relaxed">
             {isAr
               ? 'عند الانتهاء من أي لعبة، انقري على «احفظ اللحظة في رحلتي» لتسجيل تأملاتك هنا.'
               : 'Complete any game and tap "Save Moment" to record your reflections here.'}
@@ -98,19 +102,19 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
           {moments.map((m) => (
             <div
               key={m.id}
-              className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 p-6 shadow-sm space-y-3 relative group"
+              className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 p-6 shadow-sm space-y-3.5 relative group"
             >
-              <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+              <div className="flex items-center justify-between gap-2 flex-wrap border-b border-stone-100 dark:border-stone-800 pb-2.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs sm:text-sm font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
                     {m.gameTitle}
                   </span>
-                  <span className="text-[11px] text-stone-400">{m.date}</span>
+                  <span className="text-xs text-stone-500 dark:text-stone-400">{m.date}</span>
                 </div>
 
                 <button
                   onClick={() => handleDelete(m.id)}
-                  className="text-stone-400 hover:text-rose-600 transition-colors p-1.5 cursor-pointer"
+                  className="min-w-[40px] min-h-[40px] flex items-center justify-center text-stone-500 hover:text-rose-600 transition-colors p-1.5 cursor-pointer"
                   title={isAr ? 'حذف' : 'Delete'}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -118,17 +122,17 @@ export const MyJourneyDrawer: React.FC<MyJourneyDrawerProps> = ({
               </div>
 
               {/* Quote */}
-              <div className="p-3 bg-stone-50 dark:bg-stone-800/70 rounded-2xl border border-stone-100 dark:border-stone-800 text-xs font-serif font-bold text-stone-800 dark:text-stone-200 italic">
+              <div className="p-4 bg-stone-50 dark:bg-stone-800/70 rounded-2xl border border-stone-200/70 dark:border-stone-800 text-sm sm:text-base font-serif font-bold text-stone-900 dark:text-stone-100 leading-relaxed">
                 «{m.quote}»
               </div>
 
               {/* Reflection */}
               {m.reflection && (
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
+                  <span className="text-xs font-extrabold text-stone-600 dark:text-stone-300 block">
                     {isAr ? 'تأملك الشخصي:' : 'Your reflection:'}
                   </span>
-                  <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-medium">
+                  <p className="text-sm sm:text-base text-stone-800 dark:text-stone-200 leading-relaxed font-medium">
                     {m.reflection}
                   </p>
                 </div>

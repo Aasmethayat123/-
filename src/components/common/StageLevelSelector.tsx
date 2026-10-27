@@ -108,15 +108,15 @@ export const StageLevelSelector: React.FC<StageLevelSelectorProps> = ({
               {currentStage}
             </span>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-black text-stone-900 dark:text-stone-100">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-xs sm:text-sm font-black text-stone-900 dark:text-stone-100">
                   {isAr ? `المرحلة ${currentStage} من ${totalStages}` : `Stage ${currentStage} of ${totalStages}`}
                 </span>
-                <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-md border ${getDifficultyBadgeColor(currentStageDef.difficulty)}`}>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-md border ${getDifficultyBadgeColor(currentStageDef.difficulty)}`}>
                   {isAr ? currentStageDef.difficultyAr : currentStageDef.difficultyEn}
                 </span>
               </div>
-              <p className="text-[10px] text-stone-500 dark:text-stone-400 truncate max-w-[170px] sm:max-w-[210px]">
+              <p className="text-xs text-stone-600 dark:text-stone-300 leading-snug">
                 {isAr ? currentStageDef.titleAr : currentStageDef.titleEn}
               </p>
             </div>

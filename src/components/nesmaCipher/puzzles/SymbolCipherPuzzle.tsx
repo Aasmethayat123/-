@@ -88,7 +88,7 @@ export const SymbolCipherPuzzle: React.FC<SymbolCipherPuzzleProps> = ({ data, on
       {/* The Encrypted Message Display */}
       <div className="w-full text-center space-y-2">
         <span className="text-xs text-stone-500 font-medium">الرسالة المشفرة:</span>
-        <div className={`flex items-center justify-center gap-3 ${errorShake ? 'animate-shake' : ''}`}>
+        <div className={`flex flex-wrap items-center justify-center gap-2 sm:gap-3 ${errorShake ? 'animate-shake' : ''}`}>
           {data.encryptedMessage.map((sym, idx) => {
             const filledChar = filledLetters[idx];
             const isActive = activeSlotIdx === idx && !isSolved;

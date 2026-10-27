@@ -156,8 +156,8 @@ export const ClueSearchPuzzle: React.FC<ClueSearchPuzzleProps> = ({ data, onSolv
 
       {/* Inspectable Clue Modal / Popup */}
       {inspectingItem && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in" dir="rtl">
-          <div className="bg-white dark:bg-stone-900 w-full max-w-sm rounded-3xl border border-stone-200 dark:border-stone-800 shadow-2xl p-6 space-y-4 animate-in zoom-in-95 text-center">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in" dir="rtl">
+          <div className="bg-white dark:bg-stone-900 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl border border-stone-200 dark:border-stone-800 shadow-2xl p-6 space-y-4 animate-in zoom-in-95 text-center">
             <div className="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center mx-auto text-3xl shadow-inner">
               {inspectingItem.icon}
             </div>

@@ -15,6 +15,7 @@ import {
 import { soundManager } from '../../utils/audio';
 import { spendCipherXP } from '../../utils/nesmaCipherStorage';
 import { CipherVisualAmbiance } from './CipherVisualAmbiance';
+import { CIPHER_MECHANIC_GUIDES } from '../../data/gameGuides';
 
 // Puzzle Components
 import { TilePuzzle } from './puzzles/TilePuzzle';
@@ -54,8 +55,10 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
   const [revealedLetter, setRevealedLetter] = useState<string | null>(null);
   const [revealedConceptClue, setRevealedConceptClue] = useState<boolean>(false);
 
+  const [showMechanicGuide, setShowMechanicGuide] = useState<boolean>(true);
   const currentWorld = CIPHER_WORLDS.find(w => w.id === level.worldId) || CIPHER_WORLDS[0];
   const associatedQuote = CIPHER_QUOTES.find(q => q.id === level.quoteId);
+  const mechanicGuide = CIPHER_MECHANIC_GUIDES[level.puzzleType];
 
   const maxHintsAllowed = difficulty === 'hard' ? 1 : difficulty === 'medium' ? 2 : 3;
 
@@ -125,19 +128,19 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
     <div className="flex flex-col min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
       {/* Level Play Sticky Header */}
       <header className="sticky top-0 z-30 bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
           {/* Back & Level Title */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
               onClick={onReturnToMap}
-              className="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+              className="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer shrink-0"
               title="العودة لخريطة المراحل"
             >
               <ArrowRight className="w-5 h-5" />
             </button>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-md">
                   المرحلة {level.id}
                 </span>
@@ -152,7 +155,7 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
           </div>
 
           {/* Action buttons: Deep Challenge Mode, Hint & Reset */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => {
@@ -284,6 +287,33 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
           </div>
         )}
 
+        {/* Specific Puzzle Mechanic Guide (Explains exact controls for this stage's puzzle type) */}
+        {mechanicGuide && (
+          <div className="bg-emerald-50/80 dark:bg-stone-900 border border-emerald-200 dark:border-emerald-800/70 rounded-2xl p-4 space-y-2 shadow-2xs">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2 text-sm font-extrabold text-emerald-900 dark:text-emerald-300">
+                <HelpCircle className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                <span>آلية هذا اللغز: {mechanicGuide.nameAr}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMechanicGuide((prev) => !prev)}
+                className="px-3 py-1 rounded-xl bg-white dark:bg-stone-800 border border-emerald-200 dark:border-stone-700 text-xs font-bold text-emerald-800 dark:text-emerald-200 cursor-pointer"
+              >
+                {showMechanicGuide ? 'طيّ الإرشاد' : 'عرض الإرشاد'}
+              </button>
+            </div>
+            {showMechanicGuide && (
+              <div className="space-y-1 text-sm text-stone-800 dark:text-stone-200 leading-relaxed pt-1 border-t border-emerald-200/60 dark:border-stone-800">
+                <p>{mechanicGuide.howToSolveAr}</p>
+                <p className="text-xs sm:text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                  💡 تلميح للحل: {mechanicGuide.tipAr}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Puzzle Board Container */}
         <div className="bg-white dark:bg-stone-900 p-5 sm:p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm">
           {/* Dispatch corresponding puzzle component */}
@@ -354,8 +384,13 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
 
       {/* 3-Tier Progressive Hints Modal */}
       {showHintModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-stone-900 w-full max-w-md rounded-3xl border border-stone-200 dark:border-stone-800 shadow-2xl p-6 space-y-5 animate-in zoom-in-95">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`تلميحات المرحلة ${level.id}`}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+        >
+          <div className="bg-white dark:bg-stone-900 w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl border border-stone-200 dark:border-stone-800 shadow-2xl p-6 space-y-5 animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-amber-800 dark:text-amber-400 font-bold text-base">
                 <Lightbulb className="w-5 h-5 text-amber-500" />
@@ -438,9 +473,14 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
                       <p className="text-xs leading-relaxed font-medium">
                         {level.hints[idx]}
                       </p>
+                    ) : idx >= maxHintsAllowed ? (
+                      <span className="text-[11px] flex items-center gap-1.5 opacity-80">
+                        <Lock className="w-3.5 h-3.5 shrink-0" />
+                        <span>غير متاح في مستوى الصعوبة الحالي (اختر «سهل» لفتح التلميحات الثلاثة)</span>
+                      </span>
                     ) : (
                       <span className="text-[11px] flex items-center gap-1.5 opacity-70">
-                        <Lock className="w-3.5 h-3.5" />
+                        <Lock className="w-3.5 h-3.5 shrink-0" />
                         <span>مغلق؛ انقر على زر كشف التلميح أدناه</span>
                       </span>
                     )}
@@ -450,27 +490,29 @@ export const CipherLevelPlay: React.FC<CipherLevelPlayProps> = ({
             </div>
 
             {/* Unlock Button */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
               <button
                 type="button"
                 onClick={handleUnlockNextHint}
-                disabled={hintsUnlockedCount >= 3}
-                className="py-2.5 px-4 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                disabled={hintsUnlockedCount >= maxHintsAllowed}
+                className="py-2.5 px-4 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 shrink-0" />
                 <span>
-                  {hintsUnlockedCount === 0 
-                    ? 'كشف التلميح الأول' 
-                    : hintsUnlockedCount < 3 
-                      ? 'كشف التلميح التالي' 
-                      : 'تم كشف كل التلميحات'}
+                  {hintsUnlockedCount === 0
+                    ? 'كشف التلميح الأول'
+                    : hintsUnlockedCount < maxHintsAllowed
+                      ? 'كشف التلميح التالي'
+                      : maxHintsAllowed < 3
+                        ? `تم بلوغ حد التلميحات (${maxHintsAllowed}/3)`
+                        : 'تم كشف كل التلميحات'}
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setShowHintModal(false)}
-                className="py-2 px-4 text-xs font-medium text-stone-600 dark:text-stone-300 hover:text-stone-900 cursor-pointer"
+                className="py-2 px-4 text-xs font-medium text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer"
               >
                 إغلاق والعودة للعب
               </button>

@@ -28,7 +28,8 @@ import {
   Share2,
   RefreshCw,
   WifiOff,
-  Smartphone
+  Smartphone,
+  Type
 } from 'lucide-react';
 import { GameMode, Language, UserRank, RankProgress } from '../types';
 import { AMBIENT_SOUNDSCAPES, AmbientSoundscapeId, soundManager } from '../utils/audio';
@@ -36,6 +37,7 @@ import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { StreakHeaderBadge } from './StreakHeaderBadge';
 import { RankHeaderBadge } from './RankHeaderBadge';
+import { FONT_SCALE_OPTIONS, useFontScale } from '../utils/fontPreferences';
 
 interface HeaderProps {
   currentMode: GameMode;
@@ -89,6 +91,9 @@ export const Header: React.FC<HeaderProps> = ({
   );
   const isOnline = useOnlineStatus();
   const isAr = language === 'ar';
+  const { fontScale, setFontScale, cycleNextFontScale } = useFontScale();
+  const activeFontOpt =
+    FONT_SCALE_OPTIONS.find((opt) => opt.id === fontScale) || FONT_SCALE_OPTIONS[0];
 
   useEffect(() => {
     const sync = () => setActiveSoundscape(soundManager.getSoundscape());
@@ -136,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({
       )}
 
       {/* Top Banner: Brand and Controls */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-2">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-2">
         {/* Brand */}
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
           <button 
@@ -163,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Global Controls & Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-full">
           {/* Awareness Rank Badge (XP-Based Progression) */}
           <RankHeaderBadge 
             language={language} 
@@ -203,6 +208,25 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden sm:inline">{isAr ? 'وقفة أنفاس' : 'Breathe'}</span>
           </button>
 
+          {/* Quick Font Scale Switcher (ع / ع+ / ع++) */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playSoftTap();
+              cycleNextFontScale();
+            }}
+            className="flex items-center gap-1 px-2.5 py-1.5 min-h-[38px] rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-emerald-900 dark:text-emerald-200 transition-all cursor-pointer shadow-2xs text-xs font-extrabold"
+            title={
+              isAr
+                ? `حجم الخط: ${activeFontOpt.labelAr} (اضغط للتكبير)`
+                : `Font Size: ${activeFontOpt.labelEn} (Tap to cycle)`
+            }
+            aria-label={isAr ? `تغيير حجم الخط (${activeFontOpt.labelAr})` : 'Change font size'}
+          >
+            <Type className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
+            <span>{isAr ? activeFontOpt.shortBadgeAr : activeFontOpt.shortBadgeEn}</span>
+          </button>
+
           {/* Dark / Light Theme Toggle */}
           {onToggleTheme && (
             <button
@@ -210,19 +234,19 @@ export const Header: React.FC<HeaderProps> = ({
                 soundManager.playSoftTap();
                 onToggleTheme();
               }}
-              className="flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 rounded-full border border-stone-200/90 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all cursor-pointer shadow-2xs text-xs font-semibold"
+              className="flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 min-h-[38px] rounded-full border border-stone-200/90 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all cursor-pointer shadow-2xs text-xs font-semibold"
               title={theme === 'dark' ? (isAr ? 'التبديل إلى الوضع الفاتح ☀️' : 'Light Mode ☀️') : (isAr ? 'التبديل إلى الوضع الداكن 🌙' : 'Dark Mode 🌙')}
               aria-label="Toggle dark mode"
             >
               {theme === 'dark' ? (
                 <>
                   <Sun className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="hidden sm:inline text-[11px] font-bold text-amber-300">{isAr ? 'فاتح' : 'Light'}</span>
+                  <span className="hidden sm:inline text-xs font-bold text-amber-300">{isAr ? 'فاتح' : 'Light'}</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-3.5 h-3.5 text-stone-600 dark:text-stone-300" />
-                  <span className="hidden sm:inline text-[11px] font-bold text-stone-600">{isAr ? 'داكن' : 'Dark'}</span>
+                  <span className="hidden sm:inline text-xs font-bold text-stone-700">{isAr ? 'داكن' : 'Dark'}</span>
                 </>
               )}
             </button>
@@ -353,10 +377,10 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Main Nav Tabs: Desktop */}
+      {/* Main Nav Tabs: Desktop (Wraps cleanly when Large / Extra-Large font is active) */}
       <div className="hidden md:block border-t border-stone-200/60 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-900/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-1 rtl:space-x-reverse py-1.5" aria-label="Game Modes">
+          <nav className="flex flex-wrap items-center gap-1.5 py-2" aria-label="Game Modes">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentMode === item.mode;
@@ -367,13 +391,13 @@ export const Header: React.FC<HeaderProps> = ({
                     soundManager.playSoftTap();
                     onSelectMode(item.mode);
                   }}
-                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                     isActive
                       ? 'bg-stone-900 dark:bg-emerald-700 text-white shadow-2xs'
-                      : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-200/60 dark:hover:bg-stone-800'
+                      : 'text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/60 dark:hover:bg-stone-800'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-emerald-400' : 'text-stone-500 dark:text-stone-400'}`} />
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-emerald-400' : 'text-stone-600 dark:text-stone-400'}`} />
                   <span>{item.label}</span>
                 </button>
               );
@@ -408,8 +432,43 @@ export const Header: React.FC<HeaderProps> = ({
             );
           })}
 
-          {/* Mobile Quick Actions: Settings/Soundscapes, Share & Update App + Theme + Install */}
+          {/* Mobile Quick Actions: Font Size, Settings/Soundscapes, Share & Update App + Theme + Install */}
           <div className="pt-2.5 mt-2 border-t border-stone-200 dark:border-stone-800 space-y-2">
+            {/* Mobile 3-Level Font Size Picker */}
+            <div className="p-2.5 rounded-xl bg-stone-100 dark:bg-stone-800/80 space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-bold text-stone-800 dark:text-stone-200">
+                <span className="flex items-center gap-1.5">
+                  <Type className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                  <span>{isAr ? 'حجم الخط في التطبيق' : 'App Font Size'}</span>
+                </span>
+                <span className="text-emerald-800 dark:text-emerald-300">
+                  {isAr ? activeFontOpt.labelAr : activeFontOpt.labelEn}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                {FONT_SCALE_OPTIONS.map((opt) => {
+                  const selected = fontScale === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        soundManager.playSoftTap();
+                        setFontScale(opt.id);
+                      }}
+                      className={`min-h-[40px] px-2 py-1.5 rounded-lg text-xs font-extrabold transition-colors cursor-pointer ${
+                        selected
+                          ? 'bg-emerald-700 text-white'
+                          : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700'
+                      }`}
+                    >
+                      {isAr ? opt.labelAr : opt.labelEn}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {onOpenSettings && (
               <button
                 type="button"
@@ -527,13 +586,13 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
-            <div className="space-y-3 text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
+            <div className="space-y-3 text-sm sm:text-base text-stone-700 dark:text-stone-200 leading-relaxed">
               <p>
                 {isAr
                   ? 'مجموعة ألعاب تفاعلية ونفسية حركية مصممة خصيصاً لمساعدتك على فك تشابك الأفكار، وتهدئة فورة المشاعر، وتفريغ التوتر الجسدي في أوقات الضغط والامتحانات والعلاقات.'
                   : 'A suite of interactive and psychomotor games designed to help you untangle thoughts, regulate intense emotions, and discharge physical stress.'}
               </p>
-              <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 text-xs">
+              <div className="p-3.5 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800/60 text-amber-950 dark:text-amber-200 text-sm leading-relaxed">
                 {isAr
                   ? '⚠️ تنويه مهم: هذه الألعاب أدوات استكشاف ومساعدة ذاتية، وليست تشخيصاً طبياً أو بديلاً عن الاستشارة المتخصصة.'
                   : '⚠️ Disclaimer: These games are self-help awareness tools, not clinical psychiatric diagnosis.'}
@@ -543,7 +602,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setShowInfo(false)}
-                className="px-5 py-2.5 bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-white text-white dark:text-stone-900 rounded-xl text-xs font-bold cursor-pointer transition-colors"
+                className="min-h-[44px] px-6 py-2.5 bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-white text-white dark:text-stone-900 rounded-xl text-sm font-bold cursor-pointer transition-colors"
               >
                 {isAr ? 'إغلاق' : 'Close'}
               </button>

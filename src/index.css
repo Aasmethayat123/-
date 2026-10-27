@@ -1,20 +1,89 @@
+@import "@fontsource/cairo/400.css";
+@import "@fontsource/cairo/500.css";
+@import "@fontsource/cairo/600.css";
+@import "@fontsource/cairo/700.css";
+@import "@fontsource/cairo/800.css";
+@import "@fontsource/cairo/900.css";
+@import "@fontsource/tajawal/400.css";
+@import "@fontsource/tajawal/500.css";
+@import "@fontsource/tajawal/700.css";
+@import "@fontsource/tajawal/800.css";
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
 
+/* =========================================================================
+   Unified Arabic Typography & Eye-Comfort Scale System («نسمة حياة»)
+   - Primary Arabic font: Cairo (with Tajawal & Plus Jakarta Sans fallbacks)
+   - Comfortable defaults:
+     * Body text (text-base): 1.125rem (18px at normal scale)
+     * Descriptive / button / alert text (text-sm): 1.03125rem (~16.5px)
+     * Compact labels / badges (text-xs): 0.96875rem (~15.5px)
+     * Section headings (text-2xl): 1.625rem (26px)
+     * Main headings (text-3xl): 1.9375rem (31px)
+   - Global 3-level root font scaling via html[data-font-scale]:
+     * normal (عادي): 16px root
+     * large (كبير): 18px root (+12.5%)
+     * xlarge (كبير جدًا): 19.75px root (+23.5%, fluidly clamped on narrow phones)
+   ========================================================================= */
+@theme {
+  --font-sans: 'Cairo', 'Tajawal', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Cairo', 'Tajawal', 'Plus Jakarta Sans', Georgia, serif;
+  --font-mono: 'Plus Jakarta Sans', 'Cairo', 'Tajawal', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --text-xs: 0.96875rem;
+  --text-xs--line-height: 1.62;
+
+  --text-sm: 1.03125rem;
+  --text-sm--line-height: 1.72;
+
+  --text-base: 1.125rem;
+  --text-base--line-height: 1.78;
+
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.65;
+
+  --text-xl: 1.4375rem;
+  --text-xl--line-height: 1.5;
+
+  --text-2xl: 1.625rem;
+  --text-2xl--line-height: 1.38;
+
+  --text-3xl: 1.9375rem;
+  --text-3xl--line-height: 1.32;
+
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 1.25;
+}
+
 @layer base {
   :root {
-    --font-sans: 'Alexandria', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    --font-serif: 'Alexandria', Georgia, Cambria, 'Times New Roman', Times, serif;
-    --font-mono: 'Alexandria', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    --font-arabic: 'Alexandria', 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-arabic: 'Cairo', 'Tajawal', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  html,
+  html[data-font-scale="normal"] {
+    font-size: clamp(15.5px, 4vw, 16px);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  html[data-font-scale="large"] {
+    font-size: clamp(16.75px, 4.4vw, 18px);
+  }
+
+  html[data-font-scale="xlarge"] {
+    font-size: clamp(17.75px, 4.75vw, 19.75px);
   }
 
   body {
     font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.78;
     background-color: #faf9f6;
-    color: #292524;
+    color: #1c1917;
     overflow-x: hidden;
+    text-rendering: optimizeLegibility;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
@@ -23,11 +92,122 @@
     color: #f5f5f4;
   }
 
+  /* Unify Arabic font across serif/sans/headings while keeping crisp numerals */
   [dir="rtl"],
-  [dir="rtl"] .font-serif,
-  [dir="rtl"] .font-mono {
+  [dir="rtl"] .font-sans,
+  [dir="rtl"] .font-serif {
     font-family: var(--font-arabic);
   }
+
+  [dir="rtl"] .font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Comfortable Arabic paragraph & list line-height and safe word wrapping */
+  p,
+  li,
+  blockquote,
+  label,
+  dd {
+    line-height: 1.78;
+    overflow-wrap: break-word;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.38;
+    letter-spacing: 0;
+    overflow-wrap: break-word;
+  }
+
+  /* Ensure form inputs & buttons inherit unified font and clear readable size */
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: max(1rem, 16px);
+    line-height: 1.65;
+  }
+
+  /* Clear, eye-friendly keyboard focus ring in Light & Dark modes */
+  :focus-visible {
+    outline: 2px solid #059669;
+    outline-offset: 2px;
+  }
+
+  html.dark :focus-visible {
+    outline-color: #34d399;
+  }
+}
+
+/* =========================================================================
+   Eliminate Tiny Hardcoded Micro-Text & Improve Light/Dark Contrast
+   ========================================================================= */
+.text-\[8px\],
+.text-\[9px\],
+.text-\[10px\] {
+  font-size: 0.875rem !important;
+  line-height: 1.55 !important;
+}
+
+.text-\[11px\] {
+  font-size: 0.9375rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Upgrade faint muted text on light backgrounds for better eye comfort (WCAG AA) */
+html:not(.dark) .text-stone-400 {
+  color: #57534e;
+}
+
+html:not(.dark) .text-stone-500 {
+  color: #44403c;
+}
+
+/* Maintain readable muted text on dark surfaces (including dark hero banners inside light mode) */
+.bg-stone-900 .text-stone-400,
+.bg-stone-950 .text-stone-400,
+html.dark .text-stone-400 {
+  color: #d6d3d1;
+}
+
+.bg-stone-900 .text-stone-500,
+.bg-stone-950 .text-stone-500,
+html.dark .text-stone-500 {
+  color: #a8a29e;
+}
+
+/* Safe Multi-Line Wrapping When User Selects Large or Extra-Large Font */
+html[data-font-scale="large"] button.whitespace-nowrap,
+html[data-font-scale="xlarge"] button.whitespace-nowrap,
+html[data-font-scale="large"] a.whitespace-nowrap,
+html[data-font-scale="xlarge"] a.whitespace-nowrap {
+  white-space: normal;
+  text-align: center;
+  height: auto;
+}
+
+html[data-font-scale="large"] .truncate,
+html[data-font-scale="xlarge"] .truncate {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+html[data-font-scale="xlarge"] .line-clamp-1,
+html[data-font-scale="xlarge"] .line-clamp-2 {
+  -webkit-line-clamp: unset;
+  display: block;
+  overflow: visible;
 }
 
 /* Calm gentle pulse for breathing guide */

@@ -29,6 +29,7 @@ import {
 import { GAME_STAGES_CONFIG, getGameLevelProgress } from '../../utils/gameLevelsManager';
 import { loadCipherProgress } from '../../utils/nesmaCipherStorage';
 import { loadMovingIslandState } from '../../utils/movingIslandManager';
+import { SectionGuideBanner } from '../common/SectionGuideBanner';
 
 interface UnifiedGamesHubProps {
   language: Language;
@@ -111,12 +112,15 @@ export const UnifiedGamesHub: React.FC<UnifiedGamesHubProps> = ({
               soundManager.playSoftTap();
               onBackToHome();
             }}
-            className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-stone-200 rounded-2xl text-xs font-bold transition-all border border-white/10 shrink-0 self-start sm:self-auto cursor-pointer"
+            className="min-h-[42px] px-4 py-2.5 bg-white/10 hover:bg-white/20 text-stone-100 rounded-2xl text-xs sm:text-sm font-bold transition-all border border-white/15 shrink-0 self-start sm:self-auto cursor-pointer"
           >
             {isAr ? '← العودة للمكتبة' : '← Back to Library'}
           </button>
         </div>
       </div>
+
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="smart-games-hub" language={language} />
 
       {/* 1. Today's Featured Challenge Card */}
       <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent dark:from-amber-950/40 dark:via-stone-900 border-2 border-amber-400/60 dark:border-amber-700/60 rounded-3xl p-6 shadow-md space-y-4">

@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Bookmark
 } from 'lucide-react';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 
 interface DiscoverReadingsProps {
   language: Language;
@@ -125,21 +126,24 @@ export const DiscoverReadings: React.FC<DiscoverReadingsProps> = ({
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs text-stone-300 font-bold">
+        <div className="flex items-center gap-1.5 text-xs sm:text-sm text-stone-200 font-bold">
           <BookOpen className="w-4 h-4 text-amber-400" />
           <span>{ARTICLES_DATA.length} {isAr ? 'إضاءات مرتبطة بالألعاب' : 'Game-Linked Articles'}</span>
         </div>
       </div>
 
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="discover" language={language} />
+
       {/* Hero Section */}
-      <div className="text-center max-w-xl mx-auto space-y-2">
-        <span className="text-xs font-extrabold text-amber-700 dark:text-amber-400 uppercase tracking-wider block">
+      <div className="text-center max-w-2xl mx-auto space-y-2.5">
+        <span className="text-xs sm:text-sm font-extrabold text-amber-800 dark:text-amber-400 uppercase tracking-wider block">
           {isAr ? 'اقرأي الفكرة.. ثم عيشيها في لعبة تفاعلية' : 'Read the insight, then play it live'}
         </span>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100">
           {isAr ? 'إضاءات نفسية تُعاش وتُمارس 🌿' : 'Psychological Insights to Experience 🌿'}
         </h2>
-        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+        <p className="text-sm sm:text-base text-stone-700 dark:text-stone-300 leading-relaxed">
           {isAr
             ? 'المعرفة النظرية وحدها لا تغير المشاعر؛ لذلك يرتبط كل مقال هنا بلعبة نفسية حركية تفاعلية ترسخ الفكرة في ذاكرتك وجسدك.'
             : 'Knowledge alone does not regulate the nervous system. Each article links directly to its interactive somatic or cognitive game.'}
@@ -165,27 +169,27 @@ export const DiscoverReadings: React.FC<DiscoverReadingsProps> = ({
               </div>
 
               <div>
-                <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors leading-snug">
+                <h3 className="text-xl font-extrabold text-stone-900 dark:text-stone-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors leading-snug">
                   {art.title}
                 </h3>
-                <span className="text-xs text-stone-500 dark:text-stone-400 font-medium block mt-1">
+                <span className="text-sm text-stone-600 dark:text-stone-300 font-semibold block mt-1">
                   {art.subtitle}
                 </span>
               </div>
 
-              <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed font-sans line-clamp-3">
+              <p className="text-sm sm:text-base text-stone-700 dark:text-stone-200 leading-relaxed font-sans">
                 {art.summary}
               </p>
 
               {/* Wisdom Quote */}
-              <div className="p-3 bg-stone-50 dark:bg-stone-850 rounded-2xl border border-stone-100 dark:border-stone-800 text-xs font-serif font-bold text-stone-800 dark:text-stone-200 italic">
+              <div className="p-3.5 bg-stone-50 dark:bg-stone-800/80 rounded-2xl border border-stone-200/80 dark:border-stone-700 text-sm font-serif font-bold text-stone-900 dark:text-stone-100 leading-relaxed">
                 {art.quote}
               </div>
             </div>
 
             {/* Direct Link to the corresponding game */}
-            <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
-              <span className="text-xs font-bold text-stone-400 dark:text-stone-500">
+            <div className="pt-3.5 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-2 flex-wrap">
+              <span className="text-xs sm:text-sm font-bold text-stone-600 dark:text-stone-300">
                 {isAr ? 'التطبيق العملي:' : 'Hands-on:'}
               </span>
 
@@ -194,11 +198,11 @@ export const DiscoverReadings: React.FC<DiscoverReadingsProps> = ({
                   soundManager.playSoftTap();
                   onNavigateToGame(art.linkedGameId);
                 }}
-                className="flex items-center gap-1.5 px-4 py-2 bg-stone-900 hover:bg-stone-800 dark:bg-amber-600 dark:hover:bg-amber-500 text-white rounded-xl text-xs font-bold cursor-pointer transition-transform hover:scale-103 shadow-xs"
+                className="min-h-[44px] flex items-center gap-2 px-4 py-2.5 bg-stone-900 hover:bg-stone-800 dark:bg-amber-600 dark:hover:bg-amber-500 text-white rounded-xl text-sm font-bold cursor-pointer transition-transform hover:scale-103 shadow-xs"
               >
-                <Gamepad2 className="w-3.5 h-3.5 text-amber-400 dark:text-white" />
+                <Gamepad2 className="w-4 h-4 text-amber-400 dark:text-white shrink-0" />
                 <span>{isAr ? `العب: ${art.linkedGameName}` : `Play Game`}</span>
-                <ArrowRight className="w-3 h-3 rtl:rotate-180" />
+                <ArrowRight className="w-4 h-4 rtl:rotate-180 shrink-0" />
               </button>
             </div>
           </div>
@@ -206,12 +210,12 @@ export const DiscoverReadings: React.FC<DiscoverReadingsProps> = ({
       </div>
 
       {/* Platform Disclaimer Note */}
-      <div className="p-5 bg-stone-100/80 dark:bg-stone-900/80 rounded-2xl border border-stone-200 dark:border-stone-800 text-center max-w-xl mx-auto space-y-1.5 text-stone-600 dark:text-stone-400">
-        <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-stone-800 dark:text-stone-200">
-          <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+      <div className="p-5 bg-stone-100/80 dark:bg-stone-900/80 rounded-2xl border border-stone-200 dark:border-stone-800 text-center max-w-2xl mx-auto space-y-2 text-stone-700 dark:text-stone-300">
+        <div className="flex items-center justify-center gap-1.5 text-sm font-extrabold text-stone-900 dark:text-stone-100">
+          <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
           <span>{isAr ? 'تنويه نسمة حياة:' : 'Nesma Hayat Disclaimer:'}</span>
         </div>
-        <p className="text-[11px] leading-relaxed">
+        <p className="text-sm leading-relaxed">
           {isAr
             ? 'هذه المقالات والألعاب أدوات استكشاف ذاتي وممارسات للوعي والتهدئة النفسية، وليست تشخيصاً طبياً أو بديلاً عن الاستشارة المتخصصة.'
             : 'These readings and games are supportive self-exploration and somatic regulation tools, not a clinical psychiatric diagnosis.'}

@@ -45,7 +45,7 @@ export const BadgeCelebrationModal: React.FC<BadgeCelebrationModalProps> = ({
       aria-labelledby="badge-celebration-title"
     >
       <div
-        className="relative w-full max-w-md rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 sm:p-8 shadow-2xl text-center overflow-hidden animate-scale-up"
+        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 sm:p-8 shadow-2xl text-center animate-scale-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Ambient Celebration Glow */}

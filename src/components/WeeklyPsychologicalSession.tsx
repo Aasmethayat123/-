@@ -27,6 +27,7 @@ import { storage } from '../utils/storage';
 import { CompanionEngine, CompanionMessage } from '../utils/companionEngine';
 import { checkTextSafety, triggerCrisisInterception } from '../utils/safetyInterceptor';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 
 interface WeeklyPsychologicalSessionProps {
   language: Language;
@@ -226,24 +227,24 @@ ${unloadContent}
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in" dir={isAr ? 'rtl' : 'ltr'}>
       {/* Top Session Breadcrumb Bar */}
-      <div className="bg-stone-900 text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-stone-800 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="bg-stone-900 text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-stone-800 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={onBackToMap}
-            className="px-3.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl text-xs font-bold cursor-pointer transition-colors"
+            className="min-h-[40px] px-3.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-colors"
           >
             {isAr ? '← الرئيسية' : '← Home'}
           </button>
           <div className="flex items-center gap-2">
             <Heart className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
+            <span className="text-sm font-extrabold text-emerald-400">
               {isAr ? 'الجلسة النفسية الأسبوعية 🛋️' : 'Weekly Psychological Session 🛋️'}
             </span>
           </div>
         </div>
 
         {/* Step Indicator */}
-        <div className="flex items-center gap-1 text-[11px] font-mono text-stone-400">
+        <div className="flex items-center gap-1.5 flex-wrap text-xs font-mono text-stone-300">
           <span className={step === 'checkin' ? 'text-emerald-400 font-bold' : ''}>1. فحص</span>
           <span>•</span>
           <span className={step === 'unload' ? 'text-emerald-400 font-bold' : ''}>2. تفريغ</span>
@@ -253,6 +254,9 @@ ${unloadContent}
           <span className={step === 'intent' ? 'text-emerald-400 font-bold' : ''}>4. الميثاق</span>
         </div>
       </div>
+
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="weekly-session" language={language} />
 
       {/* STEP 1: Check-in */}
       {step === 'checkin' && (

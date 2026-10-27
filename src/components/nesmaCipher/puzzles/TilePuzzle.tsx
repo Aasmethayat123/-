@@ -16,10 +16,16 @@ const INITIAL_SCRAMBLE = [4, 0, 7, 1, 8, 3, 6, 2, 5];
 export const TilePuzzle: React.FC<TilePuzzleProps> = ({ data, onSolve }) => {
   const [tiles, setTiles] = useState<number[]>(INITIAL_SCRAMBLE);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [dragSourceIdx, setDragSourceIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
   const [isSolved, setIsSolved] = useState<boolean>(false);
   const [moveCount, setMoveCount] = useState<number>(0);
   const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
   const [showNumbers, setShowNumbers] = useState<boolean>(true);
+
+  const touchStartRef = React.useRef<{ idx: number; x: number; y: number; moved: boolean } | null>(null);
+  const dragOverRef = React.useRef<number | null>(null);
+  const suppressClickRef = React.useRef<boolean>(false);
 
   // Check solved state
   useEffect(() => {
@@ -33,31 +39,98 @@ export const TilePuzzle: React.FC<TilePuzzleProps> = ({ data, onSolve }) => {
     }
   }, [tiles, isSolved, onSolve]);
 
+  const swapTiles = (fromIdx: number, toIdx: number) => {
+    if (isSolved || fromIdx === toIdx || fromIdx < 0 || toIdx < 0) return;
+    soundManager.playClick();
+    setTiles((prev) => {
+      const next = [...prev];
+      const temp = next[fromIdx];
+      next[fromIdx] = next[toIdx];
+      next[toIdx] = temp;
+      return next;
+    });
+    setSelectedIdx(null);
+    setDragSourceIdx(null);
+    setDragOverIdx(null);
+    dragOverRef.current = null;
+    setMoveCount((prev) => prev + 1);
+  };
+
   const handleTileClick = (index: number) => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
     if (isSolved) return;
 
-    soundManager.playClick();
-
     if (selectedIdx === null) {
+      soundManager.playClick();
       setSelectedIdx(index);
     } else if (selectedIdx === index) {
+      soundManager.playClick();
       setSelectedIdx(null); // Deselect
     } else {
-      // Swap tiles
-      const nextTiles = [...tiles];
-      const temp = nextTiles[selectedIdx];
-      nextTiles[selectedIdx] = nextTiles[index];
-      nextTiles[index] = temp;
+      swapTiles(selectedIdx, index);
+    }
+  };
 
-      setTiles(nextTiles);
-      setSelectedIdx(null);
-      setMoveCount(prev => prev + 1);
+  const handleTouchStart = (index: number, e: React.TouchEvent<HTMLButtonElement>) => {
+    if (isSolved || e.touches.length === 0) return;
+    const t = e.touches[0];
+    touchStartRef.current = { idx: index, x: t.clientX, y: t.clientY, moved: false };
+    dragOverRef.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLButtonElement>) => {
+    const start = touchStartRef.current;
+    if (!start || isSolved || e.touches.length === 0) return;
+    const t = e.touches[0];
+    const dist = Math.hypot(t.clientX - start.x, t.clientY - start.y);
+    if (dist > 10) {
+      start.moved = true;
+      setDragSourceIdx(start.idx);
+      let hit = document.elementFromPoint(t.clientX, t.clientY)?.closest('[data-tile-index]') || null;
+      if (!hit) {
+        const container = e.currentTarget.parentElement;
+        const candidates = Array.from(container?.querySelectorAll('[data-tile-index]') || []);
+        hit =
+          candidates.find((el) => {
+            const r = el.getBoundingClientRect();
+            return t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom;
+          }) || null;
+      }
+      const targetAttr = hit?.getAttribute('data-tile-index');
+      const targetIdx = targetAttr !== null && targetAttr !== undefined ? Number(targetAttr) : null;
+      const validTarget = targetIdx !== null && !Number.isNaN(targetIdx) && targetIdx !== start.idx ? targetIdx : null;
+      dragOverRef.current = validTarget;
+      setDragOverIdx(validTarget);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    const start = touchStartRef.current;
+    const targetIdx = dragOverRef.current;
+    touchStartRef.current = null;
+    dragOverRef.current = null;
+    if (start?.moved) {
+      suppressClickRef.current = true;
+      if (targetIdx !== null && targetIdx !== start.idx) {
+        swapTiles(start.idx, targetIdx);
+      } else {
+        setDragSourceIdx(null);
+        setDragOverIdx(null);
+      }
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 300);
     }
   };
 
   const handleReset = () => {
     setTiles(INITIAL_SCRAMBLE);
     setSelectedIdx(null);
+    setDragSourceIdx(null);
+    setDragOverIdx(null);
     setIsSolved(false);
     setMoveCount(0);
     soundManager.playClick();
@@ -120,19 +193,20 @@ export const TilePuzzle: React.FC<TilePuzzleProps> = ({ data, onSolve }) => {
           </div>
         </div>
 
-        <p className="text-[11px] text-stone-500 dark:text-stone-400">
-          انقر على أي قطعتين لتبديل مكانهما حتى تكتمل الصورة الصباحية.
+        <p className="text-xs text-stone-600 dark:text-stone-300">
+          اسحب أي قطعة بيدك أو بالماوس إلى مكان قطعة أخرى، أو انقر على قطعتين لتبديل مكانهما حتى تكتمل الصورة.
         </p>
       </div>
 
       {/* 3x3 Puzzle Board — dir="ltr" ensures tile 0 is top-left and prevents RTL horizontal mirroring */}
       <div
         dir="ltr"
-        className="relative p-2.5 sm:p-3 bg-stone-800 dark:bg-stone-900 rounded-3xl shadow-xl border-2 border-stone-700/80 w-full max-w-[320px] sm:max-w-[340px] touch-manipulation select-none"
+        className="relative p-2.5 sm:p-3 bg-stone-800 dark:bg-stone-900 rounded-3xl shadow-xl border-2 border-stone-700/80 w-full max-w-[320px] sm:max-w-[340px] touch-none select-none"
       >
         <div className="grid grid-cols-3 gap-1.5 w-full rounded-2xl overflow-hidden bg-stone-800">
           {tiles.map((tileId, idx) => {
-            const isSelected = selectedIdx === idx;
+            const isSelected = selectedIdx === idx || dragSourceIdx === idx;
+            const isDragTarget = dragOverIdx === idx;
             const isCorrectPosition = tileId === idx;
             const col = tileId % 3;
             const row = Math.floor(tileId / 3);
@@ -140,18 +214,56 @@ export const TilePuzzle: React.FC<TilePuzzleProps> = ({ data, onSolve }) => {
             return (
               <div
                 key={idx}
+                data-tile-index={idx}
                 className="relative w-full rounded-xl overflow-hidden bg-emerald-950/50"
                 style={{ paddingBottom: '100%' }}
               >
                 <button
                   type="button"
+                  data-tile-index={idx}
+                  draggable={!isSolved}
                   onClick={() => handleTileClick(idx)}
-                  className={`absolute inset-0 block w-full h-full p-0 m-0 border-0 rounded-xl overflow-hidden transition-all duration-150 cursor-pointer focus:outline-hidden touch-manipulation ${
-                    isSelected 
-                      ? 'ring-4 ring-amber-400 scale-95 z-20 shadow-2xl brightness-110' 
-                      : isCorrectPosition
-                        ? 'ring-1 ring-emerald-500/50'
-                        : 'hover:opacity-95 active:scale-95'
+                  onDragStart={(e) => {
+                    if (isSolved) return;
+                    setDragSourceIdx(idx);
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', String(idx));
+                  }}
+                  onDragOver={(e) => {
+                    if (isSolved) return;
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (dragOverIdx !== idx) setDragOverIdx(idx);
+                  }}
+                  onDragLeave={() => {
+                    if (dragOverIdx === idx) setDragOverIdx(null);
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const rawFrom = e.dataTransfer.getData('text/plain');
+                    const fromIdx = dragSourceIdx !== null ? dragSourceIdx : Number(rawFrom);
+                    if (!Number.isNaN(fromIdx) && fromIdx !== idx) {
+                      swapTiles(fromIdx, idx);
+                    } else {
+                      setDragSourceIdx(null);
+                      setDragOverIdx(null);
+                    }
+                  }}
+                  onDragEnd={() => {
+                    setDragSourceIdx(null);
+                    setDragOverIdx(null);
+                  }}
+                  onTouchStart={(e) => handleTouchStart(idx, e)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  className={`absolute inset-0 block w-full h-full p-0 m-0 border-0 rounded-xl overflow-hidden transition-all duration-150 cursor-grab active:cursor-grabbing focus:outline-hidden touch-none ${
+                    isDragTarget
+                      ? 'ring-4 ring-emerald-400 scale-95 z-20 brightness-115'
+                      : isSelected 
+                        ? 'ring-4 ring-amber-400 scale-95 z-20 shadow-2xl brightness-110' 
+                        : isCorrectPosition
+                          ? 'ring-1 ring-emerald-500/50'
+                          : 'hover:opacity-95 active:scale-95'
                   }`}
                   aria-label={`قطعة اللغز رقم ${tileId + 1}`}
                 >

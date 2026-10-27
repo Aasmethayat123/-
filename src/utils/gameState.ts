@@ -343,11 +343,13 @@ let lastStageEmitAt = 0;
 export function emitGameCompleted(gameId: string, fallbackXP = 0): void {
   if (typeof window === 'undefined') return;
   lastStageEmitAt = Date.now();
-  window.dispatchEvent(
-    new CustomEvent<{ gameId: string; fallbackXP: number }>(GAME_COMPLETED_EVENT, {
-      detail: { gameId, fallbackXP }
-    })
-  );
+  if (typeof CustomEvent === 'function' && typeof window.dispatchEvent === 'function') {
+    window.dispatchEvent(
+      new CustomEvent<{ gameId: string; fallbackXP: number }>(GAME_COMPLETED_EVENT, {
+        detail: { gameId, fallbackXP }
+      })
+    );
+  }
 }
 
 export function wasStageCompletionJustEmitted(withinMs = 900): boolean {

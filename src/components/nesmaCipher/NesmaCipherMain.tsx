@@ -148,6 +148,8 @@ export const NesmaCipherMain: React.FC<NesmaCipherMainProps> = ({ onExit, onAddX
       {view === 'map' && (
         <CipherMap
           progress={progress}
+          onProgressUpdate={setProgress}
+          initialWorldId={selectedLevel.worldId}
           difficulty={difficulty}
           onDifficultyChange={setDifficulty}
           onSelectLevel={handleSelectLevel}

@@ -48,8 +48,8 @@ export const CipherGrandSecretModal: React.FC<CipherGrandSecretModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in" dir="rtl">
-      <div className="bg-white dark:bg-stone-900 w-full max-w-lg rounded-3xl border border-amber-500/40 shadow-2xl p-6 sm:p-8 space-y-6 animate-in zoom-in-95 relative overflow-hidden">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in" dir="rtl">
+      <div className="bg-white dark:bg-stone-900 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl border border-amber-500/40 shadow-2xl p-6 sm:p-8 space-y-6 animate-in zoom-in-95 relative">
         {/* Glowing background */}
         <div className="absolute -top-16 -right-16 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
 

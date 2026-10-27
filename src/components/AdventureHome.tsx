@@ -45,6 +45,7 @@ import {
   SW_AUTO_PREF_CHANGED_EVENT,
   isAutoUpdateEnabled,
 } from '../utils/appLifecycle';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 
 interface AdventureHomeProps {
   language: Language;
@@ -230,15 +231,15 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
           </button>
 
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-extrabold text-stone-900 dark:text-stone-100 font-serif">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-stone-900 dark:text-stone-100 font-serif">
                 {isAr ? 'اختار مغامرتك اليوم 🌿' : 'Choose Your Adventure 🌿'}
               </h1>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
                 {currentLevel.title}
               </span>
             </div>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+            <p className="text-sm text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
               {isAr ? 'مساحتك الذكية للاكتشاف والتجربة، وتفكيك التوتر بهدوء' : 'Your calm space for mindful discovery & emotional regulation'}
             </p>
           </div>
@@ -292,6 +293,9 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="map" language={language} />
 
       {/* 2. Resume Last Played (if exists) */}
       {lastPlayed && (
@@ -401,15 +405,15 @@ export const AdventureHome: React.FC<AdventureHomeProps> = ({
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-700/50">
                 {isAr ? 'اللعبة الكبرى الجديدة ⭐' : 'Grand Feature Game ⭐'}
               </span>
-              <span className="text-[10px] text-emerald-300 font-bold">{isAr ? '٣٠ مرحلة · ٣ عوالم' : '30 Levels · 3 Worlds'}</span>
+              <span className="text-[10px] text-emerald-300 font-bold">{isAr ? '٦٠ مرحلة · ٦ عوالم' : '60 Levels · 6 Worlds'}</span>
             </div>
             <h3 className="text-base sm:text-lg font-extrabold text-white">
               {isAr ? 'شفرة نسمة — حلّ اللغز واكتشف اللي جواك 🗝️' : 'Nesma Cipher — Solve & Discover 🗝️'}
             </h3>
             <p className="text-xs text-stone-300">
               {isAr
-                ? 'رحلة ألغاز واستكشاف نفسي عميق عبر حديقة البدايات، مكتبة الأسرار، وكهف التفكير.'
-                : 'A deep psychological puzzle adventure across 3 distinct worlds.'}
+                ? 'رحلة ألغاز واستكشاف نفسي عميق عبر ٦ عوالم مترابطة تبدأ بحديقة البدايات ومكتبة الأسرار حتى مختبر التفكير.'
+                : 'A deep psychological puzzle adventure across 6 interconnected worlds.'}
             </p>
           </div>
         </div>

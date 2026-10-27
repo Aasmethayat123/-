@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   Info
 } from 'lucide-react';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 
 interface WorkshopModeProps {
   language: Language;
@@ -225,23 +226,26 @@ export const WorkshopMode: React.FC<WorkshopModeProps> = ({
         <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
           {isAr ? 'مكتبة ورش العمل التفاعلية والجلسات الجماعية' : 'Interactive Workshops & Group Dialogue Hub'}
         </h1>
-        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base text-stone-700 dark:text-stone-300 leading-relaxed max-w-2xl mx-auto">
           {isAr
             ? 'ست ورش عمل متخصصة مبنية على المدارس النفسية المعتمدة، تحول تجربة الألعاب التفاعلية إلى حوارات جماعية مثمرة تبني الوعي الذاتي والتفهم الإنساني.'
             : 'Six specialized psycho-educational workshops converting interactive exercises into fruitful group dialogues that build self-awareness and mutual understanding.'}
         </p>
       </div>
 
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="workshop" language={language} />
+
       {/* ================================================================ */}
       {/* PSYCHO-EDUCATIONAL & VOLUNTARY PARTICIPATION NOTICE */}
       {/* ================================================================ */}
-      <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200 shadow-2xs">
-        <ShieldAlert className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
-        <div className="space-y-0.5 leading-relaxed">
+      <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/85 dark:bg-amber-950/35 border border-amber-200/90 dark:border-amber-800/60 flex items-start gap-3 text-sm text-amber-950 dark:text-amber-200 shadow-2xs">
+        <ShieldAlert className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+        <div className="space-y-1 leading-relaxed">
           <strong className="font-bold block">
             {isAr ? 'تنبيه تثقيفي ومشاركة اختيارية:' : 'Psycho-Educational & Voluntary Notice:'}
           </strong>
-          <p className="text-[11px] sm:text-xs text-stone-700 dark:text-stone-300">
+          <p className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
             {isAr
               ? 'هذه الورش والتمارين مصممة لأغراض التوعية والتطوير الذاتي التثقيفي، ولا تُعد علاجاً نفسياً مضموناً أو بديلاً عن الرعاية السريرية المتخصصة. المشاركة في كافة الأنشطة والأسئلة اختيارية تماماً؛ ويحق لأي مشارك تجاوز أي تمرين أو سؤال يسبب له انزعاجاً أو ضيقاً.'
               : 'These workshops and exercises are designed for psycho-educational self-growth and awareness; they are not guaranteed clinical treatments or substitutes for professional healthcare. Participation is strictly voluntary, and any participant may freely skip any prompt or exercise causing discomfort.'}

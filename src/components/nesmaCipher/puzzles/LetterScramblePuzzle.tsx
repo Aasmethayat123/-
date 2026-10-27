@@ -94,7 +94,7 @@ export const LetterScramblePuzzle: React.FC<LetterScramblePuzzleProps> = ({ data
       </div>
 
       {/* Target Word Slots */}
-      <div className={`flex items-center justify-center gap-2.5 my-2 transition-transform ${errorShake ? 'animate-shake' : ''}`}>
+      <div className={`flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 my-2 transition-transform ${errorShake ? 'animate-shake' : ''}`}>
         {Array.from({ length: data.targetWord.length }).map((_, idx) => {
           const item = placed[idx];
           return (

@@ -47,6 +47,7 @@ import {
 import { soundManager } from '../../utils/audio';
 import { IslandInterconnectedPuzzleModal } from './IslandInterconnectedPuzzleModal';
 import { IslandGrandFinaleModal } from './IslandGrandFinaleModal';
+import { SectionGuideBanner } from '../common/SectionGuideBanner';
 
 export interface ActiveIslandMissionContext {
   challengeId: string;
@@ -80,6 +81,7 @@ const COLLECTIBLE_KEYS: IslandCollectibleType[] = [
 ];
 
 export const MovingIslandMain: React.FC<MovingIslandMainProps> = ({
+  language,
   onBack,
   onLaunchLinkedGame,
   onAddXP,
@@ -322,10 +324,10 @@ export const MovingIslandMain: React.FC<MovingIslandMainProps> = ({
               <Compass className="w-4 h-4 text-amber-400" />
               <span>مغامرة موحّدة تربط ٦ ألعاب في عالم حيّ متغير</span>
             </div>
-            <h1 className="text-lg sm:text-3xl font-black font-serif text-white tracking-tight leading-snug">
+            <h1 className="text-xl sm:text-3xl font-black font-serif text-white tracking-tight leading-snug">
               جزيرة الأسرار المتحركة — رحلة اكتشاف ما وراء الألغاز
             </h1>
-            <p className="text-xs sm:text-sm text-stone-300 max-w-2xl leading-relaxed">
+            <p className="text-sm sm:text-base text-stone-200 max-w-2xl leading-relaxed">
               كل إنجاز تحققه داخل الألعاب الست يغيّر تضاريس الجزيرة، يصلح جسورها، يبدّد ضبابها، ويمنحك مفاتيح وأدلة تقودك نحو اللغز الختامي الكبير.
             </p>
           </div>
@@ -440,6 +442,9 @@ export const MovingIslandMain: React.FC<MovingIslandMainProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="moving-island" language={language} />
 
       {/* Friendly Storage Diagnostic Warning if corrupted external key recovered */}
       {hadStorageWarning && (

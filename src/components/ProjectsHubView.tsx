@@ -16,6 +16,7 @@ import {
   Sparkles,
   Info
 } from 'lucide-react';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 
 interface ProjectsHubViewProps {
   language: Language;
@@ -89,7 +90,7 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
           <h1 className="text-2xl sm:text-3xl font-extrabold font-serif">
             {isAr ? 'المشروعات والمبادرات الخاصة بي' : 'My Authentic Projects & Initiatives'}
           </h1>
-          <p className="text-xs sm:text-sm text-stone-400 max-w-xl leading-relaxed">
+          <p className="text-sm sm:text-base text-stone-300 max-w-xl leading-relaxed">
             {isAr
               ? 'مساحة مخصصة لعرض المشروعات الحقيقية فقط دون أي إحصائيات وهمية أو معلومات غير معتمدة.'
               : 'Dedicated showcase of authentic projects only, without fabricated metrics or unverified data.'}
@@ -103,7 +104,7 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
               soundManager.playSoftTap();
               onNavigateMode('admin-cms');
             }}
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-2xl text-xs font-bold cursor-pointer transition-all border border-stone-700 shadow-sm shrink-0"
+            className="min-h-[44px] flex items-center justify-center gap-2 px-5 py-3 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-2xl text-sm font-bold cursor-pointer transition-all border border-stone-700 shadow-sm shrink-0"
           >
             <Settings className="w-4 h-4 text-emerald-400" />
             <span>{isAr ? 'لوحة إدارة المحتوى' : 'Content Management'}</span>
@@ -111,8 +112,11 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
         )}
       </div>
 
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="projects" language={language} />
+
       {/* Transparency & Authenticity Notice */}
-      <div className="p-4 bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl flex items-start gap-3 text-xs text-emerald-950 dark:text-emerald-100">
+      <div className="p-4 sm:p-5 bg-emerald-50/75 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl flex items-start gap-3 text-sm text-emerald-950 dark:text-emerald-100">
         <ShieldCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <span className="font-extrabold block">
@@ -201,21 +205,21 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
 
                 {/* Real Features List */}
                 {project.features && project.features.length > 0 ? (
-                  <div className="space-y-2 pt-2 border-t border-stone-100">
+                  <div className="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800">
                     <span className="text-[11px] font-bold text-stone-400 block uppercase tracking-wider">
                       {isAr ? 'المحاور والمميزات الحقيقية:' : 'Core Features:'}
                     </span>
                     <ul className="space-y-1.5">
                       {project.features.map((feat, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-xs text-stone-700">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                        <li key={idx} className="flex items-start gap-2 text-xs text-stone-700 dark:text-stone-200">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                           <span className="leading-snug">{feat}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 ) : (
-                  <div className="pt-2 border-t border-stone-100">
+                  <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
                     <p className="text-xs text-stone-400 italic">
                       {isAr ? 'المحاور والمميزات: سيتم إضافتها قريباً من خلال إدارة المحتوى' : 'Features will be added soon'}
                     </p>
@@ -224,7 +228,7 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
               </div>
 
               {/* Card Footer: Real link or "الرابط سيتم إضافته لاحقاً" */}
-              <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-3 flex-wrap">
+              <div className="pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-3 flex-wrap">
                 {project.id === 'nesma-hayat' ? (
                   <button
                     onClick={() => {
@@ -237,10 +241,10 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
                     <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
                   </button>
                 ) : (
-                  <div className="text-xs text-stone-500 font-medium">
+                  <div className="text-xs text-stone-500 dark:text-stone-400 font-medium">
                     {project.status === 'in-development' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-[11px] font-bold">
-                        <Clock className="w-3 h-3 text-amber-600" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800 rounded-lg text-[11px] font-bold">
+                        <Clock className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                         <span>{isAr ? 'قيد التطوير والتجهيز' : 'In Preparation'}</span>
                       </span>
                     )}
@@ -253,13 +257,13 @@ export const ProjectsHubView: React.FC<ProjectsHubViewProps> = ({
                     href={project.realUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:text-emerald-900 underline"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 underline"
                   >
                     <span>{isAr ? 'زيارة الرابط الرسمي' : 'Official Link'}</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 ) : (
-                  <span className="text-[11px] font-bold text-stone-400 bg-stone-100 px-3 py-1.5 rounded-xl border border-stone-200">
+                  <span className="text-[11px] font-bold text-stone-400 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-700">
                     {isAr ? 'الرابط سيتم إضافته لاحقاً' : 'Link will be added soon'}
                   </span>
                 )}

@@ -16,6 +16,8 @@ import {
 import { useGameState, wasStageCompletionJustEmitted } from './utils/gameState';
 import { soundManager } from './utils/audio';
 import { getInitialTheme, applyTheme, ThemeMode } from './utils/theme';
+import { getInitialFontScale, applyFontScale } from './utils/fontPreferences';
+import { GameGuideWrapper } from './components/common/GameGuideSystem';
 import { ALL_36_GAMES } from './data/gamesCatalog';
 import { recordLastPlayedGame } from './utils/adventures';
 
@@ -279,6 +281,10 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
+    applyFontScale(getInitialFontScale());
+  }, []);
+
+  useEffect(() => {
     soundManager.enabled = soundEnabled;
     try {
       localStorage.setItem(SOUND_STORAGE_KEY, String(soundEnabled));
@@ -507,8 +513,9 @@ export default function App() {
         {/* Code-Split Interactive Games & Secondary Sections */}
         {currentMode !== 'map' && (
           <Suspense fallback={<ViewLoadingFallback language={language} />}>
-            {/* Full Games Catalog with Search & Filter */}
-            {currentMode === 'library' && (
+            <GameGuideWrapper gameMode={currentMode} language={language}>
+              {/* Full Games Catalog with Search & Filter */}
+              {currentMode === 'library' && (
               <GameMap
                 language={language}
                 onSelectLevel={handleStartLevel}
@@ -1065,6 +1072,7 @@ export default function App() {
                 onOpenAvatarModal={() => setIsAvatarModalOpen(true)}
               />
             )}
+            </GameGuideWrapper>
           </Suspense>
         )}
       </main>
@@ -1073,11 +1081,11 @@ export default function App() {
       <footer 
         role="contentinfo" 
         aria-label={language === 'ar' ? 'تذييل الصفحة ومعلومات المبادرة' : 'Page footer and initiative info'} 
-        className="border-t border-stone-200/80 dark:border-stone-800 bg-stone-100/60 dark:bg-stone-900/60 py-5 px-4 text-xs text-stone-500 dark:text-stone-400 transition-colors"
+        className="border-t border-stone-200/80 dark:border-stone-800 bg-stone-100/60 dark:bg-stone-900/60 py-6 px-4 text-sm text-stone-600 dark:text-stone-300 transition-colors"
       >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-extrabold text-stone-800 dark:text-stone-100">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-center sm:text-start">
+            <span className="font-extrabold text-stone-900 dark:text-stone-100">
               {language === 'ar' ? 'فكر فيها' : 'Think About It'}
             </span>
             <span aria-hidden="true">🌿</span>
@@ -1092,7 +1100,7 @@ export default function App() {
           <nav 
             role="navigation" 
             aria-label={language === 'ar' ? 'روابط التنقل السريع في التذييل' : 'Footer quick navigation links'} 
-            className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] text-stone-500 dark:text-stone-400"
+            className="flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-xs sm:text-sm text-stone-600 dark:text-stone-300"
           >
             <button
               type="button"

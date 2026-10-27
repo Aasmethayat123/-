@@ -6,6 +6,7 @@ import { AVATARS } from '../utils/gameState';
 import { soundManager } from '../utils/audio';
 import { getSavedMoments } from '../utils/moments';
 import { getCurrentAwarenessLevel } from '../data/gamificationData';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 import { 
   Play, 
   Star, 
@@ -423,10 +424,13 @@ export const GameMap: React.FC<GameMapProps> = ({
           <span>{isAr ? 'العودة إلى نظام: اختار مغامرتك' : 'Back to: Choose Your Adventure'}</span>
         </button>
 
-        <span className="text-xs font-extrabold text-stone-400 dark:text-stone-500 hidden sm:inline">
+        <span className="text-xs sm:text-sm font-extrabold text-stone-600 dark:text-stone-300 hidden sm:inline">
           {isAr ? `المكتبة الشاملة للألعاب (${ALL_36_GAMES.length} لعبة)` : `Full Games Catalog (${ALL_36_GAMES.length} Games)`}
         </span>
       </div>
+
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="library" language={language} />
 
       {/* Calm & Refined Welcome Hero + Player Stats */}
       <div className="bg-gradient-to-r from-emerald-50/80 via-white to-stone-50 dark:from-stone-900/90 dark:via-stone-900/95 dark:to-stone-950 border border-emerald-200/70 dark:border-stone-800 rounded-3xl p-5 sm:p-6 shadow-2xs transition-colors space-y-4">
@@ -445,21 +449,21 @@ export const GameMap: React.FC<GameMapProps> = ({
               <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${currentAvatar.color} flex items-center justify-center text-2xl shadow-xs border border-white/60 dark:border-stone-700 group-hover:scale-105 transition-transform`}>
                 {currentAvatar.avatarChar}
               </div>
-              <span className="absolute -bottom-1 -right-1 bg-stone-900 dark:bg-emerald-600 text-[9px] text-white px-1 py-0.2 rounded-full font-bold">
+              <span className="absolute -bottom-1 -right-1 bg-stone-900 dark:bg-emerald-600 text-xs text-white px-1.5 py-0.5 rounded-full font-bold">
                 {isAr ? 'تغيير' : 'Edit'}
               </span>
             </button>
 
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100 font-serif">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 font-serif">
                   {isAr ? 'فكّر فيها — نسمة حياة' : 'Think About It — Nesma Hayat'}
                 </h1>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
                   {currentAvatar.name}
                 </span>
               </div>
-              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 leading-snug">
+              <p className="text-sm text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
                 {isAr
                   ? 'مساحتك الهادئة لتفكيك الأفكار، تنظيم المشاعر، والتفريغ الحسي'
                   : 'Your calm sanctuary for reframing thoughts and nervous system regulation'}

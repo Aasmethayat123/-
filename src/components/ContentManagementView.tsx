@@ -26,6 +26,7 @@ import {
   Download
 } from 'lucide-react';
 import { downloadDistZip } from '../utils/downloadPackage';
+import { SectionGuideBanner } from './common/SectionGuideBanner';
 
 interface ContentManagementViewProps {
   language: Language;
@@ -225,7 +226,7 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
           </button>
           <button
             onClick={startAddNew}
-            className="flex items-center gap-1.5 px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-xs"
+            className="min-h-[42px] flex items-center gap-1.5 px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4 text-emerald-400" />
             <span>{isAr ? 'إضافة مشروع حقيقي' : 'Add Project'}</span>
@@ -233,13 +234,16 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
         </div>
       </div>
 
+      {/* Section Guide Banner */}
+      <SectionGuideBanner sectionId="admin-cms" language={language} />
+
       {/* Strict Guidelines Reminder */}
-      <div className="p-5 bg-amber-500/10 border-2 border-amber-400/60 rounded-3xl space-y-2 text-xs text-amber-950">
-        <div className="flex items-center gap-2 font-extrabold text-amber-900">
-          <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+      <div className="p-5 bg-amber-50 dark:bg-amber-950/35 border-2 border-amber-300 dark:border-amber-700/70 rounded-3xl space-y-2 text-sm text-amber-950 dark:text-amber-100">
+        <div className="flex items-center gap-2 font-extrabold text-amber-900 dark:text-amber-200">
+          <AlertCircle className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0" />
           <span>{isAr ? 'تنبيه إلزامي حول البيانات والمحتوى:' : 'Mandatory Integrity Rule:'}</span>
         </div>
-        <p className="leading-relaxed text-stone-700">
+        <p className="leading-relaxed text-stone-800 dark:text-stone-200">
           {isAr
             ? 'يمنع اختراع أسماء مشروعات وهمية أو روابط أو أرقام أو إحصائيات أو تقييمات لم يقدمها صاحب المشروع. لا تضع روابط غير موجودة، وإذا لم يتوفر الرابط سيظهر تلقائياً «الرابط سيتم إضافته لاحقاً». ولا يُعتبر أي مشروع منشوراً إلا بعد اعتماد بياناته.'
             : 'Never invent fake metrics, statistics, URLs, or projects. Missing links will display "Link will be added soon" without broken URLs.'}
@@ -248,17 +252,17 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
 
       {/* Notification Toast */}
       {feedbackMsg && (
-        <div className="p-3.5 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-2xl text-xs font-bold flex items-center gap-2 animate-fade-in shadow-xs">
-          <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+        <div className="p-3.5 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 rounded-2xl text-xs font-bold flex items-center gap-2 animate-fade-in shadow-xs">
+          <CheckCircle2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
           <span>{feedbackMsg}</span>
         </div>
       )}
 
       {/* Edit / Add Form */}
       {(isAddingNew || editingProjectId) && (
-        <form onSubmit={handleSave} className="bg-white rounded-3xl border-2 border-emerald-500/40 p-6 sm:p-8 shadow-sm space-y-6 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-            <h3 className="text-lg font-extrabold text-stone-900 font-serif">
+        <form onSubmit={handleSave} className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-emerald-500/40 p-6 sm:p-8 shadow-sm space-y-6 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-3">
+            <h3 className="text-lg font-extrabold text-stone-900 dark:text-stone-100 font-serif">
               {isAddingNew
                 ? (isAr ? 'إضافة مشروع / لعبة / اختراع حقيقي جديد' : 'Add New Real Project')
                 : (isAr ? 'تعديل بيانات المشروع الحقيقي' : 'Edit Project Data')}
@@ -266,7 +270,7 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
             <button
               type="button"
               onClick={cancelForm}
-              className="text-stone-400 hover:text-stone-700 cursor-pointer"
+              className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -275,7 +279,7 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Project Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-800 block">
+              <label className="text-xs font-bold text-stone-800 dark:text-stone-200 block">
                 {isAr ? 'اسم المشروع الحقيقي *' : 'Real Project Name *'}
               </label>
               <input
@@ -284,19 +288,19 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder={isAr ? 'مثال: نسمة حياة / عباقرة عيون مصر' : 'Project name'}
-                className="w-full text-xs p-3 bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900"
+                className="w-full text-xs p-3 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 dark:text-stone-100"
               />
             </div>
 
             {/* Category */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-800 block">
+              <label className="text-xs font-bold text-stone-800 dark:text-stone-200 block">
                 {isAr ? 'التصنيف' : 'Category'}
               </label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                className="w-full text-xs p-3 bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 cursor-pointer"
+                className="w-full text-xs p-3 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 dark:text-stone-100 cursor-pointer"
               >
                 <option value="psychology-games">{isAr ? 'ألعاب نفسية وتطبيقية' : 'Psychology Games'}</option>
                 <option value="initiatives">{isAr ? 'مبادرات ومشروعات' : 'Initiatives'}</option>
@@ -308,13 +312,13 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
 
             {/* Status */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-800 block">
+              <label className="text-xs font-bold text-stone-800 dark:text-stone-200 block">
                 {isAr ? 'حالة المشروع' : 'Status'}
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                className="w-full text-xs p-3 bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 cursor-pointer"
+                className="w-full text-xs p-3 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 dark:text-stone-100 cursor-pointer"
               >
                 <option value="active">{isAr ? 'نشط ومتاح' : 'Active'}</option>
                 <option value="in-development">{isAr ? 'قيد التطوير والتحديث' : 'In Development'}</option>
@@ -324,7 +328,7 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
 
             {/* Icon / Design Symbol */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-800 block">
+              <label className="text-xs font-bold text-stone-800 dark:text-stone-200 block">
                 {isAr ? 'رمز توضيحي للتصميم (إيموجي)' : 'Design Icon Symbol'}
               </label>
               <input
@@ -332,14 +336,14 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
                 value={formData.icon}
                 onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                 placeholder="🌿, 👁️, 💡"
-                className="w-full text-xs p-3 bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900"
+                className="w-full text-xs p-3 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 dark:text-stone-100"
               />
             </div>
           </div>
 
           {/* Real URL */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-stone-800 block">
+            <label className="text-xs font-bold text-stone-800 dark:text-stone-200 block">
               {isAr ? 'الرابط الحقيقي للمشروع (اتركه فارغاً إذا لم يتوفر بعد ليظهر «الرابط سيتم إضافته لاحقاً»)' : 'Real URL (leave empty if not available yet)'}
             </label>
             <input
@@ -347,13 +351,13 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
               value={formData.realUrl}
               onChange={(e) => setFormData({ ...formData, realUrl: e.target.value })}
               placeholder="https://..."
-              className="w-full text-xs p-3 bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900"
+              className="w-full text-xs p-3 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 dark:text-stone-100"
             />
           </div>
 
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-stone-800 block">
+            <label className="text-xs font-bold text-stone-800 dark:text-stone-200 block">
               {isAr ? 'الوصف الفعلي الحقيقي للمشروع' : 'Real Description'}
             </label>
             <textarea
@@ -361,13 +365,13 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder={isAr ? 'اكتب الوصف المعتمد بدون تخمين...' : 'Enter approved description...'}
-              className="w-full text-xs p-3 bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900"
+              className="w-full text-xs p-3 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 dark:text-stone-100"
             />
           </div>
 
           {/* Features (one per line) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-stone-800 block">
+            <label className="text-xs font-bold text-stone-800 dark:text-stone-200 block">
               {isAr ? 'المحاور والمميزات الحقيقية (اكتب كل ميزة في سطر منفصل)' : 'Features / Axes (one per line)'}
             </label>
             <textarea
@@ -375,7 +379,7 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
               value={formData.featuresText}
               onChange={(e) => setFormData({ ...formData, featuresText: e.target.value })}
               placeholder={isAr ? 'الميزة الأولى\nالميزة الثانية...' : 'Feature 1\nFeature 2...'}
-              className="w-full text-xs p-3 bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 font-mono"
+              className="w-full text-xs p-3 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl focus:outline-none focus:border-emerald-600 text-stone-900 dark:text-stone-100 font-mono"
             />
           </div>
 
@@ -388,17 +392,17 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
               onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
               className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
             />
-            <label htmlFor="isPublished" className="text-xs font-bold text-stone-800 cursor-pointer select-none">
+            <label htmlFor="isPublished" className="text-xs font-bold text-stone-800 dark:text-stone-200 cursor-pointer select-none">
               {isAr ? 'نشر هذا المشروع في الواجهة العامة للزوار' : 'Publish this project on the public showcase'}
             </label>
           </div>
 
           {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-3 border-t border-stone-200">
+          <div className="flex justify-end gap-3 pt-3 border-t border-stone-200 dark:border-stone-800">
             <button
               type="button"
               onClick={cancelForm}
-              className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-bold cursor-pointer"
+              className="px-4 py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 rounded-xl text-xs font-bold cursor-pointer"
             >
               {isAr ? 'إلغاء' : 'Cancel'}
             </button>
@@ -414,40 +418,40 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
       )}
 
       {/* Projects List in CMS */}
-      <div className="bg-white rounded-3xl border-2 border-stone-200 p-6 sm:p-8 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-          <h2 className="text-base font-extrabold text-stone-900 font-serif">
+      <div className="bg-white dark:bg-stone-900 rounded-3xl border-2 border-stone-200 dark:border-stone-800 p-6 sm:p-8 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-3">
+          <h2 className="text-base font-extrabold text-stone-900 dark:text-stone-100 font-serif">
             {isAr ? 'قائمة المشروعات المسجلة' : 'Registered Projects List'}
           </h2>
-          <span className="text-xs text-stone-500 font-mono font-bold">
+          <span className="text-xs text-stone-500 dark:text-stone-400 font-mono font-bold">
             {projects.length} {isAr ? 'مشروعات' : 'projects'}
           </span>
         </div>
 
-        <div className="divide-y divide-stone-100">
+        <div className="divide-y divide-stone-100 dark:divide-stone-800">
           {projects.map((proj) => {
             const isCore = proj.id === 'nesma-hayat' || proj.id === 'abaqirat-oyoun-misr';
 
             return (
               <div key={proj.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="text-lg">{proj.icon || '📦'}</span>
-                    <h4 className="text-sm font-extrabold text-stone-900 font-serif">
+                    <h4 className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif">
                       {proj.name}
                     </h4>
                     {isCore && (
-                      <span className="text-[10px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md font-bold">
+                      <span className="text-[10px] bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 px-2 py-0.5 rounded-md font-bold">
                         {isAr ? 'مشروع أساسي' : 'Core'}
                       </span>
                     )}
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      proj.isPublished ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-600'
+                      proj.isPublished ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300' : 'bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
                     }`}>
                       {proj.isPublished ? (isAr ? 'منشور' : 'Published') : (isAr ? 'مسودة' : 'Draft')}
                     </span>
                   </div>
-                  <p className="text-xs text-stone-500 line-clamp-1 max-w-xl">
+                  <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-1 max-w-xl">
                     {proj.description}
                   </p>
                 </div>
@@ -455,15 +459,15 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
                 <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                   <button
                     onClick={() => togglePublish(proj)}
-                    className="p-2 hover:bg-stone-100 text-stone-600 rounded-xl text-xs font-bold cursor-pointer transition-colors"
+                    className="p-2 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 rounded-xl text-xs font-bold cursor-pointer transition-colors"
                     title={proj.isPublished ? (isAr ? 'إخفاء من العامة' : 'Unpublish') : (isAr ? 'نشر للعامة' : 'Publish')}
                   >
-                    {proj.isPublished ? <Eye className="w-4 h-4 text-emerald-600" /> : <EyeOff className="w-4 h-4 text-stone-400" />}
+                    {proj.isPublished ? <Eye className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <EyeOff className="w-4 h-4 text-stone-400" />}
                   </button>
 
                   <button
                     onClick={() => startEdit(proj)}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-bold cursor-pointer transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 rounded-xl text-xs font-bold cursor-pointer transition-colors"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                     <span>{isAr ? 'تعديل' : 'Edit'}</span>
@@ -472,7 +476,7 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
                   {!isCore && (
                     <button
                       onClick={() => handleDelete(proj.id, proj.name)}
-                      className="p-2 hover:bg-rose-50 text-rose-600 rounded-xl cursor-pointer transition-colors"
+                      className="p-2 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-xl cursor-pointer transition-colors"
                       title={isAr ? 'حذف' : 'Delete'}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -485,13 +489,13 @@ export const ContentManagementView: React.FC<ContentManagementViewProps> = ({
         </div>
 
         {/* Reset Defaults button */}
-        <div className="pt-4 border-t border-stone-100 flex justify-between items-center text-xs">
+        <div className="pt-4 border-t border-stone-100 dark:border-stone-800 flex flex-wrap justify-between items-center gap-2 text-xs">
           <span className="text-stone-400">
             {isAr ? 'البيانات تُحفظ في الذاكرة المحلية لجهازك' : 'Data is stored locally in your browser'}
           </span>
           <button
             onClick={handleResetDefaults}
-            className="flex items-center gap-1.5 text-stone-500 hover:text-stone-800 font-bold cursor-pointer"
+            className="flex items-center gap-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 font-bold cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>{isAr ? 'استعادة المشروعات المعتمدة الأولية' : 'Reset to verified defaults'}</span>

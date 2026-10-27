@@ -22,10 +22,13 @@ import {
   X
 } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
+import { SectionGuideBanner } from '../common/SectionGuideBanner';
 
 
 interface CipherMapProps {
   progress: CipherProgress;
+  onProgressUpdate?: (updated: CipherProgress) => void;
+  initialWorldId?: CipherWorldId;
   difficulty: 'easy' | 'medium' | 'hard';
   onDifficultyChange: (diff: 'easy' | 'medium' | 'hard') => void;
   onSelectLevel: (levelId: number) => void;
@@ -37,6 +40,8 @@ interface CipherMapProps {
 
 export const CipherMap: React.FC<CipherMapProps> = ({
   progress,
+  onProgressUpdate,
+  initialWorldId,
   difficulty,
   onDifficultyChange,
   onSelectLevel,
@@ -45,15 +50,18 @@ export const CipherMap: React.FC<CipherMapProps> = ({
   onResetProgress,
   onExitToMainApp
 }) => {
-  const [currentProgress, setCurrentProgress] = useState<CipherProgress>(progress);
   const [showSecretModal, setShowSecretModal] = useState<boolean>(false);
   const [showArtworkModal, setShowArtworkModal] = useState<boolean>(false);
 
   const [activeWorldId, setActiveWorldId] = useState<CipherWorldId>(() => {
+    if (initialWorldId) return initialWorldId;
     const highest = Math.max(...progress.unlockedLevels, 1);
     if (highest <= 10) return 'garden';
     if (highest <= 20) return 'library';
-    return 'cave';
+    if (highest <= 30) return 'cave';
+    if (highest <= 40) return 'symbol_maze';
+    if (highest <= 50) return 'image_secrets';
+    return 'mind_lab';
   });
 
   const [confirmReset, setConfirmReset] = useState<boolean>(false);
@@ -152,7 +160,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
           </div>
 
           {/* Quick Hub Buttons: Quotes Vault & Garden */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => {
@@ -182,7 +190,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
               onClick={() => {
                 soundManager.playCorrect();
                 const updated = unlockAllCipherLevels();
-                setCurrentProgress(updated);
+                onProgressUpdate?.(updated);
               }}
               className="px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200 text-xs font-bold flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-all cursor-pointer shadow-2xs"
               title="فتح جميع المراحل الستين فوراً للعب الحر"
@@ -233,6 +241,9 @@ export const CipherMap: React.FC<CipherMapProps> = ({
 
       {/* Main Map Content */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6 space-y-6">
+        {/* Section Guide Banner */}
+        <SectionGuideBanner sectionId="nesma-cipher" language="ar" />
+
         {/* Overall Adventure Stats Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white dark:bg-stone-900 p-4 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-xs">
           <div className="flex items-center gap-3">
@@ -399,7 +410,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
                 <h2 className="text-lg sm:text-xl font-extrabold tracking-tight">
                   {activeWorld.nameAr} — البيئة التفاعلية الحية
                 </h2>
-                {((activeWorldId === 'garden' && isGardenComplete) || (activeWorldId === 'library' && isLibraryComplete) || (activeWorldId === 'cave' && isCaveComplete)) && (
+                {worldCompletedCount >= (endLvl - startLvl + 1) && (
                   <span className="px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-bold">
                     مكتمل كليًا ⭐
                   </span>
@@ -413,7 +424,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
             {/* Living Environment Status Bar reflecting real progress */}
             <div className="p-3 bg-stone-900/85 border border-stone-800 rounded-2xl backdrop-blur-md flex items-center gap-2.5 text-xs text-emerald-300 font-medium shadow-inner">
               <span className="animate-pulse text-base">
-                {activeWorldId === 'garden' ? '🌸' : activeWorldId === 'library' ? '📜' : '💎'}
+                {activeWorld.icon}
               </span>
               <span>{getLivingEnvironmentStatus()}</span>
             </div>
@@ -422,7 +433,7 @@ export const CipherMap: React.FC<CipherMapProps> = ({
             {(() => {
               const currentSecret = WORLD_SECRETS[activeWorldId];
               const isSecretUnlocked = worldCompletedCount >= 3;
-              const isSecretDiscovered = currentProgress.secretDoorsUnlocked.includes(currentSecret.id);
+              const isSecretDiscovered = progress.secretDoorsUnlocked.includes(currentSecret.id);
 
               return (
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-amber-950/85 via-stone-900 to-stone-900 border border-amber-500/40 rounded-2xl backdrop-blur-md">
@@ -634,11 +645,11 @@ export const CipherMap: React.FC<CipherMapProps> = ({
         <CipherSecretModal
           worldId={activeWorldId}
           isUnlocked={worldCompletedCount >= 3}
-          isAlreadyDiscovered={currentProgress.secretDoorsUnlocked.includes(WORLD_SECRETS[activeWorldId].id)}
+          isAlreadyDiscovered={progress.secretDoorsUnlocked.includes(WORLD_SECRETS[activeWorldId].id)}
           onClose={() => setShowSecretModal(false)}
           onDiscover={(secretId) => {
             const updated = unlockSecretDoor(secretId);
-            setCurrentProgress(updated);
+            onProgressUpdate?.(updated);
           }}
         />
       )}

@@ -71,7 +71,7 @@ export const RankHeaderBadge: React.FC<RankHeaderBadgeProps> = ({
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="absolute start-0 sm:end-0 sm:start-auto mt-2 w-80 sm:w-92 p-4 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-2xl z-50 animate-scale-up space-y-3.5">
+          <div className="fixed inset-x-3 top-24 sm:absolute sm:inset-x-auto sm:top-auto sm:end-0 sm:mt-2 sm:w-92 p-4 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-2xl z-50 animate-scale-up space-y-3.5 max-h-[80vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between pb-2 border-b border-stone-100 dark:border-stone-800">
               <div className="flex items-center gap-2">
