@@ -12,7 +12,7 @@ export interface SavedNote {
   id: string;
   title: string;
   content: string;
-  category: 'weekly-session' | 'reflection' | 'gratitude' | 'thought-record' | 'crisis-plan';
+  category: 'weekly-session' | 'reflection' | 'gratitude' | 'thought-record' | 'crisis-plan' | 'quick-journal';
   tags: string[];
   mood?: string;
   date: string;

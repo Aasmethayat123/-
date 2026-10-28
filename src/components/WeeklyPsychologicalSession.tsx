@@ -28,12 +28,14 @@ import { CompanionEngine, CompanionMessage } from '../utils/companionEngine';
 import { checkTextSafety, triggerCrisisInterception } from '../utils/safetyInterceptor';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { SectionGuideBanner } from './common/SectionGuideBanner';
+import { ALL_36_GAMES } from '../data/gamesCatalog';
 
 interface WeeklyPsychologicalSessionProps {
   language: Language;
   onBackToMap: () => void;
   onAddXP?: (amount: number) => void;
   onOpenBreathing?: () => void;
+  onNavigateToGame?: (gameId: any) => void;
 }
 
 type SessionStep = 'checkin' | 'unload' | 'companion' | 'intent' | 'summary';
@@ -42,7 +44,8 @@ export const WeeklyPsychologicalSession: React.FC<WeeklyPsychologicalSessionProp
   language,
   onBackToMap,
   onAddXP,
-  onOpenBreathing
+  onOpenBreathing,
+  onNavigateToGame
 }) => {
   const isAr = language === 'ar';
   const isOnline = useOnlineStatus();
@@ -71,6 +74,8 @@ export const WeeklyPsychologicalSession: React.FC<WeeklyPsychologicalSessionProp
   const [inputMessage, setInputMessage] = useState<string>('');
   const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
   const [useCloudAi, setUseCloudAi] = useState<boolean>(true);
+  const [recommendedGameId, setRecommendedGameId] = useState<string | null>(null);
+  const [recommendedGameReason, setRecommendedGameReason] = useState<string | null>(null);
 
   // Intent & Micro-Commitment
   const [letGoItem, setLetGoItem] = useState<string>('');
@@ -164,6 +169,11 @@ export const WeeklyPsychologicalSession: React.FC<WeeklyPsychologicalSessionProp
       };
 
       setMessages(prev => [...prev, replyMsg]);
+
+      if (response.recommendedGameId) {
+        setRecommendedGameId(response.recommendedGameId);
+        setRecommendedGameReason(response.recommendedGameReason || null);
+      }
 
       if (response.provider === 'cloud-gemini') {
         soundManager.playChime();
@@ -495,6 +505,51 @@ ${unloadContent}
               </div>
             )}
           </div>
+
+          {/* AI Recommended Game Card */}
+          {recommendedGameId && (() => {
+            const gameObj = ALL_36_GAMES.find(g => g.id === recommendedGameId);
+            if (!gameObj) return null;
+            return (
+              <div className="p-4 rounded-3xl bg-gradient-to-r from-emerald-900 to-teal-950 text-white border border-emerald-500/50 shadow-md space-y-3 animate-fade-in">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">💡</span>
+                    <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
+                      {isAr ? 'ترشيح الرفيق الذكي (Gemini)' : 'AI Companion Game Match'}
+                    </span>
+                  </div>
+                  <span className="text-[10px] bg-emerald-800 text-emerald-100 px-2.5 py-0.5 rounded-full font-mono">
+                    {gameObj.approxDuration}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 className="text-base font-extrabold text-white">
+                    {isAr ? gameObj.nameAr : gameObj.nameEn}
+                  </h4>
+                  <p className="text-xs text-emerald-100/90 mt-1 leading-relaxed">
+                    {recommendedGameReason || (isAr ? gameObj.descAr : gameObj.descEn)}
+                  </p>
+                </div>
+
+                {onNavigateToGame && (
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      onClick={() => {
+                        soundManager.playClick();
+                        onNavigateToGame(gameObj.id);
+                      }}
+                      className="px-4 py-2 bg-emerald-400 hover:bg-emerald-300 text-stone-950 rounded-xl text-xs font-extrabold flex items-center gap-1.5 cursor-pointer shadow-sm transition-transform hover:scale-103"
+                    >
+                      <span>{isAr ? 'ابدأ هذه اللعبة الآن' : 'Start Recommended Game'}</span>
+                      <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Input Chat Box */}
           <div className="flex gap-2">

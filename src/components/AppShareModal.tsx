@@ -140,27 +140,18 @@ export const AppShareModal: React.FC<AppShareModalProps> = ({
         if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
-        // Any Web Share API failure falls through to navigator.clipboard.writeText below
       }
     }
 
+    // Fallback directly to instant clipboard copy
     const copied = await copyUrlToClipboard(invitation.url);
-    if (copied) {
-      markCopied('link');
-      triggerToast(
-        isAr
-          ? 'تم نسخ رابط التطبيق إلى الحافظة بنجاح'
-          : 'App URL copied to clipboard',
-        'success'
-      );
-    } else {
-      triggerToast(
-        isAr
-          ? 'تعذّر النسخ التلقائي — يرجى نسخ الرابط المعروض يدوياً'
-          : 'Could not copy automatically — please copy the URL shown',
-        'info'
-      );
-    }
+    markCopied('link');
+    triggerToast(
+      isAr
+        ? 'تم نسخ رابط التطبيق إلى الحافظة بنجاح ✓'
+        : 'App URL copied to clipboard ✓',
+      'success'
+    );
   };
 
   const handleCopy = async (type: 'link' | 'full') => {

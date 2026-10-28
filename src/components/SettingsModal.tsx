@@ -17,6 +17,7 @@ import {
   Type,
   HelpCircle,
   RotateCcw,
+  Bell,
 } from 'lucide-react';
 import { Language } from '../types';
 import {
@@ -24,6 +25,10 @@ import {
   AmbientSoundscapeId,
   soundManager,
 } from '../utils/audio';
+import {
+  NotificationManager,
+  WeeklyReminderConfig,
+} from '../utils/notificationManager';
 import {
   SW_AUTO_PREF_CHANGED_EVENT,
   isAutoUpdateEnabled,
@@ -86,6 +91,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [autoUpdate, setAutoUpdate] = useState<boolean>(() => isAutoUpdateEnabled());
   const [autoGameGuides, setAutoGameGuides] = useState<boolean>(() => isAutoGameGuideEnabled());
   const [guidesResetNotice, setGuidesResetNotice] = useState<boolean>(false);
+  const [reminderConfig, setReminderConfig] = useState<WeeklyReminderConfig>(() =>
+    NotificationManager.getConfig()
+  );
 
   useEffect(() => {
     const sync = () => {
@@ -241,6 +249,99 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed bg-stone-50 dark:bg-stone-800/60 p-3 rounded-2xl border border-stone-200/80 dark:border-stone-700/70">
             {isAr ? activeFontOption.descAr : activeFontOption.descEn}
           </p>
+        </section>
+
+        {/* Weekly Session Reminder (Capacitor Local Notifications) */}
+        <section
+          className="pt-4 border-t border-stone-100 dark:border-stone-800 space-y-3"
+          aria-labelledby="weekly-reminder-heading"
+        >
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Bell className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <h4
+                id="weekly-reminder-heading"
+                className="text-sm font-extrabold text-stone-900 dark:text-stone-100"
+              >
+                {isAr ? 'تذكير الجلسة الأسبوعية (عبر الإشعارات)' : 'Weekly Session Reminder'}
+              </h4>
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                soundManager.playSoftTap();
+                const granted = await NotificationManager.requestPermission();
+                if (!granted) {
+                  alert(isAr ? 'يرجى السماح بالاستلام من إعدادات المتصفح أو الجهاز.' : 'Please allow notifications in device/browser settings.');
+                  return;
+                }
+                const nextState = !reminderConfig.enabled;
+                const updated = { ...reminderConfig, enabled: nextState };
+                setReminderConfig(updated);
+                await NotificationManager.saveConfig(updated);
+              }}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                reminderConfig.enabled
+                  ? 'bg-emerald-700 text-white'
+                  : 'bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
+              }`}
+            >
+              {reminderConfig.enabled ? (isAr ? 'مفعّل ✓' : 'Enabled ✓') : (isAr ? 'متوقف' : 'Off')}
+            </button>
+          </div>
+
+          {reminderConfig.enabled && (
+            <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-bold text-stone-700 dark:text-stone-300 block mb-1">
+                    {isAr ? 'يوم الأسبوع:' : 'Day of week:'}
+                  </label>
+                  <select
+                    value={reminderConfig.dayOfWeek}
+                    onChange={async (e) => {
+                      const val = Number(e.target.value);
+                      const updated = { ...reminderConfig, dayOfWeek: val };
+                      setReminderConfig(updated);
+                      await NotificationManager.saveConfig(updated);
+                    }}
+                    className="w-full p-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 font-bold"
+                  >
+                    <option value={5}>{isAr ? 'الجمعة' : 'Friday'}</option>
+                    <option value={6}>{isAr ? 'السبت' : 'Saturday'}</option>
+                    <option value={0}>{isAr ? 'الأحد' : 'Sunday'}</option>
+                    <option value={1}>{isAr ? 'الإثنين' : 'Monday'}</option>
+                    <option value={2}>{isAr ? 'الثلاثاء' : 'Tuesday'}</option>
+                    <option value={3}>{isAr ? 'الأربعاء' : 'Wednesday'}</option>
+                    <option value={4}>{isAr ? 'الخميس' : 'Thursday'}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-stone-700 dark:text-stone-300 block mb-1">
+                    {isAr ? 'الساعة المناسبة:' : 'Time:'}
+                  </label>
+                  <input
+                    type="time"
+                    value={`${String(reminderConfig.hour).padStart(2, '0')}:${String(reminderConfig.minute).padStart(2, '0')}`}
+                    onChange={async (e) => {
+                      const [h, m] = e.target.value.split(':').map(Number);
+                      const updated = { ...reminderConfig, hour: h || 19, minute: m || 0 };
+                      setReminderConfig(updated);
+                      await NotificationManager.saveConfig(updated);
+                    }}
+                    className="w-full p-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 font-mono font-bold"
+                  />
+                </div>
+              </div>
+
+              <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                {isAr
+                  ? 'سيقوم التطبيق بإرسال تنبيه لطيف في الموعد المحدد ليذكرك بأهمية جلستك والاعتناء بسلامك الداخلي.'
+                  : 'The app will send a gentle reminder at your chosen time for weekly self-care.'}
+              </p>
+            </div>
+          )}
         </section>
 
         {/* 2. Ambient Soundscapes Section */}

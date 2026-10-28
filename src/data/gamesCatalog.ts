@@ -1703,6 +1703,35 @@ export const ALL_36_GAMES: GameCatalogItem[] = [
     color: 'from-emerald-700 via-teal-800 to-stone-900',
     badgeAr: 'ألغاز ومقولات الشفرة',
     badgeEn: 'Mind Cipher Adventure'
+  },
+  {
+    id: 'court-of-doubt',
+    nameAr: 'محكمة الشك واليقين — مسرح التحقيق والاستنتاج ⚖️',
+    nameEn: 'Court of Doubt & Certainty — Investigation Theatre ⚖️',
+    descAr: 'مسرح تحقيقي استثنائي لفحص الأدلة، تصنيف الحقائق والافتراضات، استجواب الشخصيات المشتبه بها، وإصدار الحكم المنطقي العادل.',
+    descEn: 'An immersive investigation and deduction theatre to examine clues, classify facts vs assumptions, interrogate suspects, and deliver verdicts.',
+    categoryKey: 'advanced_psych',
+    categoryAr: 'عيادة التفكير والتحرر',
+    categoryEn: 'Deep Mind & Release',
+    ideaAndGoalAr: 'تدريب التفكير المنطقي الاستنتاجي ومقاومة التسرع في الحكم عبر تحليل الأدلة وكشف التناقضات بموضوعية.',
+    ideaAndGoalEn: 'Train deductive logical thinking and resist premature conclusions through objective clue analysis.',
+    howToPlayAr: 'افحص مسرح الأدلة، صنّف كل معلومة إلى حقيقة أو افتراض أو تناقض، استجوب الشخصيات، وقدم استنتاجك النهائي.',
+    howToPlayEn: 'Examine evidence board, classify clues into facts, assumptions, or contradictions, interrogate suspects, and deliver verdict.',
+    approxDuration: '٣-٥ دقائق',
+    interactionTypeAr: 'مسرح تحقيق تفاعلي، لوحة أدلة، تصنيف منطقي واستجواب',
+    interactionTypeEn: 'Interactive investigation theatre, evidence board, logical classification & interrogation',
+    experienceType: 'cognitive',
+    suitableForAr: 'محبي الألغاز البوليسية، التفكير النقدي، والتحليل المنطقي السليم',
+    suitableForEn: 'Detective puzzle lovers, critical thinkers, and deductive logic enthusiasts',
+    worksOffline: true,
+    savesData: true,
+    overlapNoteAr: 'مستقلة تماماً: لعبة مسرح التحقيق والاستنتاج المنطقي.',
+    overlapNoteEn: 'Standalone investigation and logical deduction theatre.',
+    states: ['mental_challenge', 'focus', 'understand_self'],
+    icon: Scale,
+    color: 'from-stone-900 via-emerald-900 to-amber-700',
+    badgeAr: 'محكمة التحقيق والاستنتاج',
+    badgeEn: 'Court of Doubt'
   }
 ];
 

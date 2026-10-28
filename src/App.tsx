@@ -98,6 +98,7 @@ const EmotionSortPuzzleGame = lazy(() => import('./components/interactiveGames/E
 const UnifiedGamesHub = lazy(() => import('./components/games/UnifiedGamesHub').then((m) => ({ default: m.UnifiedGamesHub })));
 const NesmaCipherMain = lazy(() => import('./components/nesmaCipher/NesmaCipherMain').then((m) => ({ default: m.NesmaCipherMain })));
 const MovingIslandMain = lazy(() => import('./components/movingIsland/MovingIslandMain').then((m) => ({ default: m.MovingIslandMain })));
+const CourtOfDoubtGame = lazy(() => import('./components/games/CourtOfDoubtGame').then((m) => ({ default: m.CourtOfDoubtGame })));
 
 // Lazy-loaded Modals (loaded on demand when opened)
 const MindfulBreathingModal = lazy(() => import('./components/MindfulBreathingModal').then((m) => ({ default: m.MindfulBreathingModal })));
@@ -159,6 +160,7 @@ const VALID_MODES: Set<string> = new Set<string>([
   'worry-sandbox',
   'blooming-gratitude',
   'nesma-cipher',
+  'court-of-doubt',
   'mindful-organizer',
   'zen-puzzle',
   'emotion-sort-puzzle',
@@ -1036,6 +1038,15 @@ export default function App() {
               />
             )}
 
+            {/* محكمة الشك واليقين — مسرح التحقيق والاستنتاج */}
+            {currentMode === 'court-of-doubt' && (
+              <CourtOfDoubtGame
+                language={language}
+                onBackToMap={() => setCurrentMode('map')}
+                onAddXP={handleGameRewardXP}
+              />
+            )}
+
             {/* Weekly Psychological Reflection & Companion Session */}
             {currentMode === 'weekly-session' && (
               <WeeklyPsychologicalSession
@@ -1043,6 +1054,7 @@ export default function App() {
                 onBackToMap={() => setCurrentMode('map')}
                 onAddXP={handleGameRewardXP}
                 onOpenBreathing={() => setIsBreathingOpen(true)}
+                onNavigateToGame={(gameId) => setCurrentMode(gameId)}
               />
             )}
 

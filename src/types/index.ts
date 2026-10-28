@@ -60,6 +60,7 @@ export type GameMode =
   | 'blooming-gratitude'         // شجرة الامتنان ذات البراعم المتفتحة
   // شفرة نسمة: ألغاز نفسية ومقولات حكيمة
   | 'nesma-cipher'
+  | 'court-of-doubt'              // محكمة الشك واليقين — مسرح التحقيق والاستنتاج
   // Real Tactical, Organizing & Satisfying Puzzle Games:
   | 'mindful-organizer'          // ترتيب الفوضى والرفوف والسكينة
   | 'zen-puzzle'                 // بازل وتوازن أحجار الزن والماندالا

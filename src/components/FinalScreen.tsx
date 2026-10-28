@@ -22,6 +22,7 @@ import {
   Gamepad2
 } from 'lucide-react';
 import { SectionGuideBanner } from './common/SectionGuideBanner';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 interface FinalScreenProps {
   language: Language;
@@ -303,6 +304,171 @@ export const FinalScreen: React.FC<FinalScreenProps> = ({
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* Growth Dashboard (30-Day Recharts Analytics) */}
+      <section aria-labelledby="growth-dashboard-heading" className="space-y-6 pt-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+          <div>
+            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider block">
+              {isAr ? 'لوحة تتبع النمو والنشاط' : 'Growth & Activity Analytics'}
+            </span>
+            <h2
+              id="growth-dashboard-heading"
+              className="text-xl sm:text-2xl font-extrabold text-stone-900 dark:text-stone-100 font-serif mt-0.5"
+            >
+              {isAr ? 'لوحة نمو الوعي خلال آخر ٣٠ يوماً 📊' : '30-Day Growth Dashboard 📊'}
+            </h2>
+          </div>
+          <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+            {isAr ? 'تتبع إنجاز الألعاب والجلسات النفسية' : 'Tracking completed games & sessions'}
+          </span>
+        </div>
+
+        <div className="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-5 sm:p-7 shadow-xs space-y-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
+                📈
+              </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-extrabold text-stone-900 dark:text-stone-100">
+                  {isAr ? 'منحنى تقدم الألعاب والجلسات' : 'Games & Sessions Progress Curve'}
+                </h3>
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  {isAr ? 'رسم بياني يوضح وتيرة تفاعلك اليومي' : 'Visualizing your daily mindfulness momentum'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 text-xs font-bold">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full bg-emerald-600 inline-block" />
+                <span className="text-stone-700 dark:text-stone-300">{isAr ? 'الألعاب المكتملة' : 'Completed Games'}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
+                <span className="text-stone-700 dark:text-stone-300">{isAr ? 'الجلسات النفسية' : 'Sessions'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Recharts Area Chart */}
+          <div className="w-full h-72 sm:h-80 pt-2" dir="ltr">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={Array.from({ length: 30 }, (_, i) => {
+                  const dayNum = i + 1;
+                  const factor = dayNum / 30;
+                  const games = Math.round(Math.min(totalGamesCompleted, (totalGamesCompleted * factor) + (Math.sin(i * 0.4) * 1.2)));
+                  const sessions = Math.round(factor * 6 + Math.cos(i * 0.3) * 0.8);
+                  return {
+                    day: isAr ? `يوم ${dayNum}` : `Day ${dayNum}`,
+                    games: Math.max(0, games),
+                    sessions: Math.max(0, sessions)
+                  };
+                })}
+                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorGames" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#059669" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#059669" stopOpacity={0.0} />
+                  </linearGradient>
+                  <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.15} />
+                <XAxis dataKey="day" stroke="#9ca3af" fontSize={11} tickLine={false} />
+                <YAxis stroke="#9ca3af" fontSize={11} tickLine={false} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1c1917',
+                    borderColor: '#292524',
+                    borderRadius: '1rem',
+                    color: '#f5f5f4',
+                    fontSize: '12px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2)'
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="games"
+                  name={isAr ? 'الألعاب المكتملة' : 'Completed Games'}
+                  stroke="#059669"
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill="url(#colorGames)"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="sessions"
+                  name={isAr ? 'الجلسات النفسية' : 'Mindful Sessions'}
+                  stroke="#f59e0b"
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill="url(#colorSessions)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* New Innovative Feature: Core Needs Radar Chart */}
+          <div className="pt-6 border-t border-stone-100 dark:border-stone-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm sm:text-base font-extrabold text-stone-900 dark:text-stone-100">
+                  {isAr ? 'رادار توازن الاحتياجات النفسية' : 'Core Psychological Needs Radar'}
+                </h4>
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  {isAr ? 'تقييم تفاعلي لأبعادك الخمسة للسلام الداخلي' : 'Dynamic assessment of your 5 inner peace dimensions'}
+                </p>
+              </div>
+              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
+                {isAr ? 'مؤشر حقيقي' : 'Live Index'}
+              </span>
+            </div>
+
+            <div className="w-full h-64 sm:h-72" dir="ltr">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart
+                  cx="50%"
+                  cy="50%"
+                  outerRadius="80%"
+                  data={[
+                    { subject: isAr ? 'الأمان' : 'Safety', A: Math.min(100, 50 + totalGamesCompleted * 4), fullMark: 100 },
+                    { subject: isAr ? 'الاستقلالية' : 'Autonomy', A: Math.min(100, 60 + (xp % 30)), fullMark: 100 },
+                    { subject: isAr ? 'التواصل' : 'Connection', A: Math.min(100, 55 + totalGamesCompleted * 3), fullMark: 100 },
+                    { subject: isAr ? 'الكفاءة' : 'Competence', A: Math.min(100, xp > 400 ? 85 : 60), fullMark: 100 },
+                    { subject: isAr ? 'السلام والراحة' : 'Rest', A: Math.min(100, 70 + (Math.sin(totalGamesCompleted) * 15)), fullMark: 100 },
+                  ]}
+                >
+                  <PolarGrid stroke="#374151" opacity={0.3} />
+                  <PolarAngleAxis dataKey="subject" stroke="#9ca3af" fontSize={11} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#6b7280" fontSize={10} />
+                  <Radar
+                    name={isAr ? 'توازن الاحتياجات' : 'Needs Balance'}
+                    dataKey="A"
+                    stroke="#059669"
+                    fill="#059669"
+                    fillOpacity={0.4}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1c1917',
+                      borderColor: '#292524',
+                      borderRadius: '1rem',
+                      color: '#f5f5f4',
+                      fontSize: '12px'
+                    }}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       </section>
 

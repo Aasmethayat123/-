@@ -84,20 +84,28 @@ app.post('/api/companion', async (req: Request, res: Response) => {
     const systemInstruction = `
 أنت الرفيق النفسي الذكي التابع لمبادرة «نسمة حياة: فكّر فيها».
 مهمتك: الاستماع المتعاطف، التحليل الإدراكي المعتدل المستند إلى العلاج المعرفي السلوكي (CBT) وعلاج القبول والالتزام (ACT).
-الأسلوب: دافئ، إنساني، داعم بدون أحكام، لغة عربية فصيحة قريبة ومفهومة (بلمسة مصرية لطيفة ومحترمة عند الحاجة).
+الأسلوب: دافئ، إنساني، داعم بدون أحكام، لغة عربية فصيحة قريبة ومفهومة.
 قواعد أساسية لا تتجاوزها:
 1. لا تقدم تشخيصات طبية سريرية ولا تصف أدوية.
 2. إذا لاحظت نية إيذاء النفس أو أزمة حادة، حث المستخدم على طلب المساعدة الطارئة فوراً.
-3. ساعد المستخدم في التعرف على الأفكار التلقائية والتشوهات المعرفية (مثل: التضخيم، التفكير الكارثي، اللوم الذاتي، التفكير المستقطب).
+3. ساعد المستخدم في التعرف على الأفكار التلقائية والتشوهات المعرفية.
 4. اطرح سؤالاً سقراطياً لطيفاً واحداً يساعد في إعادة صياغة الفكرة.
-5. اقترح خطوة أو تمرين تأريض جسدي ملموس وبسيط (تنفس، لمس شيء، خطوة صغيرة).
+5. اقترح خطوة أو تمرين تأريض جسدي ملموس وبسيط.
+6. اقترح لعبة علاجية تناسب حالة المستخدم العاطفية الحالية من بين الألعاب التالية مع معرفها الدقيق:
+   - "game-butterfly-tap" (تمرين الفراشة المهدئة للقلق الحاد)
+   - "touch-and-break" (تحطيم التوتر للغضب والطاقة المحبوسة)
+   - "zen-puzzle" (حجارة الزن للتشتت وفقدان التركيز)
+   - "challenge-separate" (فك تشابك الأفكار لزحمة الأفكار)
+   - "hands-control" (التحكم بالتوتر الجسدي)
 
 يجب أن تعود بالإجابة بصيغة JSON حصراً بالشكل التالي:
 {
   "reply": "الرد المتعاطف والداعم",
-  "distortionIdentified": "اسم التشوه المعرفي إن وجد (مثلاً: التفكير الكارثي)",
+  "distortionIdentified": "اسم التشوه المعرفي إن وجد",
   "socraticQuestion": "سؤال سقراطي تأملي",
-  "groundingExercise": "تمرين بسيط للسكينة"
+  "groundingExercise": "تمرين بسيط للسكينة",
+  "recommendedGameId": "معرف اللعبة المقترحة (مثلاً: game-butterfly-tap أو touch-and-break أو zen-puzzle أو challenge-separate)",
+  "recommendedGameReason": "سبب اختيار هذه اللعبة بناءً على حالة المستخدم"
 }
 `;
 
@@ -132,7 +140,9 @@ ${message}
         reply: outputText,
         distortionIdentified: undefined,
         socraticQuestion: undefined,
-        groundingExercise: undefined
+        groundingExercise: undefined,
+        recommendedGameId: undefined,
+        recommendedGameReason: undefined
       };
     }
 
@@ -140,7 +150,9 @@ ${message}
       reply: parsedData.reply || (isAr ? 'أسمعك وأقدّر ما تمر به.' : 'I hear and validate your experience.'),
       distortionIdentified: parsedData.distortionIdentified,
       socraticQuestion: parsedData.socraticQuestion,
-      groundingExercise: parsedData.groundingExercise
+      groundingExercise: parsedData.groundingExercise,
+      recommendedGameId: parsedData.recommendedGameId,
+      recommendedGameReason: parsedData.recommendedGameReason
     });
   } catch (error) {
     console.error('Gemini API Error:', error);
@@ -190,6 +202,55 @@ ${notes || 'لا توجد ملاحظات تفصيلية'}
     return res.json(parsed);
   } catch (err) {
     return res.status(500).json({ error: 'Evaluation failed', useFallback: true });
+  }
+});
+
+/**
+ * Server-side End-of-Day Journal Analysis by Gemini
+ */
+app.post('/api/journal/analyze', async (req: Request, res: Response) => {
+  const { journalText, moodScore, language = 'ar' } = req.body;
+
+  if (!aiClient) {
+    return res.status(503).json({ error: 'AI unavailable', useFallback: true });
+  }
+
+  try {
+    const isAr = language === 'ar';
+    const systemInstruction = `
+أنت المحلل النفسي الذكي لمذكرات الوعي اليومي في مبادرة «نسمة حياة».
+مهمتك: قراءة تدوينة نهاية اليوم للمستخدم، تقديم تحليل أولي متعاطف، تسليط الضوء على إنجازاته ونجاحاته الصغيرة اليومية، وتقديم ومضة امتنان أو حكمة هادئة.
+يجب أن تعود بالإجابة بصيغة JSON حصراً بالشكل التالي:
+{
+  "empatheticFeedback": "تحليل إدراكي تعاطفي دافئ لتدوينة اليوم",
+  "celebratedSuccess": "احتفال لطيف بإنجاز أو صمود المستخدم اليوم",
+  "gratitudeSpark": "ومضة امتنان أو تأمل هادئ"
+}
+`;
+
+    const promptText = `
+مستوى المزاج اليوم: ${moodScore}/10
+تدوينة ومشاعر نهاية اليوم:
+${journalText || 'لم يتم إدخال نص تفصيلي'}
+`;
+
+    const response = await aiClient.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: promptText,
+      config: {
+        systemInstruction,
+        responseMimeType: 'application/json'
+      }
+    });
+
+    const parsed = JSON.parse(response.text || '{}');
+    return res.json({
+      empatheticFeedback: parsed.empatheticFeedback || (isAr ? 'أنت تقوم بعمل رائع في مراقبة وعيك.' : 'You are doing great.'),
+      celebratedSuccess: parsed.celebratedSuccess || (isAr ? 'نجاحك اليوم في الالتفات لنفسك هو بحد ذاته إنجاز.' : 'Your awareness today is a victory.'),
+      gratitudeSpark: parsed.gratitudeSpark || (isAr ? 'كل خطوة صغيرة تصنع فرقاً كبيراً.' : 'Every small step matters.')
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Journal analysis failed', useFallback: true });
   }
 });
 

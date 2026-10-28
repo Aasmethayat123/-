@@ -23,6 +23,8 @@ export interface CompanionResponse {
   distortionIdentified?: string;
   socraticQuestion?: string;
   groundingExercise?: string;
+  recommendedGameId?: string;
+  recommendedGameReason?: string;
   safetyCheck: SafetyCheckResult;
   provider: 'cloud-gemini' | 'local-cbt-engine';
   isFallback: boolean;
@@ -180,6 +182,8 @@ export async function processCompanionMessage(
             distortionIdentified: data.distortionIdentified,
             socraticQuestion: data.socraticQuestion,
             groundingExercise: data.groundingExercise,
+            recommendedGameId: data.recommendedGameId,
+            recommendedGameReason: data.recommendedGameReason,
             safetyCheck: { isCrisis: false, category: null },
             provider: 'cloud-gemini',
             isFallback: false
